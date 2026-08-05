@@ -1,4 +1,6 @@
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from AIticket.db import users_collection
 
 
@@ -28,7 +30,20 @@ def register_service(data):
         "success": True,
         "message": "User registered successfully."
     }
-from django.contrib.auth.hashers import check_password
+
+
+def get_tokens_for_user(user):
+
+    refresh = RefreshToken()
+
+    refresh["user_id"] = str(user["_id"])
+    refresh["email"] = user["email"]
+
+    return {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+    }
+
 
 def login_service(data):
 
@@ -53,7 +68,11 @@ def login_service(data):
             "message": "Invalid password."
         }
 
+    tokens = get_tokens_for_user(user)
+
     return {
         "success": True,
-        "user": user
+        "message": "Login Successful",
+        "access": tokens["access"],
+        "refresh": tokens["refresh"],
     }

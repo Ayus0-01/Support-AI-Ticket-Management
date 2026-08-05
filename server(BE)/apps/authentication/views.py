@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import RegisterSerializer,LoginSerializer
-from .services import register_service,login_service
+from .serializers import RegisterSerializer, LoginSerializer
+from .services import register_service, login_service
 
 
 @api_view(["POST"])
@@ -34,6 +34,8 @@ def register(request):
         serializer.errors,
         status=status.HTTP_400_BAD_REQUEST
     )
+
+
 @api_view(["POST"])
 def login(request):
 
@@ -46,7 +48,9 @@ def login(request):
         if result["success"]:
             return Response(
                 {
-                    "message": "Login Successful"
+                    "message": result["message"],
+                    "access": result["access"],
+                    "refresh": result["refresh"]
                 },
                 status=status.HTTP_200_OK
             )
