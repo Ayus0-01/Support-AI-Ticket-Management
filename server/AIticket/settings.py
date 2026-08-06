@@ -28,7 +28,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-    "support-ai-ticket-management-team-18k9.onrender.com",
+    'support-ai-ticket-management-team-18k9.onrender.com',
     "localhost",
     "127.0.0.1",
 ]
