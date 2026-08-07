@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { apiFetch } from "../api";
 
 interface User {
   name: string;
@@ -43,25 +44,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-
-      setUser({
-        name: username,
-        username: username,
-        email: "",
-        role: "User",
-        avatar: username.charAt(0).toUpperCase(),
-      });
-
-      return true;
+    if (!response.ok) {
+      console.log(data.message);
+      return false;
     }
 
-    console.log(data.message);
-    return false;
+    localStorage.setItem("access", data.access);
+    localStorage.setItem("refresh", data.refresh);
+
+    const meResponse = await apiFetch("/api/auth/me/");
+    const meData = await meResponse.json();
+
+    if (!meResponse.ok) {
+      console.log("ME API error:", meData.message);
+      return false;
+    }
+
+    setUser({
+      name: meData.username,
+      username: meData.username,
+      email: meData.email,
+      role: "User",
+      avatar: meData.username.charAt(0).toUpperCase(),
+    });
+
+    return true;
+
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     return false;
   }
 };

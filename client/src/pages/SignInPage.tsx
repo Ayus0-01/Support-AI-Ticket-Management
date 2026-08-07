@@ -17,7 +17,7 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
     try { return JSON.parse(localStorage.getItem(REMEMBER_KEY) ?? 'null'); } catch { return null; }
   })();
 
-  const [email, setEmail]       = useState<string>(saved?.email ?? 'lakshmipriya@gmail.com');
+  const [email, setEmail] = useState<string>(saved?.email ?? '');
   const [password, setPassword] = useState<string>(saved?.password ?? '');
   const [showPw, setShowPw]     = useState(false);
   const [remember, setRemember] = useState<boolean>(!!saved);
@@ -67,12 +67,6 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
         onNavigate('dashboard');
       }
     }, 900);
-  };
-
-  const autofill = () => {
-    setEmail('lakshmipriya@gmail.com');
-    setPassword('Lakshmi@123');
-    setError('');
   };
 
   return (
