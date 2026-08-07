@@ -30,21 +30,26 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
     if (!remember) localStorage.removeItem(REMEMBER_KEY);
   }, [remember]);
 
-  const attemptSignIn = (usr: string, pw: string) => {
-    setError('');
-    setLoading(true);
-    setTimeout(() => {
-      const ok = signIn(usr, pw);
-      setLoading(false);
-      if (ok) {
-        if (remember) localStorage.setItem(REMEMBER_KEY, JSON.stringify({ email: usr, password: pw }));
-        else localStorage.removeItem(REMEMBER_KEY);
-        onNavigate('dashboard');
-      } else {
-        setError('Incorrect email or password. Try lakshmipriya@gmail.com / Lakshmi@123');
-      }
-    }, 600);
-  };
+  const attemptSignIn = async (usr: string, pw: string) => {
+  setError("");
+  setLoading(true);
+
+  try {
+    const ok = await signIn(usr, pw);
+
+    setLoading(false);
+
+    if (ok) {
+      onNavigate("dashboard");
+    } else {
+      setError("Invalid email or password.");
+    }
+  } catch (error) {
+    setLoading(false);
+    setError("Unable to connect to the server.");
+    console.error(error);
+  }
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +59,7 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
   const handleGoogle = () => {
     setGoogleLoading(true);
     setTimeout(() => {
-      /* Simulate Google sign-in with the default account */
+
       const ok = signIn('lakshmipriya', 'Lakshmi@123');
       setGoogleLoading(false);
       if (ok) {

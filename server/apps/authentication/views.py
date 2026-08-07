@@ -2,8 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework_simplejwt.tokens import AccessToken
+from bson import ObjectId
+
 from .serializers import RegisterSerializer, LoginSerializer
 from .services import register_service, login_service
+from AIticket.db import users_collection
 
 
 @api_view(["POST"])
@@ -66,3 +70,58 @@ def login(request):
         serializer.errors,
         status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(["GET"])
+def me(request):
+
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header:
+        return Response(
+            {
+                "message": "Authorization header missing."
+            },
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    try:
+
+        token = auth_header.split(" ")[1]
+
+        access_token = AccessToken(token)
+
+        user_id = access_token["user_id"]
+
+        user = users_collection.find_one(
+            {
+                "_id": ObjectId(user_id)
+            }
+        )
+
+        if not user:
+            return Response(
+                {
+                    "message": "User not found."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response(
+            {
+                "username": user["username"],
+                "email": user["email"]
+            },
+            status=status.HTTP_200_OK
+        )
+
+    except Exception as e:
+
+        print("JWT error:", e)
+
+        return Response(
+            {
+                "message": "Invalid or expired token."
+            },
+            status=status.HTTP_401_UNAUTHORIZED
+        )
