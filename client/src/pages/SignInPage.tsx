@@ -58,9 +58,9 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
 
   const handleGoogle = () => {
     setGoogleLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
 
-      const ok = signIn('lakshmipriya', 'Lakshmi@123');
+      const ok = await signIn('lakshmipriya', 'Lakshmi@123');
       setGoogleLoading(false);
       if (ok) {
         if (remember) localStorage.setItem(REMEMBER_KEY, JSON.stringify({ email: 'lakshmipriya@gmail.com', password: 'Lakshmi@123' }));
@@ -240,7 +240,7 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
 
             <p className={`mt-6 text-center text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Don't have an account?{' '}
-              <button className="font-semibold text-blue-600 hover:text-blue-700">Get started free</button>
+              <button onClick={() => onNavigate('signup')} className="font-semibold text-blue-600 hover:text-blue-700"> Get started free </button>
             </p>
           </div>
         </div>

@@ -5,14 +5,15 @@ import {
   Bot, Sun, Moon, LayoutDashboard, Ticket, PlusCircle, Sparkles, BarChart3,
   BookOpen, Users, Settings, LogOut, Search, Bell, HelpCircle, MessageSquare,
   Send, ChevronRight, Tag, Filter, Menu, X, TrendingUp, Ticket as TicketIcon,
-  PlayCircle, CheckCircle2, AlertCircle, Zap,
+  PlayCircle, CheckCircle2, AlertCircle, Zap, ShieldCheck,
 } from 'lucide-react';
 
 interface DashboardProps {
   onNavigate: (page: string) => void;
+  initialPage?: NavPage;
 }
 
-type NavPage = 'Dashboard' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings';
+type NavPage = 'Dashboard' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies';
 
 interface Ticket {
   id: string;
@@ -33,11 +34,67 @@ const TICKETS: Ticket[] = [
   { id: 'TCK-121', subject: 'Sample Bug issue #1112',            category: 'Bug',             priority: 'Medium', status: 'Resolved'    },
 ];
 
+interface TicketCard {
+  id: string;
+  subject: string;
+  category: string;
+  subcategory: string;
+  requester: string;
+  raised: string;
+  priority: string;
+  status: string;
+  statusDetail: string;
+  statusTone: 'green' | 'blue' | 'amber' | 'gray';
+  assigned: string;
+}
+
+const MY_TICKETS: TicketCard[] = [
+  {
+    id: 'IT-2026-004521',
+    subject: 'VPN connection failing on corporate network',
+    category: 'VPN',
+    subcategory: 'Connection failure',
+    requester: 'Priya Sharma · Finance',
+    raised: '12 min ago',
+    priority: 'P2',
+    status: 'AI processing',
+    statusDetail: 'First response due in 48 min',
+    statusTone: 'blue',
+    assigned: 'Unassigned',
+  },
+  {
+    id: 'IT-2026-004488',
+    subject: 'VPN disconnects every few minutes',
+    category: 'VPN',
+    subcategory: 'Connection failure',
+    requester: 'Ramesh N. · Finance',
+    raised: '2 days ago',
+    priority: 'P3',
+    status: 'In progress',
+    statusDetail: 'Assigned to Network Team',
+    statusTone: 'amber',
+    assigned: 'Network Team',
+  },
+  {
+    id: 'IT-2026-004401',
+    subject: 'Request: Adobe Acrobat Pro licence',
+    category: 'Software',
+    subcategory: 'Licensing',
+    requester: 'Deeepa R. · Operations',
+    raised: '5 days ago',
+    priority: 'P4',
+    status: 'Waiting on you',
+    statusDetail: 'Manager approval needed',
+    statusTone: 'gray',
+    assigned: 'Manager review',
+  },
+];
+
 const STATS = [
-  { label: 'TOTAL TICKETS', value: 128, change: '+12.5%', icon: TicketIcon,    bg: 'bg-blue-50',   iconBg: 'bg-blue-100',   iconColor: 'text-blue-500'  },
-  { label: 'OPEN TICKETS',  value: 27,  change: '+8.3%',  icon: AlertCircle,   bg: 'bg-amber-50',  iconBg: 'bg-amber-100',  iconColor: 'text-amber-500' },
-  { label: 'IN PROGRESS',   value: 55,  change: '+5.7%',  icon: PlayCircle,    bg: 'bg-purple-50', iconBg: 'bg-purple-100', iconColor: 'text-purple-500'},
-  { label: 'RESOLVED',      value: 46,  change: '+15.2%', icon: CheckCircle2,  bg: 'bg-green-50',  iconBg: 'bg-green-100',  iconColor: 'text-green-500' },
+  { label: 'TOTAL TICKETS', value: 1284, change: '+18.4%', icon: TicketIcon,    bg: 'bg-blue-50',   iconBg: 'bg-blue-100',   iconColor: 'text-blue-500'  },
+  { label: 'OPEN TICKETS',  value: 312,  change: '+6.2%',  icon: AlertCircle,   bg: 'bg-amber-50',  iconBg: 'bg-amber-100',  iconColor: 'text-amber-500' },
+  { label: 'IN PROGRESS',   value: 547,  change: '+11.3%', icon: PlayCircle,    bg: 'bg-purple-50', iconBg: 'bg-purple-100', iconColor: 'text-purple-500'},
+  { label: 'RESOLVED',      value: 425,  change: '+22.7%', icon: CheckCircle2,  bg: 'bg-green-50',  iconBg: 'bg-green-100',  iconColor: 'text-green-500' },
 ];
 
 const priorityStyle: Record<string, string> = {
@@ -171,88 +228,833 @@ function DashboardHeroArt({ isDark, compact = false }: { isDark: boolean; compac
   );
 }
 
-const navItems: { name: NavPage; icon: React.ElementType; badge?: string }[] = [
-  { name: 'Dashboard',     icon: LayoutDashboard },
-  { name: 'My Tickets',    icon: Ticket          },
-  { name: 'Create Ticket', icon: PlusCircle      },
-  { name: 'AI Assistant',  icon: Sparkles,  badge: 'BETA' },
-  { name: 'Reports',       icon: BarChart3       },
-  { name: 'Knowledge Base',icon: BookOpen        },
-  { name: 'Users',         icon: Users           },
-  { name: 'Settings',      icon: Settings        },
+type SidebarItem = { name: NavPage; icon: React.ElementType; badge?: string };
+const sidebarGroups: { title: string; items: SidebarItem[] }[] = [
+  {
+    title: 'Workspace',
+    items: [
+      { name: 'Dashboard', icon: LayoutDashboard },
+      { name: 'My Tickets', icon: Ticket, badge: '127' },
+      { name: 'My queue', icon: TicketIcon, badge: '14' },
+      { name: 'Create Ticket', icon: PlusCircle },
+    ],
+  },
+  {
+    title: 'Configuration',
+    items: [
+      { name: 'Taxonomy', icon: Tag },
+      { name: 'SLA policies', icon: ShieldCheck },
+    ],
+  },
+  {
+    title: 'Productivity',
+    items: [
+      { name: 'AI Assistant', icon: Sparkles, badge: 'BETA' },
+      { name: 'Reports', icon: BarChart3 },
+      { name: 'Knowledge Base', icon: BookOpen },
+    ],
+  },
+  {
+    title: 'Administration',
+    items: [
+      { name: 'Users', icon: Users },
+      { name: 'Settings', icon: Settings },
+    ],
+  },
 ];
 
 /* ─── sub-pages ──────────────────────────────────────────────────── */
 
-function MyTicketsPage({ isDark }: { isDark: boolean }) {
+const MY_TICKET_SUMMARY = [
+  { label: 'Received today', value: '127', note: '12% vs yesterday', tone: 'green' },
+  { label: 'Classified', value: '124', note: '3 unclassified → general queue', tone: 'gray' },
+  { label: 'Classification accuracy', value: '94%', note: 'target ≥ 90%', tone: 'green' },
+  { label: 'SLA at risk', value: '6', note: '2 breaching within 1h', tone: 'red' },
+] as const;
+
+const MY_TICKET_ROWS = [
+  {
+    id: 'IT-2026-004521',
+    subject: 'VPN connection failing on corporate network',
+    requester: 'Priya Sharma · Finance',
+    category: 'VPN',
+    subcategory: 'Connection failure',
+    severity: 'HIGH',
+    priority: 'P2',
+    confidence: '92%',
+    path: 'FAST',
+    sla: '48m',
+    assignee: 'Unassigned',
+    status: 'AI processing',
+    statusDetail: 'First response due in 48 min',
+    statusTone: 'blue',
+    requesterName: 'Priya Sharma',
+    department: 'Finance',
+    site: 'Chennai',
+    assetTag: 'LT-04821',
+    description: 'Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.',
+    affected: 'My team',
+    blocked: 'Yes, completely',
+    workaround: 'None',
+    started: 'Today',
+  },
+  {
+    id: 'IT-2026-004510',
+    subject: 'ERP login failing for accounts team',
+    requester: 'Vinod P. · Finance',
+    category: 'APPLICATION',
+    subcategory: 'Authentication',
+    severity: 'HIGH',
+    priority: 'P2',
+    confidence: '90%',
+    path: 'FAST',
+    sla: '22m',
+    assignee: 'Unassigned',
+    status: 'Open',
+    statusDetail: 'SLA: 22m',
+    statusTone: 'amber',
+    requesterName: 'Vinod P.',
+    department: 'Finance',
+    site: 'Chennai',
+    assetTag: 'LT-09923',
+    description: 'Finance team members are unable to log in to the ERP application. It hangs on the loading screen and then times out.',
+    affected: 'My team',
+    blocked: 'Yes, completely',
+    workaround: 'None',
+    started: '1 hour ago',
+  },
+  {
+    id: 'IT-2026-004520',
+    subject: 'Cannot access shared finance drive',
+    requester: 'Ramesh N. · Finance',
+    category: 'ACCESS',
+    subcategory: 'Permissions',
+    severity: 'MEDIUM',
+    priority: 'P3',
+    confidence: '88%',
+    path: 'FAST',
+    sla: '2h 10m',
+    assignee: 'Arun K.',
+    status: 'In progress',
+    statusDetail: 'Assigned to Arun K.',
+    statusTone: 'amber',
+    requesterName: 'Ramesh N.',
+    department: 'Finance',
+    site: 'Chennai',
+    assetTag: 'LT-01640',
+    description: 'User cannot open a shared finance drive and is receiving a permissions error when trying to access the folder.',
+    affected: 'My team',
+    blocked: 'Yes, completely',
+    workaround: 'None',
+    started: 'Yesterday',
+  },
+  {
+    id: 'IT-2026-004519',
+    subject: 'Entire 4th floor has no network connectivity',
+    requester: 'Deepa R. · Operations',
+    category: 'NETWORK',
+    subcategory: 'Connectivity',
+    severity: 'CRITICAL',
+    priority: 'P1',
+    confidence: '96%',
+    path: 'FAST',
+    sla: '6m',
+    assignee: 'Network Team',
+    status: 'In progress',
+    statusDetail: 'Assigned to Network Team',
+    statusTone: 'red',
+    requesterName: 'Deepa R.',
+    department: 'Operations',
+    site: 'Chennai',
+    assetTag: 'LT-06111',
+    description: 'The entire 4th floor lost network access and is unable to connect to internal systems.',
+    affected: 'Whole org',
+    blocked: 'Yes, completely',
+    workaround: 'None',
+    started: 'Today',
+  },
+  {
+    id: 'IT-2026-004518',
+    subject: 'Outlook keeps asking for password after update',
+    requester: 'Karthik S. · Sales',
+    category: 'EMAIL',
+    subcategory: 'Mailbox',
+    severity: 'MEDIUM',
+    priority: 'P3',
+    confidence: '68%',
+    path: 'LLM',
+    sla: '2h 40m',
+    assignee: 'Unassigned',
+    status: 'Open',
+    statusDetail: 'SLA: 2h 40m',
+    statusTone: 'amber',
+    requesterName: 'Karthik S.',
+    department: 'Sales',
+    site: 'Mumbai',
+    assetTag: 'LT-03022',
+    description: 'After the latest Outlook update, the app keeps prompting for credentials and users cannot send emails.',
+    affected: 'My team',
+    blocked: 'Partially',
+    workaround: 'Yes, use webmail',
+    started: 'Earlier this week',
+  },
+  {
+    id: 'IT-2026-004517',
+    subject: 'Need help with the thing on my screen',
+    requester: 'Suresh M. · Admin',
+    category: 'UNCLASSIFIED',
+    subcategory: '→ general queue',
+    severity: '—',
+    priority: 'P3',
+    confidence: '31%',
+    path: 'LLM',
+    sla: '1h 55m',
+    assignee: 'Unassigned',
+    status: 'Unclassified',
+    statusDetail: 'In general queue',
+    statusTone: 'gray',
+    requesterName: 'Suresh M.',
+    department: 'Admin',
+    site: 'Delhi',
+    assetTag: 'LT-01289',
+    description: 'The user sees a strange popup on screen and is unsure what to do next.',
+    affected: 'Just me',
+    blocked: 'No',
+    workaround: 'Yes, restart the app',
+    started: 'Today',
+  },
+] as const;
+
+function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, onExport, onRaise, onOpenKB }: { title: string; isDark: boolean; selectedTicket: (typeof MY_TICKET_ROWS)[number] | null; onOpenTicket: (id: string) => void; onBack: () => void; onExport: (ticket: (typeof MY_TICKET_ROWS)[number]) => void; onRaise: () => void; onOpenKB: () => void }) {
+  const hasSelectedTicket = Boolean(selectedTicket);
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
+  const labelColor = (tone: string) => {
+    switch (tone) {
+      case 'green': return 'text-emerald-600';
+      case 'red': return 'text-red-600';
+      case 'gray': return 'text-slate-600';
+      default: return 'text-slate-600';
+    }
+  };
+
+  const priorityStyleRow = (priority: string) => {
+    if (priority === 'P1') return 'bg-red-100 text-red-600';
+    if (priority === 'P2') return 'bg-amber-100 text-amber-700';
+    if (priority === 'P3') return 'bg-orange-100 text-orange-700';
+    return 'bg-slate-100 text-slate-700';
+  };
+
+  const filterField = `w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-950 border-gray-800 text-white' : 'bg-white border-gray-200 text-slate-900'}`;
+
+  // If detailed view of a ticket is open, show details page layout
+  if (hasSelectedTicket && selectedTicket) {
+    return (
+      <div className="space-y-6">
+        <div className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Ticket details</p>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Review the selected ticket and export it as a PDF.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <button onClick={onBack} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Back to list
+              </button>
+              <button onClick={() => onExport(selectedTicket)} className="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+                Export as PDF
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className={`rounded-3xl border p-4 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+              <p className={`text-sm uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Ticket</p>
+              <p className={`mt-2 text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedTicket.subject}</p>
+              <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{selectedTicket.id}</p>
+              <div className="mt-4 space-y-3 text-sm">
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Requester</p>
+                  <p className={`mt-1 font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedTicket.requesterName}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Department</p>
+                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.department}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Site</p>
+                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.site}</p>
+                </div>
+              </div>
+            </div>
+            <div className={`rounded-3xl border p-4 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+              <p className={`text-sm uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${priorityStyleRow(selectedTicket.priority)}`}>{selectedTicket.priority}</span>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${selectedTicket.statusTone === 'red' ? 'bg-red-100 text-red-700' : selectedTicket.statusTone === 'amber' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>{selectedTicket.sla}</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{selectedTicket.path}</span>
+              </div>
+              <div className="mt-4 space-y-3 text-sm">
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Assigned</p>
+                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.assignee}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Asset tag</p>
+                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.assetTag}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={`mt-6 rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+            <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Issue details</p>
+            <p className={`mt-3 leading-7 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.description}</p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
+                <p className="text-xs text-slate-500 uppercase">Affected</p>
+                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.affected}</p>
+              </div>
+              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
+                <p className="text-xs text-slate-500 uppercase">Blocked</p>
+                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.blocked}</p>
+              </div>
+              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
+                <p className="text-xs text-slate-500 uppercase">Workaround</p>
+                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.workaround}</p>
+              </div>
+              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
+                <p className="text-xs text-slate-500 uppercase">Started</p>
+                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.started}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If My Queue page layout
+  if (title === 'My queue') {
+    const queueIds = ['IT-2026-004519', 'IT-2026-004510', 'IT-2026-004521', 'IT-2026-004520', 'IT-2026-004517'];
+    const queueRows = queueIds.map(id => MY_TICKET_ROWS.find(r => r.id === id)!).filter(Boolean);
+
+    const getRowNumberColor = (index: number) => {
+      switch (index) {
+        case 0: return 'text-red-600';
+        case 1: return 'text-amber-700';
+        case 2: return 'text-blue-600';
+        default: return 'text-slate-400 dark:text-gray-500';
+      }
+    };
+
+    const getCategoryStyle = (category: string) => {
+      switch (category.toUpperCase()) {
+        case 'NETWORK': return isDark ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        case 'APPLICATION': return isDark ? 'bg-amber-950/20 text-amber-400 border-amber-500/20' : 'bg-yellow-50 text-yellow-800 border-yellow-200';
+        case 'VPN': return isDark ? 'bg-blue-950/20 text-blue-400 border-blue-500/20' : 'bg-blue-50 text-blue-700 border-blue-200';
+        case 'ACCESS': return isDark ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        default: return isDark ? 'bg-gray-800 text-gray-400 border-gray-700' : 'bg-slate-50 text-slate-700 border-slate-200';
+      }
+    };
+
+    const getPriBadgeStyle = (priority: string) => {
+      switch (priority) {
+        case 'P1': return 'bg-red-600 text-white';
+        case 'P2': return 'bg-amber-600 text-white';
+        case 'P3': return 'bg-orange-500 text-white';
+        default: return 'bg-slate-500 text-white';
+      }
+    };
+
+    const getBreachBarColor = (id: string) => {
+      switch (id) {
+        case 'IT-2026-004519': return 'bg-red-600';
+        case 'IT-2026-004510': return 'bg-amber-600';
+        case 'IT-2026-004517': return 'bg-amber-500';
+        default: return 'bg-emerald-500';
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className={`text-[10px] uppercase tracking-[0.25em] font-semibold ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Tickets / Queue</p>
+            <h2 className={`text-2xl font-bold mt-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
+          </div>
+          <div>
+            <select className={`rounded-xl border px-3 py-2 text-xs font-semibold outline-none shadow-sm cursor-pointer ${isDark ? 'bg-gray-900 border-gray-800 text-white' : 'bg-white border-slate-200 text-slate-700'}`}>
+              <option>Sort: SLA risk (default)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className={`p-4 rounded-2xl border-l-4 ${isDark ? 'bg-emerald-950/10 border-emerald-500/80 border bg-gray-900 border-gray-800' : 'bg-emerald-50/40 border-emerald-500 bg-white border-slate-200'}`}>
+          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>Ordered by time-to-breach, not by creation date</p>
+          <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>A P1 raised five minutes ago outranks a P4 raised yesterday. This is the single ordering rule that keeps SLA performance honest.</p>
+        </div>
+
+        <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-900/50 border-gray-800 text-gray-400' : 'bg-slate-50 border-gray-150 text-slate-500'}`}>
+                  <th className="w-12 px-4 py-3"></th>
+                  <th className="text-left px-4 py-3 font-semibold">Ticket</th>
+                  <th className="text-left px-4 py-3 font-semibold">Category</th>
+                  <th className="text-center px-4 py-3 font-semibold">Pri</th>
+                  <th className="text-left px-4 py-3 font-semibold">Time to Breach</th>
+                  <th className="text-left px-4 py-3 font-semibold">Requester</th>
+                  <th className="px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+                {queueRows.map((row, index) => {
+                  const isClaim = row.id === 'IT-2026-004519' || row.id === 'IT-2026-004510' || row.id === 'IT-2026-004521';
+                  const actionText = isClaim ? 'Claim' : 'Open';
+                  
+                  return (
+                    <tr key={row.id} className={`transition-colors ${isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}`}>
+                      <td className={`px-4 py-4 text-center font-bold text-base ${getRowNumberColor(index)}`}>
+                        {index + 1}
+                      </td>
+                      <td className="px-4 py-4">
+                        <button onClick={() => onOpenTicket(row.id)} className={`text-left font-semibold text-sm hover:underline block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {row.subject}
+                        </button>
+                        <span className="text-xs text-slate-400 dark:text-gray-500 mt-1 block">
+                          {row.id} · {row.id === 'IT-2026-004521' ? '12 min ago' : row.id === 'IT-2026-004519' ? '34 min ago' : row.id === 'IT-2026-004520' ? '28 min ago' : '1 hour ago'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${getCategoryStyle(row.category)}`}>
+                          {row.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded font-semibold text-[11px] ${getPriBadgeStyle(row.priority)}`}>
+                          {row.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-16 h-1 rounded-full bg-slate-200 dark:bg-gray-800 overflow-hidden">
+                            <div className={`h-full w-full ${getBreachBarColor(row.id)}`} />
+                          </div>
+                          <span className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
+                            {row.sla}
+                          </span>
+                        </div>
+                      </td>
+                      <td className={`px-4 py-4 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
+                        {row.requesterName}
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <button
+                          onClick={() => onOpenTicket(row.id)}
+                          className={`rounded-2xl px-4 py-1.5 text-xs font-semibold border transition ${
+                            isClaim
+                              ? 'border-emerald-700 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 bg-transparent'
+                              : isDark
+                                ? 'border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent'
+                                : 'border-slate-300 text-slate-700 hover:bg-slate-50 bg-transparent'
+                          }`}
+                        >
+                          {actionText}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // All tickets card-based list layout (original)
+  const allTicketsRows = MY_TICKET_ROWS.filter(row => row.id !== 'IT-2026-004510');
+  
+  const openCount = allTicketsRows.filter(t => t.statusTone !== 'gray').length;
+  const resolvedCount = allTicketsRows.length - openCount;
+
   return (
-    <div className="space-y-4">
-      <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>My Tickets</h2>
-      <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className={isDark ? 'bg-gray-800' : 'bg-gray-50'}>
-              {['Ticket ID', 'Subject', 'Category', 'Priority', 'Status'].map(h => (
-                <th key={h} className={`text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-            {TICKETS.map(t => (
-              <tr key={t.id} className={isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}>
-                <td className={`px-4 py-3 font-mono text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{t.id}</td>
-                <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.id}: {t.subject}</td>
-                <td className={`px-4 py-3 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{t.category}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isDark ? darkPriorityStyle[t.priority] : priorityStyle[t.priority]}`}>{t.priority}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isDark ? darkStatusStyle[t.status] : statusStyle[t.status]}`}>{t.status}</span>
-                </td>
-              </tr>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
+          <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            {openCount} open · {resolvedCount} resolved in the last 30 days
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => { searchRef.current?.focus(); }} title="My tickets" className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+              <Ticket className="w-4 h-4" />
+              <span>My tickets</span>
+            </button>
+            <button onClick={onRaise} title="Raise ticket" className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700">
+              <PlusCircle className="w-4 h-4" />
+              <span>Raise ticket</span>
+            </button>
+            <button onClick={onOpenKB} title="Self help" className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold border bg-white hover:bg-slate-50">
+              <BookOpen className="w-4 h-4" />
+              <span>Self help</span>
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => {}}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            ↓ Export
+          </button>
+          <button
+            type="button"
+            onClick={onRaise}
+            className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+          >
+            <PlusCircle className="w-4 h-4" />
+            + Raise a ticket
+          </button>
+        </div>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-4">
+        {MY_TICKET_SUMMARY.map(card => (
+          <div
+            key={card.label}
+            className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}
+          >
+            <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{card.label}</p>
+            <p className={`mt-4 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{card.value}</p>
+            <p className={`mt-2 text-sm ${labelColor(card.tone)}`}>{card.note}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className={`rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="border-b px-5 py-4 xl:flex xl:items-center xl:justify-between xl:gap-4">
+          <div className="flex flex-1 flex-col gap-3 xl:flex-row xl:items-center">
+            <div className={`relative rounded-2xl ${isDark ? 'bg-gray-950' : 'bg-slate-50'} flex items-center px-4 py-3 w-full xl:max-w-md`}>
+              <Search className={`w-4 h-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+              <input
+                ref={searchRef}
+                type="search"
+                placeholder="Ticket no, subject, requester..."
+                className={`ml-3 w-full bg-transparent text-sm outline-none ${isDark ? 'text-white placeholder-gray-500' : 'text-gray-900 placeholder-gray-500'}`}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <select className={filterField}>
+                {['All statuses', 'Open', 'In progress', 'Resolved'].map(option => <option key={option}>{option}</option>)}
+              </select>
+              <select className={filterField}>
+                {['All priorities', 'P1', 'P2', 'P3', 'P4'].map(option => <option key={option}>{option}</option>)}
+              </select>
+              <select className={filterField}>
+                {['All categories', 'VPN', 'Access', 'Network', 'Email', 'Unclassified'].map(option => <option key={option}>{option}</option>)}
+              </select>
+              <select className={filterField}>
+                {['All assignees', 'Unassigned', 'Arun K.', 'Network Team'].map(option => <option key={option}>{option}</option>)}
+              </select>
+            </div>
+          </div>
+          <button className="mt-3 inline-flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:mt-0">
+            Clear
+          </button>
+        </div>
+
+        <div>
+          <div className="space-y-4 p-4">
+            {allTicketsRows.map(row => (
+              <div key={row.id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold ${row.priority === 'P1' ? 'bg-red-600 text-white' : row.priority === 'P2' ? 'bg-amber-600 text-white' : row.priority === 'P3' ? 'bg-orange-500 text-white' : 'bg-slate-700 text-white'}`}>{row.priority}</div>
+                  <div>
+                    <button onClick={() => onOpenTicket(row.id)} className={`font-semibold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>{row.subject}</button>
+                    <div className="text-xs text-slate-500 mt-1">{row.id} · {row.category} / {row.subcategory} · raised {row.started}</div>
+                  </div>
+                </div>
+                <div className="text-right flex flex-col items-end gap-1">
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${row.statusTone === 'red' ? 'bg-red-100 text-red-700' : row.statusTone === 'amber' ? 'bg-amber-100 text-amber-700' : row.statusTone === 'blue' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>{row.status}</div>
+                  <div className="text-xs text-slate-500">{row.statusDetail ?? ''}</div>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Showing 1–5 of {allTicketsRows.length}</p>
+          <div className="flex items-center gap-3">
+            <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">← Prev</button>
+            <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Next →</button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 function CreateTicketPage({ isDark }: { isDark: boolean }) {
-  const [form, setForm] = useState({ subject: '', category: 'Bug', priority: 'Medium', description: '' });
+  const [form, setForm] = useState({
+    subject: '',
+    description: '',
+    category: 'Not sure — let AI decide',
+    affectedSystem: 'Cisco AnyConnect',
+    started: 'Today',
+    impact: 'My team',
+    blocked: 'Yes, completely',
+    urgency: 'Normal',
+    workaround: false,
+    department: 'Finance',
+    location: 'Chennai — DLF IT Park',
+    assetTag: 'LT-04821',
+    preferredContact: 'Email',
+  });
   const [submitted, setSubmitted] = useState(false);
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
   const submit = (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true); setTimeout(() => setSubmitted(false), 3000); };
-  const field = `w-full px-3 py-2.5 rounded-xl border text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`;
+
+  const field = `w-full rounded-2xl border px-3 py-2.5 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`;
+  const sectionLabel = `text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`;
+  const sectionHint = `text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`;
+  const buttonBase = `inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition ${isDark ? 'border-gray-700' : 'border-gray-200'}`;
+  const optionActive = (active: boolean) => active ? 'bg-blue-600 border-transparent text-white shadow-sm' : isDark ? 'bg-gray-900 text-gray-300 hover:bg-gray-800' : 'bg-white text-gray-700 hover:bg-slate-50';
+
   return (
-    <div className="max-w-xl space-y-4">
-      <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Create Ticket</h2>
-      {submitted && <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">Ticket created successfully!</div>}
-      <form onSubmit={submit} className={`space-y-4 p-6 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-        <div>
-          <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Subject</label>
-          <input value={form.subject} onChange={e => set('subject', e.target.value)} placeholder="Describe the issue briefly" className={field} required />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Category</label>
-            <select value={form.category} onChange={e => set('category', e.target.value)} className={field}>
-              {['Bug', 'Feature Request', 'Billing', 'Login', 'Integration', 'Other'].map(c => <option key={c}>{c}</option>)}
-            </select>
+    <div className="grid gap-6 xl:grid-cols-[1.4fr_0.8fr]">
+      <div className={`rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className={`p-6 space-y-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <div className={`rounded-3xl border px-5 py-4 ${isDark ? 'bg-yellow-950/10 border-yellow-500/20' : 'bg-yellow-50 border-yellow-200'}`}>
+            <p className="text-sm font-semibold text-yellow-700">You have a similar open ticket</p>
+            <p className="mt-2 text-sm text-slate-600">Adding to an existing ticket is usually faster than raising a new one.</p>
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="font-semibold">VPN disconnects every few minutes</p>
+                <p className="text-xs text-slate-500">IT-2026-004488 · In progress · raised 2 days ago</p>
+              </div>
+              <button type="button" className="self-start rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Add to this →</button>
+            </div>
           </div>
-          <div>
-            <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Priority</label>
-            <select value={form.priority} onChange={e => set('priority', e.target.value)} className={field}>
-              {['Low', 'Medium', 'High'].map(p => <option key={p}>{p}</option>)}
-            </select>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className={`text-xl font-bold ${sectionLabel}`}>The issue</p>
+                <p className={`text-sm ${sectionHint}`}>Tell us what’s happening</p>
+              </div>
+              <span className={`text-xs uppercase tracking-[0.25em] ${sectionHint}`}>Step 1</span>
+            </div>
+
+            <div className="grid gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Subject *</label>
+                <input
+                  value={form.subject}
+                  onChange={e => set('subject', e.target.value)}
+                  placeholder="VPN connection failing on corporate network"
+                  className={field}
+                  required
+                />
+                <p className="mt-2 text-xs text-slate-500">A clear one-line summary. “Help” or “Urgent” will be rejected.</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Description *</label>
+                <textarea
+                  value={form.description}
+                  onChange={e => set('description', e.target.value)}
+                  rows={5}
+                  placeholder={'Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.'}
+                  className={field}
+                  required
+                />
+                <p className="mt-2 text-xs text-slate-500">Include: the error message · what you already tried · when it started</p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Category (if you know)</label>
+                  <select value={form.category} onChange={e => set('category', e.target.value)} className={field}>
+                    {['Not sure — let AI decide', 'VPN', 'Network', 'Software', 'Hardware', 'Access'].map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Affected system (optional)</label>
+                  <input
+                    value={form.affectedSystem}
+                    onChange={e => set('affectedSystem', e.target.value)}
+                    placeholder="Cisco AnyConnect"
+                    className={field}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">When did it start? (optional)</label>
+                <select value={form.started} onChange={e => set('started', e.target.value)} className={field}>
+                  {['Today', 'Yesterday', 'Earlier this week', 'More than a week ago'].map(value => <option key={value}>{value}</option>)}
+                </select>
+              </div>
+            </div>
           </div>
+
+          <div className={`space-y-4 rounded-3xl border px-5 py-5 ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className={`text-lg font-bold ${sectionLabel}`}>Impact</p>
+                <p className={`text-sm ${sectionHint}`}>Two questions that set the priority</p>
+              </div>
+              <span className={`text-xs uppercase tracking-[0.25em] ${sectionHint}`}>Step 2</span>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-3">Who is affected? *</label>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {['Just me', 'My team', 'My department', 'Whole org'].map(option => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => set('impact', option)}
+                      className={`${buttonBase} ${option === form.impact ? optionActive(true) : optionActive(false)}`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-3">Is your work blocked? *</label>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {['Yes, completely', 'Partially', 'No'].map(option => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => set('blocked', option)}
+                      className={`${buttonBase} ${option === form.blocked ? optionActive(true) : optionActive(false)}`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 items-end">
+                <div>
+                  <label className="block text-sm font-medium mb-2">How urgent does it feel? (optional)</label>
+                  <select value={form.urgency} onChange={e => set('urgency', e.target.value)} className={field}>
+                    {['Normal', 'High', 'Critical'].map(value => <option key={value}>{value}</option>)}
+                  </select>
+                </div>
+                <label className="inline-flex items-center gap-3 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={form.workaround}
+                    onChange={e => set('workaround', e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  A workaround is available
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className={`text-lg font-bold ${sectionLabel}`}>Context</p>
+                <p className={`text-sm ${sectionHint}`}>Mostly filled from your profile</p>
+              </div>
+              <span className={`text-xs uppercase tracking-[0.25em] ${sectionHint}`}>Step 3</span>
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium mb-2">Department *</label>
+                <select value={form.department} onChange={e => set('department', e.target.value)} className={field}>
+                  {['Finance', 'Operations', 'Sales', 'IT', 'HR'].map(value => <option key={value}>{value}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Location / site</label>
+                <select value={form.location} onChange={e => set('location', e.target.value)} className={field}>
+                  {['Chennai — DLF IT Park', 'Bangalore — Tech Hub', 'Mumbai — Downtown', 'Remote'].map(value => <option key={value}>{value}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="grid gap-4 xl:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium mb-2">Asset tag (optional)</label>
+                <input value={form.assetTag} onChange={e => set('assetTag', e.target.value)} className={field} placeholder="LT-04821" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Preferred contact</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {['Email', 'Phone', 'Teams'].map(option => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => set('preferredContact', option)}
+                      className={`${buttonBase} ${option === form.preferredContact ? optionActive(true) : optionActive(false)}`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Attachments (optional)</label>
+              <input type="file" className={field} />
+              <p className="mt-2 text-xs text-slate-500">Screenshots or log files. Max 5 files, 10 MB each.</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <button type="button" className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft</button>
+            <button type="submit" onClick={submit} className="rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">Submit ticket</button>
+          </div>
+
+          {submitted && <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">Ticket created successfully!</div>}
         </div>
-        <div>
-          <label className={`block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Description</label>
-          <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4} placeholder="Provide details about the issue..." className={field} />
+      </div>
+
+      <aside className={`rounded-3xl border p-6 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>AI classification preview</p>
+            <p className={`mt-2 text-sm ${sectionHint}`}>Updating as you type</p>
+          </div>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-700">Live</span>
         </div>
-        <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition-colors">Submit Ticket</button>
-      </form>
+
+        <div className="mt-6 space-y-4">
+          {[
+            ['Category', 'VPN'],
+            ['Sub-category', 'Connection failure'],
+            ['Severity', 'HIGH'],
+            ['Priority', 'P2'],
+            ['Est. first response', '1 hour'],
+          ].map(([label, value]) => (
+            <div key={label} className="flex items-center justify-between rounded-2xl border px-4 py-3">
+              <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>{label}</span>
+              <span className="text-sm font-semibold text-slate-900">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-slate-100 p-4">
+          <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
+            <span>Confidence</span>
+            <span>92%</span>
+          </div>
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+            <div className="h-full w-[92%] rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-sky-500" />
+          </div>
+          <p className="mt-3 text-xs text-slate-500">This is a preview only. Final classification runs after you submit and may differ.</p>
+        </div>
+      </aside>
     </div>
   );
 }
@@ -325,10 +1127,13 @@ function KnowledgeBasePage({ isDark }: { isDark: boolean }) {
 
 function UsersPage({ isDark }: { isDark: boolean }) {
   const users = [
-    { name: 'Lakshmipriya Gutti', email: 'lakshmipriya@gmail.com', role: 'Admin', tickets: 32, avatar: 'L' },
-    { name: 'Priya Mehra',        email: 'priya.m@company.com',    role: 'Agent', tickets: 21, avatar: 'P' },
-    { name: 'Ravi Shankar',       email: 'ravi.s@company.com',     role: 'Agent', tickets: 18, avatar: 'R' },
-    { name: 'Anita Rao',          email: 'anita.r@company.com',    role: 'Viewer',tickets: 5,  avatar: 'A' },
+    {
+      name: 'Current User',
+      email: 'user@example.com',
+      avatar: 'U',
+      role: 'User',
+      tickets: 0,
+    },
   ];
   return (
     <div className="space-y-4">
@@ -357,7 +1162,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
                 <td className="px-4 py-3">
                   <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${u.role === 'Admin' ? isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-100 text-blue-600' : isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>{u.role}</span>
                 </td>
-                <td className={`px-4 py-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{u.tickets}</td>
+                <td className={`px-4 py-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{u.tickets ?? 0}</td>
               </tr>
             ))}
           </tbody>
@@ -435,12 +1240,218 @@ function AIAssistantPage({ isDark, chat, setChat }: { isDark: boolean; chat: { r
   );
 }
 
+/* ─── Taxonomy Page ──────────────────────────────────────────────── */
+
+function TaxonomyPage({ isDark }: { isDark: boolean }) {
+  const categories = [
+    { name: 'VPN', subcategories: ['Connection failure', 'Slow connection', 'Split tunneling', 'Certificate issue'], tickets: 312, color: 'bg-blue-500' },
+    { name: 'NETWORK', subcategories: ['Connectivity', 'DNS resolution', 'Firewall rules', 'Bandwidth'], tickets: 287, color: 'bg-emerald-500' },
+    { name: 'APPLICATION', subcategories: ['Authentication', 'Performance', 'Error/crash', 'Feature request'], tickets: 198, color: 'bg-amber-500' },
+    { name: 'ACCESS', subcategories: ['Permissions', 'Account lockout', 'Role change', 'New access request'], tickets: 165, color: 'bg-purple-500' },
+    { name: 'EMAIL', subcategories: ['Mailbox', 'Calendar sync', 'Attachment issue', 'Spam/phishing'], tickets: 142, color: 'bg-red-500' },
+    { name: 'HARDWARE', subcategories: ['Laptop', 'Monitor', 'Peripheral', 'Replacement'], tickets: 98, color: 'bg-orange-500' },
+    { name: 'SOFTWARE', subcategories: ['Licensing', 'Installation', 'Update/patch', 'Compatibility'], tickets: 82, color: 'bg-cyan-500' },
+  ];
+
+  const severityMatrix = [
+    { level: 'CRITICAL', description: 'Complete system outage or data loss affecting entire organization', sla: '15 min', color: 'bg-red-600 text-white' },
+    { level: 'HIGH', description: 'Major functionality impaired, workaround unavailable, team-level impact', sla: '1 hour', color: 'bg-amber-600 text-white' },
+    { level: 'MEDIUM', description: 'Partial impairment with workaround available, individual impact', sla: '4 hours', color: 'bg-orange-500 text-white' },
+    { level: 'LOW', description: 'Minor inconvenience, cosmetic issue, or informational request', sla: '24 hours', color: 'bg-slate-500 text-white' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Taxonomy</h2>
+        <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Categories and sub-categories used by the AI classifier. Taxonomy drives automatic routing, SLA selection, and priority matrix lookups.
+        </p>
+      </div>
+
+      {/* Category cards */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {categories.map(cat => (
+          <div key={cat.name} className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <span className={`w-3 h-3 rounded-full ${cat.color}`} />
+                <span className={`text-sm font-bold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-900'}`}>{cat.name}</span>
+              </div>
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-slate-100 text-slate-600'}`}>{cat.tickets} tickets</span>
+            </div>
+            <div className="space-y-2">
+              {cat.subcategories.map(sub => (
+                <div key={sub} className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-slate-50 text-slate-700'}`}>
+                  <ChevronRight className="w-3 h-3 opacity-40" />
+                  {sub}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Severity matrix */}
+      <div className={`rounded-3xl border p-6 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Severity Matrix</h3>
+        <p className={`text-sm mb-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Determines the initial SLA based on category and impact scope.</p>
+        <div className="space-y-3">
+          {severityMatrix.map(s => (
+            <div key={s.level} className={`flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 p-4 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-slate-50'}`}>
+              <span className={`inline-flex items-center justify-center px-3 py-1 rounded-lg text-xs font-bold ${s.color} w-24 shrink-0 text-center`}>{s.level}</span>
+              <p className={`flex-1 text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>{s.description}</p>
+              <span className={`text-xs font-semibold shrink-0 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Target: {s.sla}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* AI classification info */}
+      <div className={`rounded-3xl border-l-4 border-blue-500 p-5 ${isDark ? 'bg-blue-950/10 border border-gray-800' : 'bg-blue-50/50 border border-blue-200'}`}>
+        <p className={`text-sm font-semibold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>AI classification</p>
+        <p className={`mt-2 text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
+          AITicketPilot uses a two-stage classifier (c1f-v1.2-1gbm at 47 ms) that maps each incoming ticket to a category → sub-category pair. 
+          Confidence scores above 85% are routed automatically via the FAST path. Tickets below this threshold fall to the LLM path for deeper analysis. 
+          Corrections made here are saved as training labels to continuously improve the model.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SLA Policies Page ──────────────────────────────────────────── */
+
+function SLAPoliciesPage({ isDark }: { isDark: boolean }) {
+  const policies = [
+    { name: 'Critical — P1', firstResponse: '15 min', resolution: '4 hours', calendar: 'Chennai business hrs', escalation: 'Auto-escalate to L3 + manager after 10 min', status: 'Active', tone: 'bg-red-600' },
+    { name: 'High — P2', firstResponse: '1 hour', resolution: '8 hours', calendar: 'Chennai business hrs', escalation: 'Auto-escalate to L2 after 45 min', status: 'Active', tone: 'bg-amber-600' },
+    { name: 'Medium — P3', firstResponse: '4 hours', resolution: '24 hours', calendar: 'Chennai business hrs', escalation: 'Notify team lead after 3 hours', status: 'Active', tone: 'bg-orange-500' },
+    { name: 'Low — P4', firstResponse: '8 hours', resolution: '72 hours', calendar: 'Standard 9-to-5', escalation: 'Weekly review queue', status: 'Active', tone: 'bg-slate-500' },
+  ];
+
+  const calendars = [
+    { name: 'Chennai business hrs', hours: 'Mon–Sat 09:00–18:00 IST', holidays: 'Indian public holidays excluded', timezone: 'Asia/Kolkata' },
+    { name: 'Standard 9-to-5', hours: 'Mon–Fri 09:00–17:00 IST', holidays: 'Indian public holidays excluded', timezone: 'Asia/Kolkata' },
+    { name: '24×7', hours: 'Always on', holidays: 'None', timezone: 'UTC' },
+  ];
+
+  const rules = [
+    { rule: 'Severity raised from MEDIUM → HIGH', condition: 'work_blocked = yes AND affected_scope = team', effect: 'Rules can raise severity but never lower it' },
+    { rule: 'Auto-assign to Network Team', condition: 'category = NETWORK AND priority ∈ {P1, P2}', effect: 'Skip general queue, assign directly' },
+    { rule: 'SLA pause on awaiting-requester', condition: 'Status changes to "Waiting on requester"', effect: 'SLA timer paused until requester replies' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>SLA Policies</h2>
+        <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Service Level Agreements that govern response and resolution timelines. SLA timers start the moment a ticket is classified by the AI engine.
+        </p>
+      </div>
+
+      {/* SLA policy table */}
+      <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-slate-50 border-gray-200 text-slate-500'}`}>
+                <th className="text-left px-5 py-3">Policy</th>
+                <th className="text-left px-5 py-3">First Response</th>
+                <th className="text-left px-5 py-3">Resolution</th>
+                <th className="text-left px-5 py-3">Calendar</th>
+                <th className="text-left px-5 py-3">Escalation</th>
+                <th className="text-center px-5 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+              {policies.map(p => (
+                <tr key={p.name} className={`transition-colors ${isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}`}>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className={`w-2.5 h-2.5 rounded-full ${p.tone}`} />
+                      <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{p.name}</span>
+                    </div>
+                  </td>
+                  <td className={`px-5 py-4 font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>{p.firstResponse}</td>
+                  <td className={`px-5 py-4 font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>{p.resolution}</td>
+                  <td className={`px-5 py-4 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{p.calendar}</td>
+                  <td className={`px-5 py-4 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{p.escalation}</td>
+                  <td className="px-5 py-4 text-center">
+                    <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">{p.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Business calendars */}
+      <div className={`rounded-3xl border p-6 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Business Calendars</h3>
+        <p className={`text-sm mb-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>SLA timers only count time within the selected business calendar.</p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {calendars.map(cal => (
+            <div key={cal.name} className={`rounded-2xl border p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'}`}>
+              <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{cal.name}</p>
+              <div className="mt-3 space-y-2 text-xs">
+                <div className={isDark ? 'text-gray-400' : 'text-slate-500'}><span className="font-medium">Hours:</span> {cal.hours}</div>
+                <div className={isDark ? 'text-gray-400' : 'text-slate-500'}><span className="font-medium">Holidays:</span> {cal.holidays}</div>
+                <div className={isDark ? 'text-gray-400' : 'text-slate-500'}><span className="font-medium">Timezone:</span> {cal.timezone}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Automation rules */}
+      <div className={`rounded-3xl border p-6 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Priority Rules & Automation</h3>
+        <p className={`text-sm mb-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Rules that auto-adjust severity, routing, and SLA timers based on ticket context.</p>
+        <div className="space-y-3">
+          {rules.map(r => (
+            <div key={r.rule} className={`p-4 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-slate-50'}`}>
+              <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{r.rule}</p>
+              <p className={`mt-1.5 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                <span className="font-medium">Condition:</span> {r.condition}
+              </p>
+              <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                <span className="font-medium">Effect:</span> {r.effect}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Info banner */}
+      <div className={`rounded-3xl border-l-4 border-emerald-500 p-5 ${isDark ? 'bg-emerald-950/10 border border-gray-800' : 'bg-emerald-50/50 border border-emerald-200'}`}>
+        <p className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>SLA tracking</p>
+        <p className={`mt-2 text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
+          SLA timers are tracked in real-time across all active tickets. When a ticket enters the "at-risk" window (≤ 30 min remaining), 
+          it automatically surfaces in the My Queue view ordered by time-to-breach. Breached SLAs are flagged in reports and 
+          trigger the configured escalation chain.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ─── main dashboard ─────────────────────────────────────────────── */
 
-export default function Dashboard({ onNavigate }: DashboardProps) {
+export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   const { isDark, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
-  const [activePage, setActivePage] = useState<NavPage>('Dashboard');
+  // compute simple priority counts for sidebar status view
+  const priorityCounts = MY_TICKET_ROWS.reduce((acc: Record<string, number>, t) => {
+    acc[t.priority] = (acc[t.priority] || 0) + 1;
+    return acc;
+  }, {});
+  const p1Count = priorityCounts['P1'] ?? 0;
+  const p2Count = priorityCounts['P2'] ?? 0;
+  const p3Count = priorityCounts['P3'] ?? 0;
+  const [activePage, setActivePage] = useState<NavPage>(initialPage ?? 'Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [quickInfo, setQuickInfo] = useState<'help' | 'messages' | 'alerts' | null>(null);
@@ -448,6 +1459,59 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     { role: 'ai', text: `Hi ${user?.name?.split(' ')[0] ?? 'there'}! I am your AI helpdesk assistant. Click on a fast action chip below or ask me anything to get started.` },
   ]);
   const [aiInput, setAiInput] = useState('');
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+
+  const selectedTicket = selectedTicketId ? MY_TICKET_ROWS.find(ticket => ticket.id === selectedTicketId) ?? null : null;
+
+  const handleOpenTicket = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+  };
+
+  const handleBackToList = () => {
+    setSelectedTicketId(null);
+  };
+
+  const exportTicketAsPdf = (ticket: (typeof MY_TICKET_ROWS)[number]) => {
+    const content = `
+      <html>
+        <head>
+          <title>${ticket.id} - ${ticket.subject}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
+            h1 { font-size: 24px; margin-bottom: 4px; }
+            p { margin: 0 0 12px; line-height: 1.5; }
+            .section { margin-bottom: 18px; }
+            .section-title { font-weight: 700; margin-bottom: 8px; }
+            .grid { display: grid; grid-template-columns: auto auto; gap: 12px 24px; }
+            .label { color: #555; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+            .value { font-weight: 600; }
+          </style>
+        </head>
+        <body>
+          <h1>${ticket.subject}</h1>
+          <p><strong>${ticket.id}</strong></p>
+          <div class="section">
+            <div class="section-title">Requester</div>
+            <p>${ticket.requesterName}</p>
+            <div class="section-title">Description</div>
+            <p>${ticket.description}</p>
+          </div>
+          <div class="section grid">
+            <div><span class="label">Department</span><div class="value">${ticket.department}</div></div>
+            <div><span class="label">Site</span><div class="value">${ticket.site}</div></div>
+            <div><span class="label">Asset tag</span><div class="value">${ticket.assetTag}</div></div>
+            <div><span class="label">Priority</span><div class="value">${ticket.priority}</div></div>
+          </div>
+        </body>
+      </html>
+    `;
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) return;
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
 
   const sendAi = (text?: string) => {
     const msg = text ?? aiInput;
@@ -480,13 +1544,17 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   const renderPage = () => {
     switch (activePage) {
-      case 'My Tickets':    return <MyTicketsPage isDark={isDark} />;
+      case 'My Tickets':
+      case 'My queue':
+        return <MyTicketsPage title={activePage === 'My queue' ? 'My queue' : 'My Tickets'} isDark={isDark} selectedTicket={selectedTicket} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onExport={exportTicketAsPdf} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} />;
       case 'Create Ticket': return <CreateTicketPage isDark={isDark} />;
       case 'AI Assistant':  return <AIAssistantPage isDark={isDark} chat={aiChat} setChat={setAiChat} />;
       case 'Reports':       return <ReportsPage isDark={isDark} />;
       case 'Knowledge Base':return <KnowledgeBasePage isDark={isDark} />;
       case 'Users':         return <UsersPage isDark={isDark} />;
       case 'Settings':      return <SettingsPage isDark={isDark} toggleTheme={toggleTheme} />;
+      case 'Taxonomy':      return <TaxonomyPage isDark={isDark} />;
+      case 'SLA policies':  return <SLAPoliciesPage isDark={isDark} />;
       default:              return null;
     }
   };
@@ -509,23 +1577,57 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </div>
 
           {/* Nav */}
-          <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-            {navItems.map(item => {
-              const active = activePage === item.name;
-              return (
-                <button
-                  key={item.name}
-                  onClick={() => { setActivePage(item.name); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${active ? 'bg-blue-600 text-white shadow-sm' : isDark ? 'text-gray-400 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
-                >
-                  <item.icon className="w-4 h-4 shrink-0" />
-                  <span>{item.name}</span>
-                  {item.badge && (
-                    <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'}`}>{item.badge}</span>
-                  )}
-                </button>
-              );
-            })}
+          <nav className="flex-1 overflow-y-auto p-3 space-y-4">
+            {sidebarGroups.map(group => (
+              <div key={group.title}>
+                <p className={`px-3 text-[11px] font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{group.title}</p>
+                <div className="mt-2 space-y-1">
+                  {group.items.map(item => {
+                    const active = activePage === item.name;
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={() => { setActivePage(item.name); setSidebarOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all ${active ? 'bg-blue-600 text-white shadow-sm' : isDark ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+                      >
+                        <item.icon className="w-4 h-4 shrink-0" />
+                        <span>{item.name}</span>
+                        {item.badge && (
+                          <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'}`}>{item.badge}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            {/* Ticket status quick view */}
+            <div className="mt-4 px-2">
+              <p className={`text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Ticket status</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-600 inline-block" />
+                    <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>P1 (Critical)</span>
+                  </div>
+                  <div className="font-semibold">{p1Count}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                    <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>P2 (High)</span>
+                  </div>
+                  <div className="font-semibold">{p2Count}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
+                    <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>P3 (Medium)</span>
+                  </div>
+                  <div className="font-semibold">{p3Count}</div>
+                </div>
+              </div>
+            </div>
           </nav>
 
           {/* User card */}
@@ -557,6 +1659,13 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <h1 className={`text-lg font-bold leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{activePage}</h1>
             {activePage === 'Dashboard' && (
               <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back, {user?.name?.split(' ')[0]} &#x1F44B;</p>
+            )}
+            {activePage === 'My Tickets' && (
+              <div className="mt-2 flex items-center gap-4">
+                <button onClick={() => setActivePage('My Tickets')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>My tickets</button>
+                <button onClick={() => setActivePage('Create Ticket')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Raise a ticket</button>
+                <button onClick={() => setActivePage('Knowledge Base')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Self-help</button>
+              </div>
             )}
           </div>
 
@@ -681,6 +1790,21 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>My Tickets shortcut</p>
+                    <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Jump directly to your ticket list from the dashboard.</p>
+                  </div>
+                  <button
+                    onClick={() => setActivePage('My Tickets')}
+                    className="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                  >
+                    Open My Tickets
+                  </button>
+                </div>
               </div>
 
               {/* Main two-column */}

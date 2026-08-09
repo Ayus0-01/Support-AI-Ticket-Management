@@ -23,7 +23,9 @@ def register(request):
         if result["success"]:
             return Response(
                 {
-                    "message": result["message"]
+                    "message": result["message"],
+                    "access": result["access"],
+                    "refresh": result["refresh"]
                 },
                 status=status.HTTP_201_CREATED
             )
@@ -113,7 +115,9 @@ def me(request):
         return Response(
             {
                 "username": user["username"],
-                "email": user["email"]
+                "email": user["email"],
+                "mobile": user.get("mobile", ""),
+                "role": user.get("role", "User")
             },
             status=status.HTTP_200_OK
         )

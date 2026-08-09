@@ -19,16 +19,24 @@ def register_service(data):
         }
 
     user = {
-        "username": data["username"],
-        "email": data["email"],
-        "password": make_password(data["password"])
-    }
+    "username": data["username"],
+    "email": data["email"],
+    "mobile": data.get("mobile", ""),
+    "role": data.get("role", "User"),
+    "password": make_password(data["password"])
+}
 
-    users_collection.insert_one(user)
+    result = users_collection.insert_one(user)
+
+    user["_id"] = result.inserted_id
+
+    tokens = get_tokens_for_user(user)
 
     return {
         "success": True,
-        "message": "User registered successfully."
+        "message": "User registered successfully.",
+        "access": tokens["access"],
+        "refresh": tokens["refresh"]
     }
 
 

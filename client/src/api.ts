@@ -1,22 +1,29 @@
-const API_URL =
-  "https://support-ai-ticket-management-team-18k9.onrender.com";
+import axios from "axios";
 
-export async function apiFetch(
-  endpoint: string,
-  options: RequestInit = {}
-) {
+const API_URL = import.meta.env.VITE_API_URL;
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access");
 
-  const headers = new Headers(options.headers);
+  const publicEndpoints = [
+    "/api/auth/login/",
+    "/api/auth/register/",
+  ];
 
-  headers.set("Content-Type", "application/json");
+  const isPublicEndpoint = publicEndpoints.includes(config.url || "");
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (token && !isPublicEndpoint) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  return fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-}
+  return config;
+});
+
+export default api;
