@@ -65,7 +65,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:5173", # your Vite React dev server
+"http://localhost:5173",
+"https://support-ai-ticket-management-team-1-8h0x.onrender.com" # your Vite React dev server
 ]
 
 CORS_ALLOWED_CREDENTIALS = True
