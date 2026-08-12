@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import api from "../api";
 
 interface User {
@@ -50,7 +50,30 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("access");
+      if (token && !user) {
+        try {
+          const meResponse = await api.get("/api/auth/me/");
+          const meData = meResponse.data;
+          setUser({
+            name: meData.username,
+            username: meData.username,
+            email: meData.email,
+            mobile: meData.mobile,
+            role: meData.role,
+            avatar: meData.username.charAt(0).toUpperCase(),
+          });
+        } catch (err) {
+          console.error("Auto auth check failed:", err);
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+        }
+      }
+    };
+    checkAuth();
+  }, []);
   const signIn = async (
     username: string,
     password: string
