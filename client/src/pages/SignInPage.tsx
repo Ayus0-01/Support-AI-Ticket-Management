@@ -31,25 +31,24 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
   }, [remember]);
 
   const attemptSignIn = async (usr: string, pw: string) => {
-  setError("");
-  setLoading(true);
+    setError("");
+    setLoading(true);
 
-  try {
-    const ok = await signIn(usr, pw);
+    try {
+      const res = await signIn(usr, pw);
+      setLoading(false);
 
-    setLoading(false);
-
-    if (ok) {
-      onNavigate("dashboard");
-    } else {
-      setError("Invalid email or password.");
+      if (res.success) {
+        onNavigate("dashboard");
+      } else {
+        setError(res.message || "Invalid email or password.");
+      }
+    } catch (error) {
+      setLoading(false);
+      setError("Unable to connect to the server.");
+      console.error(error);
     }
-  } catch (error) {
-    setLoading(false);
-    setError("Unable to connect to the server.");
-    console.error(error);
-  }
-};
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

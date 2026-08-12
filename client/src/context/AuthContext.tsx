@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import api from "../api";
 
 interface User {
@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (username: string, password: string) => Promise<boolean>;
+  signIn: (username: string, password: string) => Promise<{ success: boolean; message?: string }>;
   signOut: () => void;
   register: (
     username: string,
@@ -21,7 +21,7 @@ interface AuthContextType {
     password: string,
     mobile: string,
     role: "User" | "Agent" | "Admin"
-  ) => Promise<boolean>;
+  ) => Promise<{ success: boolean; message?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -31,8 +31,8 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async (
     _username: string,
     _password: string
-  ): Promise<boolean> => {
-    return false;
+  ): Promise<{ success: boolean; message?: string }> => {
+    return { success: false };
   },
 
   signOut: () => {},
@@ -43,18 +43,43 @@ const AuthContext = createContext<AuthContextType>({
   _password: string,
   _mobile: string,
   _role: "User" | "Agent" | "Admin"
-): Promise<boolean> => {
-  return false;
+): Promise<{ success: boolean; message?: string }> => {
+  return { success: false };
 },
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("access");
+      if (token && !user) {
+        try {
+          const meResponse = await api.get("/api/auth/me/");
+          const meData = meResponse.data;
+          setUser({
+            name: meData.username,
+            username: meData.username,
+            email: meData.email,
+            mobile: meData.mobile,
+            role: meData.role,
+            avatar: meData.username.charAt(0).toUpperCase(),
+          });
+        } catch (err) {
+          console.error("Auto auth check failed:", err);
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+        }
+      }
+    };
+    checkAuth();
+  }, []);
+
   const signIn = async (
     username: string,
     password: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       // 1. Login and get JWT tokens
       const response = await api.post("/api/auth/login/", {
@@ -69,14 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
 
-      console.log("LOGIN SUCCESS:", data);
-
       // 3. Ask backend who is currently logged in
       const meResponse = await api.get("/api/auth/me/");
-
       const meData = meResponse.data;
-
-      console.log("ME SUCCESS:", meData);
 
       // 4. Store user information in React state
       setUser({
@@ -88,69 +108,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatar: meData.username.charAt(0).toUpperCase(),
       });
 
-      return true;
+      return { success: true };
 
     } catch (error: any) {
       console.error("LOGIN ERROR:", error);
-
-      if (error.response) {
-        console.error("STATUS:", error.response.status);
-        console.error("RESPONSE:", error.response.data);
+      let message = "Invalid email or password.";
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
       }
-
-      return false;
+      return { success: false, message };
     }
   };
 
   const register = async (
-  username: string,
-  email: string,
-  password: string,
-  mobile: string,
-  role: "User" | "Agent" | "Admin"
-): Promise<boolean> => {
-  try {
-    const response = await api.post("/api/auth/register/", {
-      username,
-      email,
-      password,
-      mobile,
-      role,
-    });
+    username: string,
+    email: string,
+    password: string,
+    mobile: string,
+    role: "User" | "Agent" | "Admin"
+  ): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const response = await api.post("/api/auth/register/", {
+        username,
+        email,
+        password,
+        mobile,
+        role,
+      });
 
-    const data = response.data;
+      const data = response.data;
 
-    // Save the JWT tokens returned by registration
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
+      // Save the JWT tokens returned by registration
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
 
-    console.log("REGISTER SUCCESS:", data);
+      // Get the newly registered user's information
+      const meResponse = await api.get("/api/auth/me/");
+      const meData = meResponse.data;
 
-    // Get the newly registered user's information
-    const meResponse = await api.get("/api/auth/me/");
-    const meData = meResponse.data;
+      setUser({
+        name: meData.username,
+        username: meData.username,
+        email: meData.email,
+        mobile: meData.mobile,
+        role: meData.role,
+        avatar: meData.username.charAt(0).toUpperCase(),
+      });
 
-    setUser({
-      name: meData.username,
-      username: meData.username,
-      email: meData.email,
-      mobile: meData.mobile,
-      role: meData.role,
-      avatar: meData.username.charAt(0).toUpperCase(),
-    });
-
-    return true;
-  } catch (error: any) {
-    console.error("REGISTER ERROR:", error);
-
-    if (error.response) {
-      console.error("STATUS:", error.response.status);
-      console.error("RESPONSE:", error.response.data);
+      return { success: true };
+    } catch (error: any) {
+      console.error("REGISTER ERROR:", error);
+      let message = "Registration failed.";
+      if (error.response?.data) {
+        if (error.response.data.message) {
+          message = error.response.data.message;
+        } else if (typeof error.response.data === "object") {
+          const keys = Object.keys(error.response.data);
+          if (keys.length > 0) {
+            const firstKey = keys[0];
+            const firstErr = error.response.data[firstKey];
+            message = Array.isArray(firstErr) ? `${firstKey}: ${firstErr[0]}` : String(firstErr);
+          }
+        }
+      }
+      return { success: false, message };
     }
-
-    return false;
-  }
-};
+  };
 
   const signOut = () => {
     localStorage.removeItem("access");
