@@ -2,6 +2,8 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+console.log("API URL:", import.meta.env.VITE_API_URL);
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -16,6 +18,7 @@ api.interceptors.request.use((config) => {
     "/api/auth/login/",
     "/api/auth/register/",
   ];
+  
 
   const isPublicEndpoint = publicEndpoints.includes(config.url || "");
 

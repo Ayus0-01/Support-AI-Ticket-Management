@@ -31,7 +31,7 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
     return;
   }
   setLoading(true);
-  const ok = await register(
+  const res = await register(
     name,
     email,
     password,
@@ -39,10 +39,10 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
     role
   );
   setLoading(false);
-  if (ok) {
+  if (res.success) {
     onNavigate('dashboard:My Tickets');
   } else {
-    setError('Registration failed. Please try again.');
+    setError(res.message || 'Registration failed. Please try again.');
   }
 };
 

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { createTicket, getMyTickets, getTicketDetails, Ticket as ApiTicket } from "../services/ticketService";
+
 import {
   Bot, Sun, Moon, LayoutDashboard, Ticket, PlusCircle, Sparkles, BarChart3,
   BookOpen, Users, Settings, LogOut, Search, Bell, HelpCircle, MessageSquare,
@@ -425,9 +427,56 @@ const MY_TICKET_ROWS = [
   },
 ] as const;
 
-function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, onExport, onRaise, onOpenKB }: { title: string; isDark: boolean; selectedTicket: (typeof MY_TICKET_ROWS)[number] | null; onOpenTicket: (id: string) => void; onBack: () => void; onExport: (ticket: (typeof MY_TICKET_ROWS)[number]) => void; onRaise: () => void; onOpenKB: () => void }) {
-  const hasSelectedTicket = Boolean(selectedTicket);
+function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, onExport, onRaise, onOpenKB }: { title: string; isDark: boolean; selectedTicketId: string | null; onOpenTicket: (id: string) => void; onBack: () => void; onExport: (ticket: any) => void; onRaise: () => void; onOpenKB: () => void }) {
   const searchRef = useRef<HTMLInputElement | null>(null);
+
+  const [tickets, setTickets] = useState<ApiTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [detailTicket, setDetailTicket] = useState<ApiTicket | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [detailError, setDetailError] = useState("");
+
+  useEffect(() => {
+    const loadTickets = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getMyTickets();
+        setTickets(data);
+      } catch (err) {
+        console.error("Failed to load tickets:", err);
+        setError("Could not load your tickets.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTickets();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTicketId) {
+      const fetchDetail = async () => {
+        try {
+          setLoadingDetail(true);
+          setDetailError("");
+          const data = await getTicketDetails(selectedTicketId);
+          setDetailTicket(data);
+        } catch (err) {
+          console.error("Failed to fetch ticket detail:", err);
+          setDetailError("Could not fetch ticket details.");
+        } finally {
+          setLoadingDetail(false);
+        }
+      };
+      fetchDetail();
+    } else {
+      setDetailTicket(null);
+    }
+  }, [selectedTicketId]);
 
   const labelColor = (tone: string) => {
     switch (tone) {
@@ -438,97 +487,117 @@ function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, on
     }
   };
 
-  const priorityStyleRow = (priority: string) => {
-    if (priority === 'P1') return 'bg-red-100 text-red-600';
-    if (priority === 'P2') return 'bg-amber-100 text-amber-700';
-    if (priority === 'P3') return 'bg-orange-100 text-orange-700';
-    return 'bg-slate-100 text-slate-700';
-  };
-
   const filterField = `w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-950 border-gray-800 text-white' : 'bg-white border-gray-200 text-slate-900'}`;
 
-  // If detailed view of a ticket is open, show details page layout
-  if (hasSelectedTicket && selectedTicket) {
+  // If detailed view of a ticket is open, show details page layout fetched from GET /api/tickets/<ticket_id>/
+  if (selectedTicketId) {
     return (
       <div className="space-y-6">
         <div className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-4 dark:border-gray-800">
             <div>
-              <p className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Ticket details</p>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Review the selected ticket and export it as a PDF.</p>
+              <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Ticket Details</p>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Full ticket details fetched live from database.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button onClick={onBack} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                Back to list
-              </button>
-              <button onClick={() => onExport(selectedTicket)} className="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
-                Export as PDF
+              <button onClick={onBack} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800">
+                ← Back to list
               </button>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div className={`rounded-3xl border p-4 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
-              <p className={`text-sm uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Ticket</p>
-              <p className={`mt-2 text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedTicket.subject}</p>
-              <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{selectedTicket.id}</p>
-              <div className="mt-4 space-y-3 text-sm">
-                <div>
-                  <p className="text-xs text-slate-500 uppercase">Requester</p>
-                  <p className={`mt-1 font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedTicket.requesterName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 uppercase">Department</p>
-                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.department}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 uppercase">Site</p>
-                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.site}</p>
-                </div>
-              </div>
-            </div>
-            <div className={`rounded-3xl border p-4 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
-              <p className={`text-sm uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${priorityStyleRow(selectedTicket.priority)}`}>{selectedTicket.priority}</span>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${selectedTicket.statusTone === 'red' ? 'bg-red-100 text-red-700' : selectedTicket.statusTone === 'amber' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>{selectedTicket.sla}</span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{selectedTicket.path}</span>
-              </div>
-              <div className="mt-4 space-y-3 text-sm">
-                <div>
-                  <p className="text-xs text-slate-500 uppercase">Assigned</p>
-                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.assignee}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 uppercase">Asset tag</p>
-                  <p className={`mt-1 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.assetTag}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {loadingDetail ? (
+            <div className="py-12 text-center text-sm text-gray-500">Loading ticket details...</div>
+          ) : detailError ? (
+            <div className="py-12 text-center text-sm text-red-500">{detailError}</div>
+          ) : detailTicket ? (
+            <div className="space-y-6 mt-6">
+              <div className="grid gap-4 lg:grid-cols-2">
+                {/* Left Column: Core Fields */}
+                <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                  <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Ticket Information</p>
+                  <p className={`mt-2 text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{detailTicket.subject}</p>
+                  <p className="mt-1 text-xs text-blue-600 font-mono font-semibold">{detailTicket.ticket_id}</p>
 
-          <div className={`mt-6 rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
-            <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Issue details</p>
-            <p className={`mt-3 leading-7 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.description}</p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
-                <p className="text-xs text-slate-500 uppercase">Affected</p>
-                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.affected}</p>
+                  <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Requester</span>
+                      <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{detailTicket.requester?.username || 'User'} ({detailTicket.requester?.email || 'N/A'})</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Category</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.category}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Subcategory</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.subcategory || 'N/A'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Department</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.department || 'N/A'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Site</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.site || 'N/A'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Asset Tag</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.asset_tag || 'N/A'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Preferred Contact</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.preferred_contact || 'Email'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Status & System Metadata */}
+                <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                  <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status & System Metadata</p>
+                  
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold">{detailTicket.status}</span>
+                    {/* Priority Badge (View-Only per IMP rule) */}
+                    <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority || 'P3'} (View Only)</span>
+                    <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity || 'Normal'}</span>
+                  </div>
+
+                  <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Assignee</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.assignee || 'Unassigned'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">SLA Target</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.sla || 'Standard SLA'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Confidence</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.confidence ? `${Math.round(detailTicket.confidence * 100)}%` : 'N/A'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Path</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.path || 'Standard Queue'}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Created At</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.created_at).toLocaleString()}</span>
+                    </div>
+                    <div className="pt-2 flex justify-between">
+                      <span className="text-xs text-slate-500 uppercase">Updated At</span>
+                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.updated_at).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
-                <p className="text-xs text-slate-500 uppercase">Blocked</p>
-                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.blocked}</p>
-              </div>
-              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
-                <p className="text-xs text-slate-500 uppercase">Workaround</p>
-                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.workaround}</p>
-              </div>
-              <div className={`rounded-2xl p-4 ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
-                <p className="text-xs text-slate-500 uppercase">Started</p>
-                <p className={`mt-2 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{selectedTicket.started}</p>
+
+              {/* Full Description */}
+              <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Description</p>
+                <p className={`mt-3 leading-7 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{detailTicket.description}</p>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     );
@@ -676,10 +745,15 @@ function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, on
   }
 
   // All tickets card-based list layout (original)
-  const allTicketsRows = MY_TICKET_ROWS.filter(row => row.id !== 'IT-2026-004510');
-  
-  const openCount = allTicketsRows.filter(t => t.statusTone !== 'gray').length;
-  const resolvedCount = allTicketsRows.length - openCount;
+  const openCount = tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Closed').length;
+  const resolvedCount = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length;
+
+  const dynamicSummary = [
+    { label: 'TOTAL TICKETS', value: String(tickets.length), note: 'Total created', tone: 'green' },
+    { label: 'OPEN TICKETS', value: String(openCount), note: 'Active queue', tone: 'red' },
+    { label: 'RESOLVED', value: String(resolvedCount), note: 'Completed', tone: 'green' },
+    { label: 'UNASSIGNED', value: String(tickets.filter(t => !t.assignee || t.assignee === 'Unassigned').length), note: 'Pending assignment', tone: 'gray' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -724,7 +798,7 @@ function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, on
       </div>
 
       <div className="grid gap-4 xl:grid-cols-4">
-        {MY_TICKET_SUMMARY.map(card => (
+        {dynamicSummary.map(card => (
           <div
             key={card.label}
             className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}
@@ -770,25 +844,43 @@ function MyTicketsPage({ title, isDark, selectedTicket, onOpenTicket, onBack, on
 
         <div>
           <div className="space-y-4 p-4">
-            {allTicketsRows.map(row => (
-              <div key={row.id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold ${row.priority === 'P1' ? 'bg-red-600 text-white' : row.priority === 'P2' ? 'bg-amber-600 text-white' : row.priority === 'P3' ? 'bg-orange-500 text-white' : 'bg-slate-700 text-white'}`}>{row.priority}</div>
-                  <div>
-                    <button onClick={() => onOpenTicket(row.id)} className={`font-semibold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>{row.subject}</button>
-                    <div className="text-xs text-slate-500 mt-1">{row.id} · {row.category} / {row.subcategory} · raised {row.started}</div>
-                  </div>
-                </div>
-                <div className="text-right flex flex-col items-end gap-1">
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${row.statusTone === 'red' ? 'bg-red-100 text-red-700' : row.statusTone === 'amber' ? 'bg-amber-100 text-amber-700' : row.statusTone === 'blue' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'}`}>{row.status}</div>
-                  <div className="text-xs text-slate-500">{row.statusDetail ?? ''}</div>
-                </div>
-              </div>
-            ))}
+           {loading ? (
+  <p className="text-center py-6 text-sm text-gray-500">Loading your tickets...</p>
+) : error ? (
+  <p className="text-center py-6 text-sm text-red-500">{error}</p>
+) : tickets.length === 0 ? (
+  <p className="text-center py-6 text-sm text-gray-500">No tickets found. Click "Raise ticket" to create one!</p>
+) : (
+  tickets.map(row => (
+    <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+      <div className="flex items-center gap-4">
+        <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold text-xs ${row.priority === 'P1' ? 'bg-red-600 text-white' : row.priority === 'P2' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-white'}`}>
+          {row.priority || 'P3'}
+        </div>
+        <div>
+          <button onClick={() => onOpenTicket(row.ticket_id)} className={`font-semibold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            {row.subject}
+          </button>
+          <div className="text-xs text-slate-500 mt-1">
+            {row.ticket_id} · {row.category} {row.subcategory ? `/ ${row.subcategory}` : ''} · created {new Date(row.created_at).toLocaleDateString()}
+          </div>
+        </div>
+      </div>
+      <div className="text-right flex flex-col items-end gap-1">
+        <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+          {row.status}
+        </div>
+        <div className="text-xs text-slate-500">
+          Assignee: {row.assignee || 'Unassigned'}
+        </div>
+      </div>
+    </div>
+  ))
+)}
           </div>
         </div>
         <div className="flex flex-col gap-3 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Showing 1–5 of {allTicketsRows.length}</p>
+          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Showing {tickets.length > 0 ? 1 : 0}–{tickets.length} of {tickets.length}</p>
           <div className="flex items-center gap-3">
             <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">← Prev</button>
             <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Next →</button>
@@ -808,7 +900,6 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
     started: 'Today',
     impact: 'My team',
     blocked: 'Yes, completely',
-    urgency: 'Normal',
     workaround: false,
     department: 'Finance',
     location: 'Chennai — DLF IT Park',
@@ -816,8 +907,32 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
     preferredContact: 'Email',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
-  const submit = (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true); setTimeout(() => setSubmitted(false), 3000); };
+  const submit = async () => {
+  try {
+    setSubmitting(true);
+    setSubmitError("");
+
+    await createTicket({
+      subject: form.subject,
+      category: form.category,
+      description: form.description,
+      department: form.department,
+      site: form.location,
+      asset_tag: form.assetTag,
+      preferred_contact: form.preferredContact,
+    });
+
+    setSubmitted(true);
+  } catch (error) {
+    console.error("Create ticket failed:", error);
+    setSubmitError("Could not create the ticket.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const field = `w-full rounded-2xl border px-3 py-2.5 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`;
   const sectionLabel = `text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`;
@@ -941,12 +1056,7 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2 items-end">
-                <div>
-                  <label className="block text-sm font-medium mb-2">How urgent does it feel? (optional)</label>
-                  <select value={form.urgency} onChange={e => set('urgency', e.target.value)} className={field}>
-                    {['Normal', 'High', 'Critical'].map(value => <option key={value}>{value}</option>)}
-                  </select>
-                </div>
+               
                 <label className="inline-flex items-center gap-3 text-sm font-medium">
                   <input
                     type="checkbox"
@@ -1013,10 +1123,15 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             <button type="button" className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft</button>
-            <button type="submit" onClick={submit} className="rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">Submit ticket</button>
+            <button type="button" onClick={submit} disabled={submitting} className="rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">{submitting ? "Submitting..." : "Submit ticket"}</button>
           </div>
 
           {submitted && <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">Ticket created successfully!</div>}
+          {submitError && (
+  <div className="rounded-2xl bg-red-50 p-4 text-sm text-red-800">
+    {submitError}
+  </div>
+)}
         </div>
       </div>
 
@@ -1460,6 +1575,24 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   ]);
   const [aiInput, setAiInput] = useState('');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [homeTickets, setHomeTickets] = useState<ApiTicket[]>([]);
+const [loadingHome, setLoadingHome] = useState(true);
+
+useEffect(() => {
+  const loadHomeData = async () => {
+    try {
+      setLoadingHome(true);
+      const data = await getMyTickets();
+      setHomeTickets(data);
+    } catch (err) {
+      console.error("Failed to load home tickets:", err);
+    } finally {
+      setLoadingHome(false);
+    }
+  };
+  loadHomeData();
+}, []);
+  const [myTickets, setMyTickets] = useState<Ticket[]>([]);
 
   const selectedTicket = selectedTicketId ? MY_TICKET_ROWS.find(ticket => ticket.id === selectedTicketId) ?? null : null;
 
@@ -1546,7 +1679,7 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
     switch (activePage) {
       case 'My Tickets':
       case 'My queue':
-        return <MyTicketsPage title={activePage === 'My queue' ? 'My queue' : 'My Tickets'} isDark={isDark} selectedTicket={selectedTicket} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onExport={exportTicketAsPdf} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} />;
+        return <MyTicketsPage title={activePage === 'My queue' ? 'My queue' : 'My Tickets'} isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onExport={exportTicketAsPdf} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} />;
       case 'Create Ticket': return <CreateTicketPage isDark={isDark} />;
       case 'AI Assistant':  return <AIAssistantPage isDark={isDark} chat={aiChat} setChat={setAiChat} />;
       case 'Reports':       return <ReportsPage isDark={isDark} />;
@@ -1777,20 +1910,34 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
             <div className="space-y-6">
 
               {/* Stat cards */}
-              <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                {STATS.map(s => (
-                  <div key={s.label} className={`relative overflow-hidden p-5 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-                    <p className={`text-xs font-semibold tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{s.label}</p>
-                    <p className={`text-4xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{s.value}</p>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-xs text-green-500 font-semibold">{s.change} <span className={`font-normal ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>from last week</span></span>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-gray-800' : s.iconBg}`}>
-                        <s.icon className={`w-5 h-5 ${s.iconColor}`} />
+              {(() => {
+                const homeOpenCount = homeTickets.filter(t => t.status !== 'Resolved' && t.status !== 'Closed').length;
+                const homeUnassignedCount = homeTickets.filter(t => !t.assignee || t.assignee === 'Unassigned').length;
+
+                const dynamicHomeStats = [
+                  { label: 'Total Tickets', value: String(homeTickets.length), change: 'Total created', icon: TicketIcon, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+                  { label: 'Open Queue', value: String(homeOpenCount), change: 'Active tickets', icon: AlertCircle, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+                  { label: 'Unassigned', value: String(homeUnassignedCount), change: 'Pending team', icon: HelpCircle, iconBg: 'bg-orange-50', iconColor: 'text-orange-600' },
+                  { label: 'Avg Response', value: '15m', change: 'Standard SLA', icon: Zap, iconBg: 'bg-green-50', iconColor: 'text-green-600' },
+                ];
+
+                return (
+                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                    {dynamicHomeStats.map(s => (
+                      <div key={s.label} className={`relative overflow-hidden p-5 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                        <p className={`text-xs font-semibold tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{s.label}</p>
+                        <p className={`text-4xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{s.value}</p>
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-xs text-green-500 font-semibold">{s.change}</span>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-gray-800' : s.iconBg}`}>
+                            <s.icon className={`w-5 h-5 ${s.iconColor}`} />
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               <div className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1835,18 +1982,24 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
 
                   {/* Rows */}
                   <div className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-                    {TICKETS.map(t => (
-                      <div key={t.id} className={`grid grid-cols-12 items-center px-5 py-3.5 cursor-pointer transition-colors ${isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}`}>
-                        <span className={`col-span-6 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.id}: {t.subject}</span>
-                        <span className={`col-span-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{t.category}</span>
-                        <span className="col-span-2">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isDark ? darkPriorityStyle[t.priority] : priorityStyle[t.priority]}`}>{t.priority}</span>
-                        </span>
-                        <span className="col-span-2">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isDark ? darkStatusStyle[t.status] : statusStyle[t.status]}`}>{t.status}</span>
-                        </span>
-                      </div>
-                    ))}
+                    {loadingHome ? (
+                      <p className="text-center py-6 text-sm text-gray-500">Loading tickets...</p>
+                    ) : homeTickets.length === 0 ? (
+                      <p className="text-center py-6 text-sm text-gray-500">No tickets found. Create your first ticket!</p>
+                    ) : (
+                      homeTickets.slice(0, 5).map(t => (
+                        <div key={t.ticket_id} onClick={() => { setSelectedTicketId(t.ticket_id); setActivePage('My Tickets'); }} className={`grid grid-cols-12 items-center px-5 py-3.5 cursor-pointer transition-colors ${isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}`}>
+                          <span className={`col-span-6 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
+                          <span className={`col-span-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{t.category}</span>
+                          <span className="col-span-2">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">{t.priority || 'P3'}</span>
+                          </span>
+                          <span className="col-span-2">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">{t.status}</span>
+                          </span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
 
