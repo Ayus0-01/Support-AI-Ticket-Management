@@ -30,8 +30,7 @@ function AppContent() {
     }
 
     if (p === 'dashboard') {
-      const hasToken = Boolean(localStorage.getItem('access'));
-      if (!isAuthenticated && !hasToken) {
+      if (!isAuthenticated) {
         setPage('signin');
         setDashboardActive(undefined);
         return;
@@ -47,8 +46,7 @@ function AppContent() {
   };
 
   useEffect(() => {
-    const hasToken = Boolean(localStorage.getItem('access'));
-    if (page === 'dashboard' && !isAuthenticated && !hasToken) setPage('signin');
+    if (page === 'dashboard' && !isAuthenticated) setPage('signin');
   }, [isAuthenticated, page]);
 
   if (page === 'signin') {
