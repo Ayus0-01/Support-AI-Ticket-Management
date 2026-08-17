@@ -1,0 +1,1173 @@
+import json
+from pathlib import Path
+
+
+DATASET_PATH = Path(__file__).parent / "category_seed_data.json"
+
+
+TEMPLATES = {
+    "VPN": {
+        "Connection failure": [
+            (
+                "VPN connection failing",
+                "I cannot connect to the company VPN from my laptop."
+            ),
+            (
+                "Unable to connect to VPN",
+                "The VPN client fails whenever I try to establish a connection."
+            ),
+            (
+                "VPN will not connect",
+                "I am unable to establish a VPN connection to the company network."
+            ),
+            (
+                "VPN connection error",
+                "The company VPN keeps failing when I attempt to connect."
+            ),
+            (
+                "Remote VPN access not working",
+                "I cannot access internal resources because the VPN connection will not start."
+            ),
+            (
+                "VPN disconnects during connection",
+                "The VPN starts connecting but fails before the connection is established."
+            ),
+            (
+                "VPN connection refused",
+                "The VPN client refuses to establish a connection to the corporate network."
+            ),
+            (
+                "Cannot establish remote VPN",
+                "My remote connection to the company VPN is not working."
+            ),
+            (
+                "VPN authentication keeps failing",
+                "The VPN client starts the connection but fails during authentication and does not let me connect."
+            ),
+        ],
+        "Slow connection": [
+            (
+                "VPN is very slow",
+                "The VPN connects successfully but the connection speed is extremely slow."
+            ),
+            (
+                "Slow VPN performance",
+                "Applications become very slow whenever I am connected through the VPN."
+            ),
+            (
+                "VPN latency is high",
+                "There is significant delay when accessing company resources through the VPN."
+            ),
+            (
+                "VPN connection speed dropped",
+                "The VPN connection has become much slower than usual."
+            ),
+            (
+                "Remote access is slow",
+                "Working through the VPN is unusually slow today."
+            ),
+            (
+                "Slow internal access over VPN",
+                "Company systems take a long time to respond while I am connected to VPN."
+            ),
+            (
+                "VPN performance issue",
+                "The VPN connection works but network performance is very poor."
+            ),
+        ],
+        "Split tunneling": [
+            (
+                "Need split tunneling",
+                "I need some internet traffic to bypass the company VPN."
+            ),
+            (
+                "Split tunnel configuration",
+                "I need help configuring split tunneling for my VPN connection."
+            ),
+            (
+                "Local traffic through VPN",
+                "My local internet traffic should not go through the corporate VPN."
+            ),
+            (
+                "Configure VPN split routing",
+                "I need certain applications to use the local network instead of the VPN."
+            ),
+            (
+                "Split tunneling not working",
+                "The configured split tunnel routes are not behaving as expected."
+            ),
+            (
+                "VPN route configuration",
+                "I need help setting which traffic should use the VPN tunnel."
+            ),
+            (
+                "Internet access with VPN",
+                "I need direct internet access while remaining connected to the corporate VPN."
+            ),
+        ],
+        "Certificate issue": [
+            (
+                "VPN certificate error",
+                "The VPN client reports a certificate error when I try to connect."
+            ),
+            (
+                "VPN certificate expired",
+                "My VPN certificate appears to have expired."
+            ),
+            (
+                "Certificate authentication failure",
+                "VPN authentication fails because of a certificate problem."
+            ),
+            (
+                "Invalid VPN certificate",
+                "The VPN client says that the certificate is invalid."
+            ),
+            (
+                "VPN certificate renewal",
+                "I need my VPN certificate renewed so I can connect."
+            ),
+            (
+                "Certificate warning on VPN",
+                "A certificate warning appears whenever I connect to VPN."
+            ),
+            (
+                "Corporate VPN certificate issue",
+                "The corporate VPN is rejecting my certificate."
+            ),
+        ],
+    },
+
+    "NETWORK": {
+        "Connectivity": [
+            ("Network unavailable", "My computer cannot connect to the office network."),
+            ("Internet connection lost", "I have lost network connectivity at my workstation."),
+            ("Network connection problem", "My system is unable to reach the company network."),
+            ("Cannot access network", "Network resources are not reachable from my computer."),
+            ("Office network down", "My workstation has no network connection."),
+            ("Connectivity failure", "The network connection keeps dropping."),
+            ("Unable to reach internal network", "I cannot connect to internal network resources."),
+            ("Network access unavailable", "The network is unavailable from my current workstation."),
+        ],
+        "DNS resolution": [
+            ("DNS resolution failing", "Company hostnames are not resolving on my computer."),
+            ("Cannot resolve server name", "DNS lookup fails when I try to access an internal server."),
+            ("DNS issue", "I can connect to the network but domain names are not resolving."),
+            ("Internal DNS unavailable", "Internal DNS queries are failing."),
+            ("Hostname resolution problem", "I cannot resolve company hostnames."),
+            ("DNS lookup failure", "DNS lookups return errors for internal services."),
+            ("Server name not resolving", "The server hostname cannot be resolved."),
+            ("DNS configuration problem", "The workstation appears to have a DNS configuration issue."),
+        ],
+        "Firewall rules": [
+            ("Firewall blocking application", "A firewall rule appears to be blocking access to an internal application."),
+            ("Need firewall rule", "A new firewall rule is required for an application to communicate."),
+            ("Firewall access denied", "The firewall is preventing traffic to the required server."),
+            ("Port blocked by firewall", "The required network port appears to be blocked."),
+            ("Firewall rule request", "Please add a firewall rule for the required service."),
+            ("Network traffic blocked", "Firewall filtering is preventing the required network connection."),
+            ("Firewall configuration issue", "The current firewall rules are blocking legitimate traffic."),
+            ("Request firewall access", "I need firewall access opened for a company service."),
+        ],
+        "Bandwidth": [
+            ("Network bandwidth is low", "The network is extremely slow because available bandwidth appears limited."),
+            ("Bandwidth problem", "Network performance is poor during periods of high traffic."),
+            ("High network usage", "Heavy network usage is causing slow connectivity."),
+            ("Insufficient bandwidth", "There does not appear to be enough bandwidth for our current workload."),
+            ("Network congestion", "Network traffic is congested and applications are responding slowly."),
+            ("Bandwidth saturation", "The network link appears to be saturated."),
+            ("Slow network due to traffic", "Network performance drops significantly when traffic increases."),
+            ("High bandwidth consumption", "A large amount of network traffic is affecting performance."),
+        ],
+    },
+
+    "APPLICATION": {
+        "Authentication": [
+            ("Application login failing", "I cannot sign in to the business application."),
+            ("Application authentication error", "The application rejects my login credentials."),
+            ("Unable to authenticate", "Authentication fails when I try to access the application."),
+            ("Application sign-in problem", "The application does not allow me to sign in."),
+            ("Login error in application", "I receive an authentication error when logging into the application."),
+            ("Application credentials rejected", "My credentials are being rejected by the application."),
+            ("Authentication failure", "The application authentication process is failing."),
+            ("Cannot log into application", "I am unable to authenticate to the required application."),
+        ],
+        "Performance": [
+            ("Application is slow", "The business application takes a long time to respond."),
+            ("Application performance issue", "The application is responding much slower than usual."),
+            ("Slow application response", "Pages in the application take several seconds to load."),
+            ("Application latency", "There is noticeable delay when using the application."),
+            ("Application running slowly", "The application performance has degraded significantly."),
+            ("Slow report generation", "Reports in the application take too long to generate."),
+            ("Application response delay", "The application is unusually slow when processing requests."),
+            ("Performance degradation", "The application's performance has become poor recently."),
+        ],
+        "Error/crash": [
+            ("Application crashes", "The application closes unexpectedly whenever I perform an operation."),
+            ("Application error", "I receive an unexpected error while using the application."),
+            ("Application keeps crashing", "The application crashes repeatedly after opening."),
+            ("Unexpected application failure", "The application stops working during normal use."),
+            ("Application error message", "An error message appears when I try to complete a task."),
+            ("Business application crashed", "The application crashed while I was working."),
+            ("Application failure", "The application is failing during normal operation."),
+            ("Application stopped responding", "The application becomes unresponsive and eventually closes."),
+        ],
+        "Feature request": [
+            ("Request new application feature", "I would like the application to support an additional feature."),
+            ("Application enhancement request", "Please consider adding a new capability to the application."),
+            ("Feature improvement needed", "I have a suggestion for improving the application."),
+            ("New functionality request", "We need additional functionality in the business application."),
+            ("Application feature suggestion", "I would like to request a new feature."),
+            ("Request application enhancement", "Please add functionality that would make this workflow easier."),
+            ("New application capability", "Our team needs a new capability in the application."),
+            ("Application improvement request", "I have a feature request for the application."),
+        ],
+    },
+
+    "ACCESS": {
+        "Permissions": [
+            ("Permission denied", "I do not have permission to access the required resource."),
+            ("Access permission missing", "My account does not have the permissions needed for this system."),
+            ("Need additional permissions", "Please grant me the permissions required for my work."),
+            ("Resource access denied", "I receive a permission denied message when accessing the resource."),
+            ("Permission problem", "My current account permissions are insufficient."),
+            ("Access rights missing", "I need additional access rights for a business resource."),
+            ("Cannot access restricted resource", "The system says I do not have permission to access it."),
+            ("Request permission", "I need permission to access a company resource."),
+        ],
+        "Account lockout": [
+            ("Account locked", "My account has been locked after several failed login attempts."),
+            ("Unable to log in account locked", "My account is locked and I cannot sign in."),
+            ("Account lockout issue", "The user account is currently locked."),
+            ("Locked user account", "Please unlock my company account."),
+            ("Account repeatedly locking", "My account keeps becoming locked after login attempts."),
+            ("Need account unlock", "I need assistance unlocking my account."),
+            ("User account locked out", "I am unable to access my account because it is locked."),
+            ("Login blocked by lockout", "Account lockout is preventing me from signing in."),
+        ],
+        "Role change": [
+            ("Change user role", "My job role has changed and my system role needs to be updated."),
+            ("Role update request", "Please update my access role to match my new responsibilities."),
+            ("Employee role changed", "I need my application role changed after moving teams."),
+            ("Update access role", "My current role no longer matches my position."),
+            ("Role modification", "Please modify my assigned system role."),
+            ("Change permissions role", "My new position requires a different access role."),
+            ("Department role update", "Please update my role after my internal transfer."),
+            ("New job role access", "My job responsibilities changed and my system role needs updating."),
+        ],
+        "New access request": [
+            ("Request new system access", "I need access to a system that I have never used before."),
+            ("New application access", "Please provide access to the required business application."),
+            ("Request access to resource", "I need access to a company resource for my work."),
+            ("Access request", "Please grant me access to the requested system."),
+            ("Need access to application", "My role requires access to an application I cannot currently use."),
+            ("Request access for work", "I need a new access permission for my current responsibilities."),
+            ("New resource access", "Please provide access to the required internal resource."),
+            ("Application access needed", "I need access to a business system."),
+        ],
+    },
+
+    "EMAIL": {
+        "Mailbox": [
+            ("Mailbox not working", "I cannot send or receive emails from my mailbox."),
+            ("Email mailbox issue", "My mailbox is not updating with new messages."),
+            ("Cannot receive emails", "New messages are not arriving in my mailbox."),
+            ("Cannot send emails", "Outgoing emails are failing from my mailbox."),
+            ("Mailbox unavailable", "I cannot access my company mailbox."),
+            ("Email inbox problem", "My inbox is not displaying recent messages."),
+            ("Mailbox storage issue", "My mailbox appears to have reached its storage limit."),
+            ("Email account problem", "There is an issue with my company email mailbox."),
+        ],
+        "Calendar sync": [
+            ("Calendar not syncing", "My company calendar is not synchronizing with my device."),
+            ("Calendar synchronization issue", "Calendar updates are not appearing on my phone."),
+            ("Meetings not syncing", "New calendar meetings are not appearing on my device."),
+            ("Calendar sync failure", "The calendar application cannot synchronize with the server."),
+            ("Calendar update missing", "Changes made to my calendar are not syncing."),
+            ("Calendar synchronization problem", "My calendar is out of sync with the company account."),
+            ("Mobile calendar issue", "My work calendar is not updating on my mobile device."),
+            ("Calendar events missing", "Recent calendar events are not appearing."),
+        ],
+        "Attachment issue": [
+            ("Cannot send attachment", "My email fails whenever I try to attach a file."),
+            ("Email attachment problem", "Attachments are not being delivered with my emails."),
+            ("Attachment upload failing", "I cannot attach files to an outgoing email."),
+            ("Large attachment issue", "Sending an email with an attachment fails."),
+            ("Email file attachment error", "I receive an error when adding a file to an email."),
+            ("Attachment missing", "The recipient is not receiving the attached file."),
+            ("Unable to open email attachment", "I cannot open an attachment received through company email."),
+            ("Attachment sending problem", "Email attachments are causing the message to fail."),
+        ],
+        "Spam/phishing": [
+            ("Suspicious email received", "I received a suspicious email asking for my company credentials."),
+            ("Possible phishing email", "An email appears to be attempting to steal login information."),
+            ("Phishing message", "I received a suspicious link asking me to verify my account."),
+            ("Spam email", "My mailbox is receiving a large number of unwanted messages."),
+            ("Suspicious attachment in email", "I received an unexpected email with a suspicious attachment."),
+            ("Report phishing", "I would like to report a possible phishing message."),
+            ("Malicious email suspected", "The message appears to contain a suspicious link."),
+            ("Potential phishing attempt", "An email is requesting sensitive information and looks suspicious."),
+        ],
+    },
+
+    "HARDWARE": {
+        "Laptop": [
+            ("Laptop not starting", "My company laptop will not power on."),
+            ("Laptop overheating", "My laptop becomes extremely hot during normal use."),
+            ("Laptop keyboard problem", "Several keys on my company laptop are not working."),
+            ("Laptop battery issue", "The laptop battery is no longer holding a charge."),
+            ("Laptop freezing", "My laptop frequently freezes during normal work."),
+            ("Laptop performance problem", "My company laptop has become extremely slow."),
+            ("Laptop power issue", "The laptop does not turn on even when connected to power."),
+            ("Laptop hardware failure", "My company laptop appears to have a hardware problem."),
+        ],
+        "Monitor": [
+            ("Monitor not displaying", "My external monitor shows no image."),
+            ("Monitor flickering", "The monitor keeps flickering while I work."),
+            ("Second monitor not working", "My second monitor is not detected by the laptop."),
+            ("Monitor display issue", "The screen has intermittent display problems."),
+            ("Monitor connection problem", "The external display is not connecting properly."),
+            ("Monitor black screen", "My monitor remains black after connecting it."),
+            ("Display quality problem", "The monitor display has lines and visual distortion."),
+            ("External monitor failure", "The external monitor has stopped working."),
+        ],
+        "Peripheral": [
+            ("Keyboard not working", "My external keyboard is not responding."),
+            ("Mouse not working", "The company mouse has stopped responding."),
+            ("Docking station issue", "My docking station is not detecting connected devices."),
+            ("Headset problem", "My company headset is not working."),
+            ("USB device failure", "A USB peripheral is not being recognized."),
+            ("Webcam not working", "The external webcam is not detected."),
+            ("Peripheral connection issue", "A connected peripheral is not functioning."),
+            ("External device problem", "One of my work peripherals has stopped working."),
+        ],
+        "Replacement": [
+            ("Request laptop replacement", "My company laptop needs to be replaced because of hardware failure."),
+            ("Request new monitor", "My damaged monitor needs to be replaced."),
+            ("Hardware replacement needed", "I need a replacement device for a failed company asset."),
+            ("Replace faulty keyboard", "The company keyboard is damaged and needs replacement."),
+            ("Replacement device request", "Please provide a replacement for my faulty hardware."),
+            ("Request replacement laptop", "My current laptop cannot be repaired and needs replacement."),
+            ("Damaged hardware replacement", "I need a replacement for damaged company equipment."),
+            ("Equipment replacement", "Please arrange replacement of my faulty work equipment."),
+        ],
+    },
+
+    "SOFTWARE": {
+        "Licensing": [
+            ("Software license required", "I need a license for the software required for my work."),
+            ("License expired", "The software license on my computer has expired."),
+            ("License activation problem", "I cannot activate the installed software license."),
+            ("Request software license", "Please provide a license for the required application."),
+            ("Software licensing issue", "The application says that no valid license is available."),
+            ("License renewal request", "The software license needs to be renewed."),
+            ("License unavailable", "I cannot use the application because its license is missing."),
+            ("Software activation license", "The software requires a valid license to activate."),
+        ],
+        "Installation": [
+            ("Software installation request", "I need help installing the required software."),
+            ("Application installation failing", "The software installer fails during installation."),
+            ("Cannot install software", "I am unable to install the required application."),
+            ("Installation error", "An error occurs when installing the software."),
+            ("Need software installed", "Please install the required application on my workstation."),
+            ("Software setup problem", "The application installation does not complete successfully."),
+            ("Installation failed", "The software installation fails before completion."),
+            ("Application installation issue", "I cannot complete installation of the required software."),
+        ],
+        "Update/patch": [
+            ("Software update failing", "The application cannot install its latest update."),
+            ("Patch installation issue", "The required software patch fails to install."),
+            ("Application update problem", "The application update keeps failing."),
+            ("Need software patch", "The workstation needs the latest approved software patch."),
+            ("Software update request", "Please update the installed application to the latest version."),
+            ("Patch failed", "The latest security patch did not install correctly."),
+            ("Update installation error", "An error appears when applying the software update."),
+            ("Application patching issue", "The required application patch is not being applied."),
+        ],
+        "Compatibility": [
+            ("Software compatibility issue", "The application does not work correctly with my operating system."),
+            ("Application incompatible", "The software is incompatible with the current workstation configuration."),
+            ("Compatibility problem", "The application fails because of a version compatibility issue."),
+            ("Software version conflict", "The installed software version is not compatible with another application."),
+            ("Operating system compatibility", "The application does not support the current operating system."),
+            ("Incompatible software", "The required software cannot run on my workstation configuration."),
+            ("Version compatibility issue", "Different software versions are causing compatibility problems."),
+            ("Application compatibility failure", "The application cannot operate with the current system configuration."),
+        ],
+    },
+}
+
+EXTRA_CATEGORY_EXAMPLES = {
+
+    "VPN": [
+        ("VPN cannot connect from home",
+         "I am working remotely and the company VPN refuses to connect."),
+        ("Remote VPN access failure",
+         "The corporate VPN is not allowing me to access internal systems."),
+        ("VPN drops connection",
+         "My VPN connection disconnects shortly after connecting."),
+        ("VPN disconnecting repeatedly",
+         "The VPN keeps disconnecting while I am working remotely."),
+        ("VPN connection timeout",
+         "The VPN connection times out before I can access company resources."),
+        ("VPN remote access problem",
+         "I cannot establish reliable remote access to the company network."),
+        ("VPN access unavailable",
+         "The corporate VPN is unavailable from my workstation."),
+        ("VPN tunnel failure",
+         "The VPN tunnel cannot be established successfully."),
+        ("VPN remote login issue",
+         "I am unable to access internal applications through the VPN."),
+        ("VPN network access problem",
+         "The VPN connects but I cannot reach internal company resources."),
+
+        ("VPN connection is slow",
+         "The VPN works but all company applications are responding very slowly."),
+        ("Poor VPN speed",
+         "Network performance becomes very slow when using the VPN."),
+        ("High latency through VPN",
+         "There is a large delay when accessing internal services through VPN."),
+        ("VPN traffic delay",
+         "Requests through the VPN take much longer than normal."),
+        ("VPN performance degraded",
+         "The VPN connection is working but performance has dropped significantly."),
+        ("Slow remote VPN access",
+         "Remote access through the company VPN is extremely slow."),
+        ("VPN bandwidth problem",
+         "The VPN connection appears to have very poor throughput."),
+        ("VPN response delay",
+         "Internal systems are taking a long time to respond over VPN."),
+        ("VPN network slowdown",
+         "Everything becomes slower after connecting to the corporate VPN."),
+        ("VPN latency problem",
+         "There is noticeable network latency while connected to VPN."),
+
+        ("Configure split VPN traffic",
+         "I need certain internet traffic to bypass the corporate VPN."),
+        ("VPN split route request",
+         "Please configure the VPN so selected traffic uses the local network."),
+        ("Split VPN access needed",
+         "I need local internet access while remaining connected to the VPN."),
+        ("VPN routing configuration",
+         "I need help configuring which traffic should pass through the VPN."),
+        ("Split tunnel routing issue",
+         "Some traffic is incorrectly being sent through the corporate VPN."),
+        ("VPN local traffic request",
+         "I need local network traffic to avoid the VPN tunnel."),
+        ("Split VPN configuration problem",
+         "My split tunneling configuration is not routing traffic correctly."),
+        ("VPN selective routing",
+         "I need only company traffic to use the VPN."),
+        ("Internet bypass through VPN",
+         "I need selected internet traffic to bypass the corporate VPN."),
+        ("VPN route exception",
+         "I need a routing exception configured for specific applications."),
+
+        ("VPN certificate rejected",
+         "The corporate VPN rejects my certificate during connection."),
+        ("VPN certificate validation error",
+         "The VPN cannot validate the certificate provided by my workstation."),
+        ("Expired VPN certificate",
+         "My corporate VPN certificate has expired and prevents connection."),
+        ("VPN certificate authentication problem",
+         "Certificate authentication fails when connecting to VPN."),
+        ("Invalid certificate on VPN",
+         "The VPN client reports that my certificate is invalid."),
+        ("VPN certificate needs renewal",
+         "I need my VPN certificate renewed before I can connect."),
+        ("VPN trust certificate error",
+         "The VPN reports a certificate trust problem."),
+        ("Corporate certificate failure",
+         "The corporate certificate is preventing VPN authentication."),
+        ("VPN certificate warning",
+         "A certificate warning appears whenever I start the VPN."),
+        ("VPN certificate configuration issue",
+         "The VPN certificate configuration appears to be incorrect."),
+    ],
+
+
+    "NETWORK": [
+        ("Office network unavailable",
+         "My workstation cannot connect to the company network."),
+        ("Network connection lost",
+         "The network connection suddenly stopped working."),
+        ("Unable to access network",
+         "I cannot reach any company network resources."),
+        ("Network connectivity problem",
+         "My computer is having trouble connecting to the network."),
+        ("Internal network unavailable",
+         "Internal network resources cannot be reached."),
+        ("Network connection dropped",
+         "My network connection keeps disconnecting."),
+        ("Network access failure",
+         "The workstation cannot access the company network."),
+        ("No network connection",
+         "My computer currently has no network connectivity."),
+        ("Office connectivity issue",
+         "I cannot connect to the office network from my workstation."),
+        ("Network unavailable on workstation",
+         "The network is unavailable on my company computer."),
+
+        ("DNS lookup problem",
+         "Internal hostnames cannot be resolved through DNS."),
+        ("DNS server issue",
+         "DNS requests to the company server are failing."),
+        ("Hostname lookup failure",
+         "Company server names cannot be resolved."),
+        ("DNS records not resolving",
+         "DNS records are not resolving correctly for internal services."),
+        ("Internal hostname problem",
+         "I cannot resolve internal application hostnames."),
+        ("DNS query failure",
+         "DNS queries are returning errors."),
+        ("Unable to resolve domain",
+         "The company domain cannot be resolved from my workstation."),
+        ("DNS service unavailable",
+         "The internal DNS service appears to be unavailable."),
+        ("DNS network configuration",
+         "My computer appears to have incorrect DNS settings."),
+        ("Server hostname failure",
+         "The server hostname does not resolve on the network."),
+
+        ("Firewall blocking connection",
+         "A firewall is preventing my application from connecting to a server."),
+        ("Blocked network port",
+         "The required network port is blocked by the firewall."),
+        ("Firewall access request",
+         "I need a firewall rule added for a business service."),
+        ("Firewall traffic restriction",
+         "Firewall filtering is preventing required network traffic."),
+        ("Firewall rule problem",
+         "The current firewall configuration is blocking legitimate traffic."),
+        ("Open firewall port",
+         "Please allow the required port through the company firewall."),
+        ("Firewall server access",
+         "The firewall is preventing access to the required server."),
+        ("Network firewall block",
+         "Network traffic is being blocked by firewall rules."),
+        ("Firewall configuration request",
+         "I need a firewall rule configured for an internal application."),
+        ("Firewall connection denied",
+         "The firewall is denying the required connection."),
+
+        ("Network congestion",
+         "Heavy traffic is causing the network to become slow."),
+        ("Limited network bandwidth",
+         "Available network bandwidth is insufficient for our workload."),
+        ("Network traffic saturation",
+         "The network link appears to be saturated."),
+        ("Bandwidth shortage",
+         "There is not enough bandwidth for current network usage."),
+        ("High network traffic",
+         "Large amounts of network traffic are affecting performance."),
+        ("Network overloaded",
+         "The network becomes extremely slow during periods of heavy usage."),
+        ("Bandwidth utilization problem",
+         "High bandwidth usage is affecting network performance."),
+        ("Network capacity issue",
+         "The current network capacity is insufficient."),
+        ("Traffic congestion problem",
+         "Network congestion is causing slow responses."),
+        ("Insufficient network throughput",
+         "The network cannot provide enough throughput for current demand."),
+    ],
+
+
+    "APPLICATION": [
+        ("Business application login failure",
+         "I cannot log into the company application."),
+        ("Application credentials rejected",
+         "The application keeps rejecting my credentials."),
+        ("Application authentication problem",
+         "Authentication fails when accessing the business application."),
+        ("Application sign in unavailable",
+         "I cannot sign into the required application."),
+        ("Login authentication error",
+         "The application displays an authentication error during login."),
+        ("Unable to authenticate application",
+         "The application will not authenticate my account."),
+        ("Application access login problem",
+         "My login attempt to the application is failing."),
+        ("Application login credentials issue",
+         "My credentials are not being accepted by the application."),
+        ("Business system authentication failure",
+         "Authentication to the business system is unsuccessful."),
+        ("Application account login issue",
+         "I am unable to access the application using my account."),
+
+        ("Application running slowly",
+         "The business application is taking a long time to respond."),
+        ("Slow business application",
+         "The application has become noticeably slower."),
+        ("Application response time problem",
+         "Application requests take much longer than expected."),
+        ("Application performance degradation",
+         "The performance of the business application has deteriorated."),
+        ("Slow application processing",
+         "The application takes too long to process requests."),
+        ("Application latency issue",
+         "There is significant delay when using the application."),
+        ("Application response slowdown",
+         "Pages and actions in the application are responding slowly."),
+        ("Business application delay",
+         "The application has a noticeable response delay."),
+        ("Application processing slow",
+         "Application operations are taking too long to complete."),
+        ("Poor application performance",
+         "The application performance is significantly worse than usual."),
+
+        ("Application crashes unexpectedly",
+         "The business application closes without warning."),
+        ("Application failure",
+         "The application stops working during normal use."),
+        ("Application error encountered",
+         "An unexpected error appears while using the application."),
+        ("Application stops responding",
+         "The application becomes unresponsive during normal work."),
+        ("Repeated application crash",
+         "The application crashes every time I perform a certain operation."),
+        ("Application runtime error",
+         "The application displays an error while running."),
+        ("Unexpected software failure",
+         "The business application suddenly stops functioning."),
+        ("Application error popup",
+         "An error popup appears while completing a task."),
+        ("Application crash problem",
+         "The application keeps crashing during normal use."),
+        ("Application stopped working",
+         "The business application has stopped working completely."),
+
+        ("Request application feature",
+         "I would like a new feature added to the business application."),
+        ("Application functionality request",
+         "Our team needs additional functionality in the application."),
+        ("Request application enhancement",
+         "Please improve the application by adding a new capability."),
+        ("New application capability",
+         "We need a new capability in the business application."),
+        ("Application feature suggestion",
+         "I have a suggestion for a new application feature."),
+        ("Business application improvement",
+         "I would like to suggest an improvement to the application."),
+        ("New application functionality",
+         "Please add functionality to support our workflow."),
+        ("Application enhancement needed",
+         "The application needs an additional feature."),
+        ("Feature addition request",
+         "We would like to request additional functionality."),
+        ("Application improvement suggestion",
+         "I have an improvement request for the business application."),
+    ],
+
+
+    "ACCESS": [
+        ("Permission denied",
+         "I cannot access a resource because my permissions are insufficient."),
+        ("Missing access rights",
+         "My account does not have the required access rights."),
+        ("Permission request",
+         "I need additional permissions for my work."),
+        ("Restricted resource access",
+         "The system denies access to a restricted resource."),
+        ("Insufficient permissions",
+         "My account permissions are not sufficient."),
+        ("Access rights problem",
+         "I am missing the access rights required for my job."),
+        ("Resource permission issue",
+         "I cannot access the required company resource."),
+        ("Request additional permissions",
+         "Please grant the permissions needed for my role."),
+        ("Access permission failure",
+         "The system reports that I do not have permission."),
+        ("Permission configuration problem",
+         "My account permissions need to be updated."),
+
+        ("Account locked",
+         "My company account has been locked."),
+        ("User account lockout",
+         "I cannot log in because my account is locked."),
+        ("Unlock account request",
+         "Please help me unlock my company account."),
+        ("Repeated account lockout",
+         "My account keeps getting locked after login attempts."),
+        ("Locked company account",
+         "My company account is currently locked."),
+        ("Login blocked by account lock",
+         "The account lockout prevents me from signing in."),
+        ("Account access locked",
+         "I cannot access my account because it has been locked."),
+        ("Need account unlock",
+         "My user account needs to be unlocked."),
+        ("Account lockout problem",
+         "I am unable to sign in due to an account lockout."),
+        ("User login locked",
+         "My user account is locked after failed login attempts."),
+
+        ("Change system role",
+         "My role has changed and my system access needs updating."),
+        ("Update employee role",
+         "Please update my access role after my department change."),
+        ("Role modification request",
+         "I need my assigned application role changed."),
+        ("New role access",
+         "My new responsibilities require a different system role."),
+        ("Change access role",
+         "Please modify my current system role."),
+        ("Employee role update",
+         "My job responsibilities have changed."),
+        ("Department transfer access",
+         "I moved departments and need my system role updated."),
+        ("Role change request",
+         "My account role needs to match my new position."),
+        ("Update user role",
+         "Please change my assigned role in the system."),
+        ("Job role access change",
+         "My new job role requires different system access."),
+
+        ("Request new access",
+         "I need access to a system for my work."),
+        ("New system access request",
+         "Please provide access to the required internal system."),
+        ("Application access request",
+         "I need access to a business application."),
+        ("Request access to resource",
+         "Please grant me access to the required company resource."),
+        ("New user access",
+         "I need access to a system I have not used before."),
+        ("Access needed for work",
+         "My work requires access to a new application."),
+        ("Request business system access",
+         "Please provide access to the required business system."),
+        ("New resource permission request",
+         "I need access to a new internal resource."),
+        ("Access provisioning request",
+         "Please provision access for my account."),
+        ("System access needed",
+         "I require access to a company system."),
+    ],
+
+
+    "EMAIL": [
+        ("Mailbox unavailable",
+         "I cannot access my company mailbox."),
+        ("Email inbox problem",
+         "My company inbox is not working correctly."),
+        ("Cannot receive email",
+         "New company emails are not arriving."),
+        ("Cannot send email",
+         "Outgoing company emails are failing."),
+        ("Mailbox synchronization problem",
+         "My mailbox is not updating with new messages."),
+        ("Email account issue",
+         "There is a problem with my work email account."),
+        ("Mailbox access failure",
+         "I am unable to access my company mailbox."),
+        ("Email inbox unavailable",
+         "My company email inbox is unavailable."),
+        ("Mailbox storage problem",
+         "My mailbox has reached its storage limit."),
+        ("Email mailbox failure",
+         "My work mailbox is not functioning correctly."),
+
+        ("Calendar synchronization failure",
+         "My work calendar is not syncing correctly."),
+        ("Calendar events missing",
+         "Recent meetings are missing from my calendar."),
+        ("Calendar update problem",
+         "Calendar changes are not appearing on my device."),
+        ("Work calendar not updating",
+         "My company calendar is not receiving new updates."),
+        ("Meeting synchronization issue",
+         "New meetings are not appearing on my phone."),
+        ("Calendar sync error",
+         "The calendar cannot synchronize with the company server."),
+        ("Mobile calendar problem",
+         "My work calendar is not updating on my mobile device."),
+        ("Calendar events not syncing",
+         "Calendar events are not synchronized across devices."),
+        ("Calendar server sync issue",
+         "The company calendar is out of sync with the server."),
+        ("Missing calendar updates",
+         "Changes made to the calendar are not appearing."),
+
+        ("Email attachment failure",
+         "I cannot send an email with an attached file."),
+        ("Attachment upload error",
+         "Adding a file to my email causes an error."),
+        ("Attachment not delivered",
+         "The recipient did not receive the attached file."),
+        ("Unable to attach file",
+         "The email client will not attach my file."),
+        ("Large email attachment problem",
+         "Messages containing large attachments fail to send."),
+        ("Email file problem",
+         "Attachments are causing my email to fail."),
+        ("Attachment download problem",
+         "I cannot open an attachment received by email."),
+        ("Missing email attachment",
+         "The attachment is missing from the received message."),
+        ("Attachment transmission failure",
+         "Email attachments are not being sent correctly."),
+        ("Email attachment error",
+         "An error occurs when attaching files to emails."),
+
+        ("Suspicious email",
+         "I received a suspicious message asking for company credentials."),
+        ("Phishing email report",
+         "I want to report a suspected phishing email."),
+        ("Malicious email",
+         "The email contains a suspicious link."),
+        ("Spam message received",
+         "My mailbox is receiving many unwanted messages."),
+        ("Credential phishing attempt",
+         "An email is attempting to collect my login credentials."),
+        ("Suspicious email attachment",
+         "I received an unexpected attachment from a suspicious sender."),
+        ("Possible phishing attempt",
+         "The message appears to be trying to steal sensitive information."),
+        ("Report suspicious email",
+         "I would like to report a suspicious company email."),
+        ("Unwanted email problem",
+         "My mailbox is receiving a large amount of spam."),
+        ("Email security concern",
+         "I received an email that appears to be malicious."),
+    ],
+
+
+    "HARDWARE": [
+        ("Laptop power failure",
+         "My company laptop will not turn on."),
+        ("Laptop overheating problem",
+         "My laptop becomes extremely hot during normal work."),
+        ("Laptop keyboard failure",
+         "Several keys on my company laptop have stopped working."),
+        ("Laptop battery problem",
+         "The laptop battery is no longer holding a charge."),
+        ("Laptop freezing issue",
+         "My laptop frequently freezes while I work."),
+        ("Laptop hardware problem",
+         "My company laptop appears to have a hardware failure."),
+        ("Laptop startup failure",
+         "The laptop does not start even when connected to power."),
+        ("Laptop slow performance",
+         "My company laptop has become very slow."),
+        ("Laptop power problem",
+         "The laptop does not respond when I press the power button."),
+        ("Laptop device failure",
+         "My work laptop is experiencing a hardware issue."),
+
+        ("Monitor black screen",
+         "My external monitor displays a black screen."),
+        ("Monitor flicker problem",
+         "The external monitor keeps flickering."),
+        ("Monitor not detected",
+         "My laptop cannot detect the external monitor."),
+        ("External display failure",
+         "The external display has stopped working."),
+        ("Monitor image problem",
+         "The monitor does not display the correct image."),
+        ("Second monitor issue",
+         "My second monitor is not working."),
+        ("Monitor display distortion",
+         "The monitor shows lines and distorted images."),
+        ("Monitor connection failure",
+         "The external monitor cannot connect to my laptop."),
+        ("Display screen problem",
+         "The screen has intermittent display problems."),
+        ("External monitor problem",
+         "My external monitor is not functioning correctly."),
+
+        ("Keyboard peripheral failure",
+         "My external keyboard is not responding."),
+        ("Mouse peripheral issue",
+         "My company mouse has stopped working."),
+        ("Docking station failure",
+         "My docking station does not detect connected devices."),
+        ("Headset not working",
+         "My work headset is not functioning."),
+        ("USB device not recognized",
+         "A USB peripheral is not being detected."),
+        ("Webcam peripheral problem",
+         "My external webcam is not detected."),
+        ("External keyboard issue",
+         "The connected keyboard has stopped responding."),
+        ("Peripheral device failure",
+         "A connected work peripheral is not functioning."),
+        ("USB peripheral problem",
+         "My computer cannot recognize a USB device."),
+        ("External device not working",
+         "One of my company peripherals has stopped working."),
+
+        ("Laptop replacement request",
+         "My company laptop needs to be replaced."),
+        ("Monitor replacement request",
+         "My damaged monitor needs replacement."),
+        ("Hardware replacement needed",
+         "I need a replacement for a failed company device."),
+        ("Replace faulty equipment",
+         "A faulty company device needs to be replaced."),
+        ("Replacement laptop needed",
+         "My current laptop cannot be repaired and needs replacement."),
+        ("Damaged hardware replacement",
+         "I need replacement equipment for damaged hardware."),
+        ("Request new company device",
+         "Please arrange a replacement for my faulty device."),
+        ("Equipment replacement request",
+         "My work equipment needs to be replaced."),
+        ("Faulty hardware replacement",
+         "A failed hardware component requires replacement."),
+        ("Company device replacement",
+         "I need a replacement company device."),
+    ],
+    
+
+    "SOFTWARE": [
+        ("Software license request",
+         "I need a valid license for software required for my work."),
+        ("License activation failure",
+         "I cannot activate the software license."),
+        ("Expired software license",
+         "The installed software license has expired."),
+        ("License renewal needed",
+         "Please renew the license for the software."),
+        ("Software license missing",
+         "The application reports that no valid license is available."),
+        ("License unavailable",
+         "I cannot use the software because its license is unavailable."),
+        ("Request application license",
+         "Please provide a license for the required application."),
+        ("Software licensing problem",
+         "The application is reporting a licensing problem."),
+        ("License validation issue",
+         "The software cannot validate its license."),
+        ("Software activation issue",
+         "The software will not activate because of a license problem."),
+
+        ("Install required software",
+         "I need help installing software on my workstation."),
+        ("Software installer failure",
+         "The software installer fails during installation."),
+        ("Application installation problem",
+         "I cannot complete the installation of the required application."),
+        ("Installation error",
+         "An error occurs while installing the software."),
+        ("Software setup failure",
+         "The application setup does not complete successfully."),
+        ("Cannot install application",
+         "The required application cannot be installed."),
+        ("Installation request",
+         "Please install the required software on my computer."),
+        ("Software installation issue",
+         "The software installation fails before completion."),
+        ("Application setup problem",
+         "I am having trouble completing the application installation."),
+        ("Failed software installation",
+         "The software installation process fails repeatedly."),
+
+        ("Software update problem",
+         "The latest software update will not install."),
+        ("Patch installation failure",
+         "The required software patch fails to install."),
+        ("Application update failure",
+         "The application update keeps failing."),
+        ("Security patch issue",
+         "The latest security patch did not install correctly."),
+        ("Software patch request",
+         "The workstation needs the latest approved software patch."),
+        ("Update installation error",
+         "An error appears when applying the software update."),
+        ("Application patching problem",
+         "The required application patch cannot be applied."),
+        ("Software update request",
+         "Please update the installed application."),
+        ("Failed application update",
+         "The latest application update is failing."),
+        ("Patch update problem",
+         "The software patching process is not working."),
+
+        ("Software compatibility issue",
+         "The application is incompatible with my operating system."),
+        ("Application version conflict",
+         "Different software versions are causing compatibility problems."),
+        ("Operating system incompatibility",
+         "The software does not support the current operating system."),
+        ("Application compatibility failure",
+         "The application cannot run with the current system configuration."),
+        ("Software version mismatch",
+         "The installed software version is incompatible."),
+        ("Incompatible application",
+         "The required application cannot run on this workstation."),
+        ("Software compatibility problem",
+         "The application fails because of a compatibility issue."),
+        ("Version compatibility failure",
+         "The current software version conflicts with the system."),
+        ("Operating system compatibility problem",
+         "The application does not support the installed operating system."),
+        ("Application version compatibility",
+         "The application cannot operate with the current software environment."),
+    ],
+}
+
+def load_dataset():
+    with open(DATASET_PATH, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def generate_tickets():
+    data = load_dataset()
+
+    tickets = []
+
+    for category, subcategories in TEMPLATES.items():
+
+        for subcategory, examples in subcategories.items():
+
+            for subject, description in examples:
+
+                tickets.append(
+                    {
+                        "subject": subject,
+                        "description": description,
+                        "category": category,
+                        "subcategory": subcategory,
+                    }
+                )
+
+    extra_subcategory_map = {
+
+        "VPN": [
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+            "Connection failure",
+
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+            "Slow connection",
+
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+            "Split tunneling",
+
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+            "Certificate issue",
+        ],
+
+        "NETWORK": [
+            *["Connectivity"] * 10,
+            *["DNS resolution"] * 10,
+            *["Firewall rules"] * 10,
+            *["Bandwidth"] * 10,
+        ],
+
+        "APPLICATION": [
+            *["Authentication"] * 10,
+            *["Performance"] * 10,
+            *["Error/crash"] * 10,
+            *["Feature request"] * 10,
+        ],
+
+        "ACCESS": [
+            *["Permissions"] * 10,
+            *["Account lockout"] * 10,
+            *["Role change"] * 10,
+            *["New access request"] * 10,
+        ],
+
+        "EMAIL": [
+            *["Mailbox"] * 10,
+            *["Calendar sync"] * 10,
+            *["Attachment issue"] * 10,
+            *["Spam/phishing"] * 10,
+        ],
+
+        "HARDWARE": [
+            *["Laptop"] * 10,
+            *["Monitor"] * 10,
+            *["Peripheral"] * 10,
+            *["Replacement"] * 10,
+        ],
+
+        "SOFTWARE": [
+            *["Licensing"] * 10,
+            *["Installation"] * 10,
+            *["Update/patch"] * 10,
+            *["Compatibility"] * 10,
+        ],
+    }
+
+    for category, examples in EXTRA_CATEGORY_EXAMPLES.items():
+
+        subcategory_list = extra_subcategory_map[category]
+
+        if len(examples) != len(subcategory_list):
+            raise ValueError(
+                f"{category}: "
+                f"{len(examples)} examples but "
+                f"{len(subcategory_list)} subcategory labels"
+            )
+
+        for (
+            (subject, description),
+            subcategory
+        ) in zip(
+            examples,
+            subcategory_list
+        ):
+
+            tickets.append(
+                {
+                    "subject": subject,
+                    "description": description,
+                    "category": category,
+                    "subcategory": subcategory,
+                }
+            )
+
+    data["tickets"] = tickets
+
+    with open(
+        DATASET_PATH,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        json.dump(
+            data,
+            file,
+            indent=2,
+            ensure_ascii=False
+        )
+
+    print(
+        f"Generated {len(tickets)} seed tickets."
+    )
+if __name__ == "__main__":
+    generate_tickets()
