@@ -1,0 +1,360 @@
+{
+  "tickets": [
+    {
+      "subject": "Remote tunnel cannot be established",
+      "description": "The secure remote tunnel refuses to come up when I try to work from home.",
+      "category": "VPN"
+    },
+    {
+      "subject": "Corporate tunnel drops repeatedly",
+      "description": "My encrypted connection to the office keeps terminating every few minutes.",
+      "category": "VPN"
+    },
+    {
+      "subject": "VPN causes browsing delay",
+      "description": "Websites and internal tools become noticeably slower after connecting to the corporate tunnel.",
+      "category": "VPN"
+    },
+    {
+      "subject": "Bypass selected traffic",
+      "description": "I want normal internet browsing to use my local connection while business traffic remains on VPN.",
+      "category": "VPN"
+    },
+    {
+      "subject": "Remote tunnel certificate rejected",
+      "description": "The remote access client refuses my certificate when establishing the secure tunnel.",
+      "category": "VPN"
+    },
+    {
+      "subject": "VPN cannot reach office resources",
+      "description": "The VPN appears connected but I cannot reach systems inside the company network.",
+      "category": "VPN"
+    },
+    {
+      "subject": "Secure tunnel takes too long",
+      "description": "Connecting to the corporate VPN takes several minutes before it finally succeeds.",
+      "category": "VPN"
+    },
+    {
+      "subject": "VPN routing exception",
+      "description": "A particular application needs to communicate outside the corporate tunnel.",
+      "category": "VPN"
+    },
+    {
+      "subject": "VPN identity certificate problem",
+      "description": "The remote access service reports that my authentication certificate cannot be trusted.",
+      "category": "VPN"
+    },
+    {
+      "subject": "Remote tunnel performance degraded",
+      "description": "The secure connection works, but accessing office systems through it has become sluggish.",
+      "category": "VPN"
+    },
+
+    {
+      "subject": "Office Wi-Fi cannot reach servers",
+      "description": "I am connected to the office network but internal servers cannot be reached.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Names resolve intermittently",
+      "description": "Some company hostnames work while others randomly fail to resolve.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Internal website unreachable",
+      "description": "The company network is available but one of our internal websites cannot be reached.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Network traffic is saturated",
+      "description": "Large amounts of traffic are consuming the network link and slowing everyone down.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Blocked service port",
+      "description": "A business service cannot communicate because its required TCP port appears inaccessible.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Office connection keeps dropping",
+      "description": "My workstation repeatedly loses its connection to the corporate network.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "DNS names fail but internet works",
+      "description": "I have network connectivity, but internal domain names cannot be translated to addresses.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Firewall prevents server communication",
+      "description": "Traffic to a required internal server appears to be filtered by the network firewall.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Network overloaded during work hours",
+      "description": "Connectivity becomes extremely slow whenever network usage increases during the day.",
+      "category": "NETWORK"
+    },
+    {
+      "subject": "Internal resource unreachable",
+      "description": "My workstation is online but cannot communicate with a specific company resource.",
+      "category": "NETWORK"
+    },
+
+    {
+      "subject": "Business portal rejects sign-in",
+      "description": "The company application opens normally but refuses my username and password.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Application freezes during processing",
+      "description": "The application becomes unresponsive while processing a normal request.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Unexpected application termination",
+      "description": "The business program suddenly closes whenever I work with a particular screen.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Request reporting capability",
+      "description": "Our team would like the application to provide an additional reporting capability.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Business tool takes several seconds",
+      "description": "Every action in the application now takes much longer than it normally does.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Login screen returns an error",
+      "description": "The application displays an error instead of completing the sign-in process.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Application stops responding",
+      "description": "The program becomes completely unresponsive when I perform routine tasks.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Workflow enhancement suggestion",
+      "description": "I would like an additional option added to simplify our current application workflow.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Business application crashes on startup",
+      "description": "The program launches briefly and then closes without warning.",
+      "category": "APPLICATION"
+    },
+    {
+      "subject": "Slow application processing",
+      "description": "Submitting requests through the business application now takes unusually long.",
+      "category": "APPLICATION"
+    },
+
+    {
+      "subject": "Cannot open shared company folder",
+      "description": "My account is being refused when I try to access a restricted company folder.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Employee moved to another team",
+      "description": "My responsibilities have changed and I need the access associated with my new role.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Too many login attempts",
+      "description": "My corporate account has been disabled after several unsuccessful sign-in attempts.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Access required for new system",
+      "description": "I need access to a business system that is currently unavailable to my account.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Restricted resource unavailable",
+      "description": "The system says my account is not authorized to use the requested resource.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Department transfer access update",
+      "description": "I transferred departments and my existing system permissions need to reflect the move.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Corporate account disabled",
+      "description": "I cannot sign in because the company account has been locked.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Additional system privileges needed",
+      "description": "My current permissions do not cover the tasks required for my position.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "Authorization missing",
+      "description": "I can log into the system but I am not authorized to access the required resource.",
+      "category": "ACCESS"
+    },
+    {
+      "subject": "New employee system access",
+      "description": "A newly assigned responsibility requires access to an internal business application.",
+      "category": "ACCESS"
+    },
+
+    {
+      "subject": "Inbox stopped receiving messages",
+      "description": "My company inbox has stopped receiving new messages even though colleagues are sending them.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Meeting changes missing on phone",
+      "description": "Updates made to my work calendar are not appearing on my mobile device.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Message rejected with file",
+      "description": "Emails send successfully until I include a document attachment.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Suspicious password request",
+      "description": "I received a message asking me to confirm my company password through a link.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Mailbox cannot send messages",
+      "description": "Outgoing company emails remain unsent and eventually report a failure.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Unexpected calendar behavior",
+      "description": "My work meetings are present online but some events are missing from the local calendar.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Email attachment never arrived",
+      "description": "The recipient received my message but the file I attached was not included.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Possible credential harvesting email",
+      "description": "An unexpected message asks me to sign into a company-looking webpage.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Inbox storage limit reached",
+      "description": "I can no longer receive messages because my mailbox appears to be full.",
+      "category": "EMAIL"
+    },
+    {
+      "subject": "Cannot access work inbox",
+      "description": "My company mailbox is unavailable even though other services are working.",
+      "category": "EMAIL"
+    },
+
+    {
+      "subject": "Laptop shuts down unexpectedly",
+      "description": "My work laptop powers off without warning while I am using it.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "External display shows distorted colors",
+      "description": "The connected monitor displays strange lines and distorted colors.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Wireless mouse stopped responding",
+      "description": "My company mouse no longer responds to movement or clicks.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Notebook battery drains quickly",
+      "description": "The laptop battery loses most of its charge after a short period of normal use.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "USB headset not detected",
+      "description": "My computer does not recognize the headset connected through USB.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Laptop screen remains blank",
+      "description": "The built-in laptop display stays black after powering on the device.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Dock does not recognize monitor",
+      "description": "My docking station works partially but does not detect the attached display.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Keyboard has intermittent input",
+      "description": "Some keys on my external keyboard work only occasionally.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Replace damaged work device",
+      "description": "My company equipment was physically damaged and needs to be replaced.",
+      "category": "HARDWARE"
+    },
+    {
+      "subject": "Webcam suddenly unavailable",
+      "description": "The camera connected to my workstation is no longer detected.",
+      "category": "HARDWARE"
+    },
+
+    {
+      "subject": "License server unavailable",
+      "description": "The installed application cannot verify its license with the licensing service.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Installer stops midway",
+      "description": "The required program begins installing but fails before the installation completes.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Patch cannot be applied",
+      "description": "The approved security update repeatedly fails when I try to install it.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Application unsupported on workstation",
+      "description": "The required software does not support the operating system installed on this computer.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "License activation rejected",
+      "description": "The software is installed but activation fails because the license cannot be validated.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Required program missing",
+      "description": "I need the approved business software installed on my workstation.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Version conflict between programs",
+      "description": "Two installed applications are incompatible because they require different software versions.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Security update installation failure",
+      "description": "The latest approved patch refuses to install on my workstation.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Software activation expired",
+      "description": "The application stopped working because its activation is no longer valid.",
+      "category": "SOFTWARE"
+    },
+    {
+      "subject": "Program cannot run after OS upgrade",
+      "description": "An application that worked previously is incompatible with the newly upgraded operating system.",
+      "category": "SOFTWARE"
+    }
+  ]
+}
