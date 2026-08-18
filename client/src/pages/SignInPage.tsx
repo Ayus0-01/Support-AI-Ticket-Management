@@ -11,7 +11,7 @@ const REMEMBER_KEY = 'aiticket_remember';
 
 export default function SignInPage({ onNavigate }: SignInPageProps) {
   const { isDark, toggleTheme } = useTheme();
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
 
   const saved = (() => {
     try { return JSON.parse(localStorage.getItem(REMEMBER_KEY) ?? 'null'); } catch { return null; }
@@ -24,11 +24,21 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [shouldNavigateToDashboard, setShouldNavigateToDashboard] = useState(false);
 
   /* Keep saved state in sync when remember toggle changes */
   useEffect(() => {
     if (!remember) localStorage.removeItem(REMEMBER_KEY);
   }, [remember]);
+
+  // signIn schedules a React state update. Wait until this component receives
+  // the authenticated context value before asking App to render the dashboard.
+  useEffect(() => {
+    if (shouldNavigateToDashboard && isAuthenticated) {
+      setShouldNavigateToDashboard(false);
+      onNavigate('dashboard');
+    }
+  }, [isAuthenticated, onNavigate, shouldNavigateToDashboard]);
 
   const attemptSignIn = async (usr: string, pw: string) => {
     setError("");
@@ -39,7 +49,7 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
       setLoading(false);
 
       if (res.success) {
-        onNavigate("dashboard");
+        setShouldNavigateToDashboard(true);
       } else {
         setError(res.message || "Invalid email or password.");
       }
@@ -59,11 +69,13 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
     setGoogleLoading(true);
     setTimeout(async () => {
 
-      const ok = await signIn('lakshmipriya', 'Lakshmi@123');
+      const result = await signIn('lakshmipriya', 'Lakshmi@123');
       setGoogleLoading(false);
-      if (ok) {
+      if (result.success) {
         if (remember) localStorage.setItem(REMEMBER_KEY, JSON.stringify({ email: 'lakshmipriya@gmail.com', password: 'Lakshmi@123' }));
-        onNavigate('dashboard');
+        setShouldNavigateToDashboard(true);
+      } else {
+        setError(result.message || 'Unable to sign in.');
       }
     }, 900);
   };

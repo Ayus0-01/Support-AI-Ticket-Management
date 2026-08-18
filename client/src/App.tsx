@@ -5,63 +5,176 @@ import Navbar from '@/components/Navbar';
 import LandingPage from '@/pages/LandingPage';
 import SignInPage from '@/pages/SignInPage';
 import SignUpPage from '@/pages/SignUpPage';
-import Dashboard from '@/pages/Dashboard';
+import UserDashboard from '@/pages/UserDashboard';
+import AgentDashboard from '@/pages/AgentDashboard';
+import AdminDashboard from '@/pages/AdminDashboard';
+import type { NavPage } from '@/pages/Dashboard';
 
 type Page = 'home' | 'signin' | 'signup' | 'dashboard';
 
+const NAV_PAGES: NavPage[] = [
+  'Dashboard',
+  'My queue',
+  'My Tickets',
+  'Create Ticket',
+  'AI Assistant',
+  'Reports',
+  'Knowledge Base',
+  'Users',
+  'Settings',
+  'Taxonomy',
+  'SLA policies',
+];
+
+function isNavPage(page: string | null): page is NavPage {
+  return page !== null && NAV_PAGES.includes(page as NavPage);
+}
+
 function AppContent() {
-  const [page, setPage] = useState<Page>('home');
-  const { isAuthenticated } = useAuth();
-  const [dashboardActive, setDashboardActive] = useState<string | undefined>(undefined);
+  const [page, setPage] = useState<Page>(() => {
+    return (sessionStorage.getItem("page") as Page) || "home";
+  });
+
+  const {
+    isAuthenticated,
+    user,
+    authLoading
+  } = useAuth();
+
+  const [dashboardActive, setDashboardActive] = useState<NavPage | undefined>(
+    () => {
+      const savedPage = sessionStorage.getItem("dashboardActive");
+
+      return isNavPage(savedPage) ? savedPage : undefined;
+    }
+  );
+  useEffect(() => {
+    sessionStorage.setItem("page", page);
+
+    if (dashboardActive) {
+      sessionStorage.setItem(
+        "dashboardActive",
+        dashboardActive
+      );
+    } else if (page !== 'dashboard') {
+      sessionStorage.removeItem("dashboardActive");
+    }
+  }, [page, dashboardActive]);
 
   const navigate = (p: string) => {
-    // allow target formats like 'dashboard:My Tickets' to open dashboard on a specific subpage
+    // Allow navigation like:
+    // dashboard:My Tickets
+    // dashboard:Create Ticket
     if (p.startsWith('dashboard:')) {
       const [, sub] = p.split(':');
+
+      const validSub = sub && isNavPage(sub)
+        ? sub
+        : undefined;
+
       if (!isAuthenticated) {
-        // if not authenticated, go to signin and remember desired subpage
         setPage('signin');
-        setDashboardActive(sub);
+        setDashboardActive(validSub);
         return;
       }
-      setDashboardActive(sub);
-      setPage('dashboard');
-      return;
-    }
 
+  setDashboardActive(validSub);
+  setPage('dashboard');
+  return;
+}
+
+    // Normal dashboard navigation
     if (p === 'dashboard') {
       if (!isAuthenticated) {
         setPage('signin');
         setDashboardActive(undefined);
         return;
       }
+
+      setDashboardActive(undefined);
       setPage('dashboard');
       return;
     }
 
-    // navigating to other pages should clear any pending dashboard target
+    // Navigation to other pages
     setDashboardActive(undefined);
     setPage(p as Page);
+
     window.scrollTo(0, 0);
   };
 
   useEffect(() => {
-    if (page === 'dashboard' && !isAuthenticated) setPage('signin');
-  }, [isAuthenticated, page]);
+    if (
+      !authLoading &&
+      page === 'dashboard'
+      && !isAuthenticated
+    ) {
+      setPage('signin');
+    }
+  }, [
+    authLoading,
+    isAuthenticated,
+    page,
+  ]);
+
+  if (authLoading) {
+  return null;
+  }
 
   if (page === 'signin') {
-    return <SignInPage onNavigate={navigate} />;
+    return (
+      <SignInPage
+        onNavigate={navigate}
+      />
+    );
   }
+
   if (page === 'signup') {
-    return <SignUpPage onNavigate={navigate} />;
+    return (
+      <SignUpPage
+        onNavigate={navigate}
+      />
+    );
   }
+
   if (page === 'dashboard') {
-    return <Dashboard onNavigate={navigate} initialPage={dashboardActive as any} />;
+    if (!user) {
+      return null;
+    }
+
+    if (user.role === 'Agent') {
+      return (
+        <AgentDashboard
+          onNavigate={navigate}
+          initialPage={dashboardActive}
+        />
+      );
+    }
+
+    if (user.role === 'Admin') {
+      return (
+        <AdminDashboard
+          onNavigate={navigate}
+          initialPage={dashboardActive}
+        />
+      );
+    }
+
+    return (
+      <UserDashboard
+        onNavigate={navigate}
+        initialPage={dashboardActive}
+      />
+    );
   }
+
   return (
     <>
       <Navbar onNavigate={navigate} />
-      <LandingPage onNavigate={navigate} />
+
+      <LandingPage
+        onNavigate={navigate}
+      />
     </>
   );
 }
