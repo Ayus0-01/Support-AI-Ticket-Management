@@ -1,13 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { useAuth } from '@/context/AuthContext';
-import { createTicket, getMyTickets, getTicketDetails, Ticket as ApiTicket } from "../services/ticketService";
+import { 
+  useAuth,
+  Capability,
+} from '@/context/AuthContext';
+import {
+  createTicket,
+  getMyTickets,
+  getTicketDetails,
+  getAgentQueue,
+  checkDuplicateTickets,
+  previewClassification,
+  overrideClassification,
+  transitionTicketStatus,
+  addTicketComment,
+  getTicketTimeline,
+  Ticket as ApiTicket,
+  TimelineEvent,
+} from "../services/ticketService";
 
 import {
   Bot, Sun, Moon, LayoutDashboard, Ticket, PlusCircle, Sparkles, BarChart3,
   BookOpen, Users, Settings, LogOut, Search, Bell, HelpCircle, MessageSquare,
-  Send, ChevronRight, Tag, Filter, Menu, X, TrendingUp, Ticket as TicketIcon,
-  PlayCircle, CheckCircle2, AlertCircle, Zap, ShieldCheck,
+  Send, ChevronRight, Tag, Menu, X, Ticket as TicketIcon,
+  AlertCircle, Zap, ShieldCheck,
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -15,110 +31,7 @@ interface DashboardProps {
   initialPage?: NavPage;
 }
 
-type NavPage = 'Dashboard' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies';
-
-interface Ticket {
-  id: string;
-  subject: string;
-  category: 'Bug' | 'Other' | 'Login' | 'Feature Request' | 'Billing' | 'Integration';
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'In Progress' | 'Resolved' | 'Open';
-}
-
-const TICKETS: Ticket[] = [
-  { id: 'TCK-128', subject: 'Sample Bug issue #1119',            category: 'Bug',             priority: 'High',   status: 'In Progress' },
-  { id: 'TCK-127', subject: 'Sample Other issue #1118',          category: 'Other',           priority: 'Low',    status: 'Resolved'    },
-  { id: 'TCK-126', subject: 'Sample Login issue #1117',          category: 'Login',           priority: 'Medium', status: 'In Progress' },
-  { id: 'TCK-125', subject: 'Sample Bug issue #1116',            category: 'Bug',             priority: 'High',   status: 'In Progress' },
-  { id: 'TCK-124', subject: 'Sample Feature Request issue #1115',category: 'Feature Request', priority: 'Medium', status: 'Resolved'    },
-  { id: 'TCK-123', subject: 'Sample Billing issue #1114',        category: 'Billing',         priority: 'High',   status: 'Open'        },
-  { id: 'TCK-122', subject: 'Sample Integration issue #1113',    category: 'Integration',     priority: 'Low',    status: 'Open'        },
-  { id: 'TCK-121', subject: 'Sample Bug issue #1112',            category: 'Bug',             priority: 'Medium', status: 'Resolved'    },
-];
-
-interface TicketCard {
-  id: string;
-  subject: string;
-  category: string;
-  subcategory: string;
-  requester: string;
-  raised: string;
-  priority: string;
-  status: string;
-  statusDetail: string;
-  statusTone: 'green' | 'blue' | 'amber' | 'gray';
-  assigned: string;
-}
-
-const MY_TICKETS: TicketCard[] = [
-  {
-    id: 'IT-2026-004521',
-    subject: 'VPN connection failing on corporate network',
-    category: 'VPN',
-    subcategory: 'Connection failure',
-    requester: 'Priya Sharma · Finance',
-    raised: '12 min ago',
-    priority: 'P2',
-    status: 'AI processing',
-    statusDetail: 'First response due in 48 min',
-    statusTone: 'blue',
-    assigned: 'Unassigned',
-  },
-  {
-    id: 'IT-2026-004488',
-    subject: 'VPN disconnects every few minutes',
-    category: 'VPN',
-    subcategory: 'Connection failure',
-    requester: 'Ramesh N. · Finance',
-    raised: '2 days ago',
-    priority: 'P3',
-    status: 'In progress',
-    statusDetail: 'Assigned to Network Team',
-    statusTone: 'amber',
-    assigned: 'Network Team',
-  },
-  {
-    id: 'IT-2026-004401',
-    subject: 'Request: Adobe Acrobat Pro licence',
-    category: 'Software',
-    subcategory: 'Licensing',
-    requester: 'Deeepa R. · Operations',
-    raised: '5 days ago',
-    priority: 'P4',
-    status: 'Waiting on you',
-    statusDetail: 'Manager approval needed',
-    statusTone: 'gray',
-    assigned: 'Manager review',
-  },
-];
-
-const STATS = [
-  { label: 'TOTAL TICKETS', value: 1284, change: '+18.4%', icon: TicketIcon,    bg: 'bg-blue-50',   iconBg: 'bg-blue-100',   iconColor: 'text-blue-500'  },
-  { label: 'OPEN TICKETS',  value: 312,  change: '+6.2%',  icon: AlertCircle,   bg: 'bg-amber-50',  iconBg: 'bg-amber-100',  iconColor: 'text-amber-500' },
-  { label: 'IN PROGRESS',   value: 547,  change: '+11.3%', icon: PlayCircle,    bg: 'bg-purple-50', iconBg: 'bg-purple-100', iconColor: 'text-purple-500'},
-  { label: 'RESOLVED',      value: 425,  change: '+22.7%', icon: CheckCircle2,  bg: 'bg-green-50',  iconBg: 'bg-green-100',  iconColor: 'text-green-500' },
-];
-
-const priorityStyle: Record<string, string> = {
-  High:   'bg-red-100 text-red-600',
-  Medium: 'bg-amber-100 text-amber-600',
-  Low:    'bg-green-100 text-green-600',
-};
-const statusStyle: Record<string, string> = {
-  'In Progress': 'bg-blue-100 text-blue-600',
-  Resolved:      'bg-green-100 text-green-600',
-  Open:          'bg-gray-100 text-gray-600',
-};
-const darkPriorityStyle: Record<string, string> = {
-  High:   'bg-red-500/15 text-red-400',
-  Medium: 'bg-amber-500/15 text-amber-400',
-  Low:    'bg-green-500/15 text-green-400',
-};
-const darkStatusStyle: Record<string, string> = {
-  'In Progress': 'bg-blue-500/15 text-blue-400',
-  Resolved:      'bg-green-500/15 text-green-400',
-  Open:          'bg-gray-500/15 text-gray-400',
-};
+export type NavPage = 'Dashboard' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies';
 
 const AI_QUICK_ACTIONS = ['Summarize tickets', 'Show unresolved tickets', 'Draft reply', 'Escalate ticket'];
 
@@ -230,253 +143,326 @@ function DashboardHeroArt({ isDark, compact = false }: { isDark: boolean; compac
   );
 }
 
-type SidebarItem = { name: NavPage; icon: React.ElementType; badge?: string };
-const sidebarGroups: { title: string; items: SidebarItem[] }[] = [
+type SidebarItem = { name: NavPage; icon: React.ElementType; badge?: string; capability?: Capability };
+const sidebarGroups: {
+  title: string;
+  items: SidebarItem[];
+}[] = [
   {
     title: 'Workspace',
+
     items: [
-      { name: 'Dashboard', icon: LayoutDashboard },
-      { name: 'My Tickets', icon: Ticket, badge: '127' },
-      { name: 'My queue', icon: TicketIcon, badge: '14' },
-      { name: 'Create Ticket', icon: PlusCircle },
+      {
+        name: 'Dashboard',
+        icon: LayoutDashboard,
+      },
+
+      {
+        name: 'My Tickets',
+        icon: Ticket,
+        capability: 'VIEW_OWN_TICKETS',
+      },
+
+      {
+        name: 'My queue',
+        icon: TicketIcon,
+        capability: 'VIEW_AGENT_QUEUE',
+      },
+
+      {
+        name: 'Create Ticket',
+        icon: PlusCircle,
+        capability: 'CREATE_TICKET',
+      },
     ],
   },
+
   {
     title: 'Configuration',
+
     items: [
-      { name: 'Taxonomy', icon: Tag },
-      { name: 'SLA policies', icon: ShieldCheck },
+      {
+        name: 'Taxonomy',
+        icon: Tag,
+        capability: 'ADMIN_SETTINGS',
+      },
+
+      {
+        name: 'SLA policies',
+        icon: ShieldCheck,
+        capability: 'ADMIN_SETTINGS',
+      },
     ],
   },
+
   {
     title: 'Productivity',
+
     items: [
-      { name: 'AI Assistant', icon: Sparkles, badge: 'BETA' },
-      { name: 'Reports', icon: BarChart3 },
-      { name: 'Knowledge Base', icon: BookOpen },
+      {
+        name: 'AI Assistant',
+        icon: Sparkles,
+      },
+
+      {
+        name: 'Reports',
+        icon: BarChart3,
+        capability: 'VIEW_REPORTS',
+      },
+
+      {
+        name: 'Knowledge Base',
+        icon: BookOpen,
+      },
     ],
   },
+
   {
     title: 'Administration',
+
     items: [
-      { name: 'Users', icon: Users },
-      { name: 'Settings', icon: Settings },
+      {
+        name: 'Users',
+        icon: Users,
+        capability: 'MANAGE_USERS',
+      },
+
+      {
+        name: 'Settings',
+        icon: Settings,
+        capability: 'ADMIN_SETTINGS',
+      },
     ],
   },
 ];
 
 /* ─── sub-pages ──────────────────────────────────────────────────── */
 
-const MY_TICKET_SUMMARY = [
-  { label: 'Received today', value: '127', note: '12% vs yesterday', tone: 'green' },
-  { label: 'Classified', value: '124', note: '3 unclassified → general queue', tone: 'gray' },
-  { label: 'Classification accuracy', value: '94%', note: 'target ≥ 90%', tone: 'green' },
-  { label: 'SLA at risk', value: '6', note: '2 breaching within 1h', tone: 'red' },
-] as const;
-
-const MY_TICKET_ROWS = [
-  {
-    id: 'IT-2026-004521',
-    subject: 'VPN connection failing on corporate network',
-    requester: 'Priya Sharma · Finance',
-    category: 'VPN',
-    subcategory: 'Connection failure',
-    severity: 'HIGH',
-    priority: 'P2',
-    confidence: '92%',
-    path: 'FAST',
-    sla: '48m',
-    assignee: 'Unassigned',
-    status: 'AI processing',
-    statusDetail: 'First response due in 48 min',
-    statusTone: 'blue',
-    requesterName: 'Priya Sharma',
-    department: 'Finance',
-    site: 'Chennai',
-    assetTag: 'LT-04821',
-    description: 'Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.',
-    affected: 'My team',
-    blocked: 'Yes, completely',
-    workaround: 'None',
-    started: 'Today',
-  },
-  {
-    id: 'IT-2026-004510',
-    subject: 'ERP login failing for accounts team',
-    requester: 'Vinod P. · Finance',
-    category: 'APPLICATION',
-    subcategory: 'Authentication',
-    severity: 'HIGH',
-    priority: 'P2',
-    confidence: '90%',
-    path: 'FAST',
-    sla: '22m',
-    assignee: 'Unassigned',
-    status: 'Open',
-    statusDetail: 'SLA: 22m',
-    statusTone: 'amber',
-    requesterName: 'Vinod P.',
-    department: 'Finance',
-    site: 'Chennai',
-    assetTag: 'LT-09923',
-    description: 'Finance team members are unable to log in to the ERP application. It hangs on the loading screen and then times out.',
-    affected: 'My team',
-    blocked: 'Yes, completely',
-    workaround: 'None',
-    started: '1 hour ago',
-  },
-  {
-    id: 'IT-2026-004520',
-    subject: 'Cannot access shared finance drive',
-    requester: 'Ramesh N. · Finance',
-    category: 'ACCESS',
-    subcategory: 'Permissions',
-    severity: 'MEDIUM',
-    priority: 'P3',
-    confidence: '88%',
-    path: 'FAST',
-    sla: '2h 10m',
-    assignee: 'Arun K.',
-    status: 'In progress',
-    statusDetail: 'Assigned to Arun K.',
-    statusTone: 'amber',
-    requesterName: 'Ramesh N.',
-    department: 'Finance',
-    site: 'Chennai',
-    assetTag: 'LT-01640',
-    description: 'User cannot open a shared finance drive and is receiving a permissions error when trying to access the folder.',
-    affected: 'My team',
-    blocked: 'Yes, completely',
-    workaround: 'None',
-    started: 'Yesterday',
-  },
-  {
-    id: 'IT-2026-004519',
-    subject: 'Entire 4th floor has no network connectivity',
-    requester: 'Deepa R. · Operations',
-    category: 'NETWORK',
-    subcategory: 'Connectivity',
-    severity: 'CRITICAL',
-    priority: 'P1',
-    confidence: '96%',
-    path: 'FAST',
-    sla: '6m',
-    assignee: 'Network Team',
-    status: 'In progress',
-    statusDetail: 'Assigned to Network Team',
-    statusTone: 'red',
-    requesterName: 'Deepa R.',
-    department: 'Operations',
-    site: 'Chennai',
-    assetTag: 'LT-06111',
-    description: 'The entire 4th floor lost network access and is unable to connect to internal systems.',
-    affected: 'Whole org',
-    blocked: 'Yes, completely',
-    workaround: 'None',
-    started: 'Today',
-  },
-  {
-    id: 'IT-2026-004518',
-    subject: 'Outlook keeps asking for password after update',
-    requester: 'Karthik S. · Sales',
-    category: 'EMAIL',
-    subcategory: 'Mailbox',
-    severity: 'MEDIUM',
-    priority: 'P3',
-    confidence: '68%',
-    path: 'LLM',
-    sla: '2h 40m',
-    assignee: 'Unassigned',
-    status: 'Open',
-    statusDetail: 'SLA: 2h 40m',
-    statusTone: 'amber',
-    requesterName: 'Karthik S.',
-    department: 'Sales',
-    site: 'Mumbai',
-    assetTag: 'LT-03022',
-    description: 'After the latest Outlook update, the app keeps prompting for credentials and users cannot send emails.',
-    affected: 'My team',
-    blocked: 'Partially',
-    workaround: 'Yes, use webmail',
-    started: 'Earlier this week',
-  },
-  {
-    id: 'IT-2026-004517',
-    subject: 'Need help with the thing on my screen',
-    requester: 'Suresh M. · Admin',
-    category: 'UNCLASSIFIED',
-    subcategory: '→ general queue',
-    severity: '—',
-    priority: 'P3',
-    confidence: '31%',
-    path: 'LLM',
-    sla: '1h 55m',
-    assignee: 'Unassigned',
-    status: 'Unclassified',
-    statusDetail: 'In general queue',
-    statusTone: 'gray',
-    requesterName: 'Suresh M.',
-    department: 'Admin',
-    site: 'Delhi',
-    assetTag: 'LT-01289',
-    description: 'The user sees a strange popup on screen and is unsure what to do next.',
-    affected: 'Just me',
-    blocked: 'No',
-    workaround: 'Yes, restart the app',
-    started: 'Today',
-  },
-] as const;
-
-function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, onExport, onRaise, onOpenKB }: { title: string; isDark: boolean; selectedTicketId: string | null; onOpenTicket: (id: string) => void; onBack: () => void; onExport: (ticket: any) => void; onRaise: () => void; onOpenKB: () => void }) {
+function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, onRaise, onOpenKB, canViewClassification }: { title: string; isDark: boolean; selectedTicketId: string | null; onOpenTicket: (id: string) => void; onBack: () => void; onRaise: () => void; onOpenKB: () => void; canViewClassification: boolean }) {
+  const { can, user } = useAuth();
   const searchRef = useRef<HTMLInputElement | null>(null);
 
-  const [tickets, setTickets] = useState<ApiTicket[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const [tickets, setTickets] = useState<ApiTicket[]>([]);
+const [queueTickets, setQueueTickets] = useState<ApiTicket[]>([]);
+const [loading, setLoading] = useState(true);
+const [queueLoading, setQueueLoading] = useState(false);
+const [error, setError] = useState("");
+const [queueError, setQueueError] = useState("");
 
   const [detailTicket, setDetailTicket] = useState<ApiTicket | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [detailError, setDetailError] = useState("");
+  const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
+  const [timelineLoading, setTimelineLoading] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [isResolving, setIsResolving] = useState(false);
+  const [resolutionSummary, setResolutionSummary] = useState("");
+  const [overrideCategory, setOverrideCategory] = useState("");
+  const [overrideSeverity, setOverrideSeverity] = useState("HIGH");
+  const [commentText, setCommentText] = useState("");
+  const [commentVisibility, setCommentVisibility] = useState<"PUBLIC" | "INTERNAL">("PUBLIC");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All statuses");
+  const [priorityFilter, setPriorityFilter] = useState("All priorities");
+  const [categoryFilter, setCategoryFilter] = useState("All categories");
+  const [assigneeFilter, setAssigneeFilter] = useState("All assignees");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
+
+useEffect(() => {
+  const loadPageData = async () => {
+    try {
+      if (title === "My queue") {
+        setQueueLoading(true);
+        setQueueError("");
+
+        const data = await getAgentQueue();
+
+        setQueueTickets(data);
+        return;
+      }
+
+      setLoading(true);
+      setError("");
+
+      const data = await getMyTickets();
+
+      setTickets(data);
+    } catch (err) {
+      console.error("Failed to load ticket data:", err);
+
+      if (title === "My queue") {
+        const error = err as {
+          response?: {
+            data?: {
+              detail?: string;
+              message?: string;
+              error?: string;
+            };
+          };
+          message?: string;
+        };
+
+        const backendMessage =
+          error.response?.data?.detail ||
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message;
+
+        setQueueError(
+          backendMessage ||
+          "Could not load the agent queue."
+        );
+      } else {
+        setError(
+          "Could not load your tickets."
+        );
+      }
+    } finally {
+      if (title === "My queue") {
+        setQueueLoading(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  };
+
+  loadPageData();
+}, [title]);
 
   useEffect(() => {
-    const loadTickets = async () => {
-      try {
-        setLoading(true);
-        setError("");
+    if (!selectedTicketId) {
+      setDetailTicket(null);
+      setTimeline([]);
+      setActionError("");
+      setIsResolving(false);
+      setResolutionSummary("");
+      return;
+    }
 
-        const data = await getMyTickets();
-        setTickets(data);
+    const fetchDetail = async () => {
+      try {
+        setLoadingDetail(true);
+        setDetailError("");
+        setActionError("");
+
+        if (title === "My queue") {
+          // Agent/Admin tickets come from the queue endpoint. Do not fall back
+          // to the employee-owned ticket-detail endpoint when the ticket leaves
+          // the active queue (for example, immediately after resolving it).
+          const queueTicket = queueTickets.find(
+            ticket => ticket.ticket_id === selectedTicketId
+          );
+
+          if (queueTicket) {
+            setDetailTicket(queueTicket);
+            setOverrideCategory(queueTicket.category || "");
+            setOverrideSeverity((queueTicket.severity || "HIGH").toUpperCase());
+          }
+        } else {
+          const data = await getTicketDetails(selectedTicketId);
+          setDetailTicket(data);
+          setOverrideCategory(data.category || "");
+          setOverrideSeverity((data.severity || "HIGH").toUpperCase());
+        }
+
+        setTimelineLoading(true);
+        try {
+          const timelineData = await getTicketTimeline(selectedTicketId);
+          setTimeline(timelineData);
+        } catch (timelineError) {
+          console.error("Failed to fetch ticket timeline:", timelineError);
+          setTimeline([]);
+        } finally {
+          setTimelineLoading(false);
+        }
       } catch (err) {
-        console.error("Failed to load tickets:", err);
-        setError("Could not load your tickets.");
+        console.error("Failed to fetch ticket detail:", err);
+        setDetailError("Could not fetch ticket details.");
       } finally {
-        setLoading(false);
+        setLoadingDetail(false);
       }
     };
 
-    loadTickets();
-  }, []);
+    fetchDetail();
+  }, [selectedTicketId, title, queueTickets]);
 
-  useEffect(() => {
-    if (selectedTicketId) {
-      const fetchDetail = async () => {
-        try {
-          setLoadingDetail(true);
-          setDetailError("");
-          const data = await getTicketDetails(selectedTicketId);
-          setDetailTicket(data);
-        } catch (err) {
-          console.error("Failed to fetch ticket detail:", err);
-          setDetailError("Could not fetch ticket details.");
-        } finally {
-          setLoadingDetail(false);
-        }
-      };
-      fetchDetail();
-    } else {
-      setDetailTicket(null);
+  const filteredTickets = tickets.filter(ticket => {
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = !term || [
+      ticket.ticket_id,
+      ticket.subject,
+      ticket.description,
+      ticket.requester?.username,
+      ticket.requester?.email,
+    ].some(value => String(value || "").toLowerCase().includes(term));
+
+    const matchesStatus =
+      statusFilter === "All statuses" ||
+      ticket.status === statusFilter;
+
+    const matchesPriority =
+      priorityFilter === "All priorities" ||
+      ticket.priority === priorityFilter;
+
+    const matchesCategory =
+      categoryFilter === "All categories" ||
+      (ticket.category || "").toUpperCase() === categoryFilter.toUpperCase();
+
+    const matchesAssignee =
+      assigneeFilter === "All assignees" ||
+      (ticket.assignee || "Unassigned") === assigneeFilter;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesCategory &&
+      matchesAssignee
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedTickets = filteredTickets.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
+
+  const exportFilteredTickets = () => {
+    if (filteredTickets.length === 0) {
+      return;
     }
-  }, [selectedTicketId]);
+
+    const rows = [
+      ['Ticket ID', 'Subject', 'Category', 'Subcategory', 'Status', 'Priority', 'Severity', 'Assignee', 'Created At'],
+      ...filteredTickets.map(ticket => [
+        ticket.ticket_id,
+        ticket.subject,
+        ticket.category || '',
+        ticket.subcategory || '',
+        ticket.status || '',
+        ticket.priority || '',
+        ticket.severity || '',
+        ticket.assignee || 'Unassigned',
+        ticket.created_at,
+      ]),
+    ];
+
+    const csv = rows
+      .map(row => row.map(value => `\"${String(value).replace(/\"/g, '\\"')}\"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-tickets.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const labelColor = (tone: string) => {
     switch (tone) {
@@ -489,15 +475,135 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
 
   const filterField = `w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-950 border-gray-800 text-white' : 'bg-white border-gray-200 text-slate-900'}`;
 
-  // If detailed view of a ticket is open, show details page layout fetched from GET /api/tickets/<ticket_id>/
+  // Live ticket workspace. Agent/Admin can operate on queue tickets; users see safe details + timeline.
   if (selectedTicketId) {
+    const classification = (detailTicket?.classification || {}) as Record<string, any>;
+    const categoryMeta = classification.category || {};
+    const subcategoryMeta = classification.subcategory || {};
+    const severityMeta = classification.severity || {};
+    const priorityMeta = classification.priority || {};
+    const categoryConfidence = detailTicket?.confidence ?? categoryMeta.confidence ?? null;
+    const classificationPath = detailTicket?.path || categoryMeta.route || subcategoryMeta.route || 'Standard Queue';
+    const priorityReason = detailTicket?.priority_reason || priorityMeta.reason || '';
+    const isAgentWorkspace = title === 'My queue' && can('VIEW_AGENT_TICKET');
+
+    const refreshQueueTicket = async () => {
+      if (!isAgentWorkspace) return;
+      const refreshed = await getAgentQueue();
+      setQueueTickets(refreshed);
+      const refreshedTicket = refreshed.find(ticket => ticket.ticket_id === selectedTicketId);
+      if (refreshedTicket) {
+        setDetailTicket(refreshedTicket);
+      }
+    };
+
+    const handleOverride = async () => {
+      if (!isAgentWorkspace) return;
+      if (!overrideCategory.trim() && !overrideSeverity.trim()) {
+        setActionError('Enter a corrected category or severity.');
+        return;
+      }
+
+      try {
+        setActionBusy(true);
+        setActionError("");
+        const result = await overrideClassification(selectedTicketId, {
+          category: overrideCategory.trim() || undefined,
+          severity: overrideSeverity as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" || undefined,
+        });
+
+        const updatedClassification = result?.updated_classification || {};
+        setDetailTicket(current => current ? {
+          ...current,
+          category: updatedClassification.category ?? current.category,
+          severity: updatedClassification.severity ?? current.severity,
+          priority: typeof updatedClassification.priority === 'object'
+            ? updatedClassification.priority?.value ?? current.priority
+            : updatedClassification.priority ?? current.priority,
+          sla: updatedClassification.sla ?? current.sla,
+          queue: updatedClassification.queue ?? current.queue,
+        } : current);
+
+        await refreshQueueTicket();
+        const timelineData = await getTicketTimeline(selectedTicketId);
+        setTimeline(timelineData);
+      } catch (error: any) {
+        setActionError(error?.response?.data?.message || error?.message || 'Could not apply classification override.');
+      } finally {
+        setActionBusy(false);
+      }
+    };
+
+    const handleStatusChange = async (status: 'In Progress' | 'Resolved') => {
+      if (!isAgentWorkspace) return;
+      const trimmedResolutionSummary = resolutionSummary.trim();
+
+      if (status === 'Resolved' && !trimmedResolutionSummary) {
+        setActionError('Resolution summary is required when resolving a ticket.');
+        return;
+      }
+
+      try {
+        setActionBusy(true);
+        setActionError("");
+        await transitionTicketStatus(selectedTicketId, {
+          status,
+          resolution_summary: status === 'Resolved'
+            ? trimmedResolutionSummary
+            : undefined,
+        });
+        setDetailTicket(current => current ? {
+          ...current,
+          status,
+          resolution: status === 'Resolved'
+            ? { summary: trimmedResolutionSummary, resolved_at: new Date().toISOString() }
+            : current.resolution,
+        } : current);
+        if (status === 'Resolved') {
+          setIsResolving(false);
+          setResolutionSummary("");
+        }
+        await refreshQueueTicket();
+        const timelineData = await getTicketTimeline(selectedTicketId);
+        setTimeline(timelineData);
+      } catch (error: any) {
+        setActionError(error?.response?.data?.message || error?.message || 'Could not change ticket status.');
+      } finally {
+        setActionBusy(false);
+      }
+    };
+
+    const handleComment = async () => {
+      if (!isAgentWorkspace || !commentText.trim()) return;
+      if (commentVisibility === 'INTERNAL' && !can('ADD_INTERNAL_COMMENT')) {
+        setActionError('You do not have permission to add internal comments.');
+        return;
+      }
+
+      try {
+        setActionBusy(true);
+        setActionError("");
+        await addTicketComment(selectedTicketId, {
+          comment: commentText.trim(),
+          visibility: commentVisibility,
+        });
+        setCommentText("");
+        const timelineData = await getTicketTimeline(selectedTicketId);
+        setTimeline(timelineData);
+      } catch (error: any) {
+        setActionError(error?.response?.data?.message || error?.message || 'Could not add the comment.');
+      } finally {
+        setActionBusy(false);
+      }
+    };
+
     return (
       <div className="space-y-6">
         <div className={`rounded-3xl border p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-4 dark:border-gray-800">
             <div>
               <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Ticket Details</p>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Full ticket details fetched live from database.</p>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{isAgentWorkspace ? 'Agent workspace — live ticket controls and classification review.' : 'Full ticket details fetched live from the database.'}</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <button onClick={onBack} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800">
@@ -513,89 +619,172 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
           ) : detailTicket ? (
             <div className="space-y-6 mt-6">
               <div className="grid gap-4 lg:grid-cols-2">
-                {/* Left Column: Core Fields */}
                 <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                   <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Ticket Information</p>
                   <p className={`mt-2 text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{detailTicket.subject}</p>
                   <p className="mt-1 text-xs text-blue-600 font-mono font-semibold">{detailTicket.ticket_id}</p>
-
                   <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Requester</span>
-                      <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{detailTicket.requester?.username || 'User'} ({detailTicket.requester?.email || 'N/A'})</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Category</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.category}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Subcategory</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.subcategory || 'N/A'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Department</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.department || 'N/A'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Site</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.site || 'N/A'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Asset Tag</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.asset_tag || 'N/A'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Preferred Contact</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.preferred_contact || 'Email'}</span>
-                    </div>
+                    <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">Requester</span><span className={`font-medium text-right ${isDark ? 'text-white' : 'text-gray-900'}`}>{detailTicket.requester?.username || user?.username || 'User'} ({detailTicket.requester?.email || user?.email || 'N/A'})</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Department</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.department || 'N/A'}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Site</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.site || 'N/A'}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Asset Tag</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.asset_tag || 'N/A'}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Preferred Contact</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.preferred_contact || 'Email'}</span></div>
                   </div>
                 </div>
 
-                {/* Right Column: Status & System Metadata */}
                 <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                   <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status & System Metadata</p>
-                  
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold">{detailTicket.status}</span>
-                    {/* Priority Badge (View-Only per IMP rule) */}
-                    <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority || 'P3'} (View Only)</span>
-                    <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity || 'Normal'}</span>
+                    <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority || 'P4'}</span>
+                    <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity || 'N/A'}</span>
                   </div>
-
                   <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Assignee</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.assignee || 'Unassigned'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">SLA Target</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.sla || 'Standard SLA'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Confidence</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.confidence ? `${Math.round(detailTicket.confidence * 100)}%` : 'N/A'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Path</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.path || 'Standard Queue'}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Created At</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.created_at).toLocaleString()}</span>
-                    </div>
-                    <div className="pt-2 flex justify-between">
-                      <span className="text-xs text-slate-500 uppercase">Updated At</span>
-                      <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.updated_at).toLocaleString()}</span>
-                    </div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Assignee</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.assignee || 'Unassigned'}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Queue</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.queue || 'N/A'}</span></div>
+                    <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">First response due</span><span className={`text-right ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.sla?.first_response_due ? new Date(detailTicket.sla.first_response_due).toLocaleString() : detailTicket.sla?.priority || 'Standard SLA'}</span></div>
+                    {canViewClassification && (
+                      <>
+                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Confidence</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{categoryConfidence != null ? `${Math.round(categoryConfidence * 100)}%` : 'N/A'}</span></div>
+                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Path</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{classificationPath}</span></div>
+                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Priority Reason</span><span className={`text-right max-w-[70%] ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{priorityReason || 'Not supplied'}</span></div>
+                      </>
+                    )}
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Created At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.created_at).toLocaleString()}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Updated At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.updated_at).toLocaleString()}</span></div>
                   </div>
                 </div>
               </div>
 
-              {/* Full Description */}
               <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                 <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Description</p>
                 <p className={`mt-3 leading-7 text-sm ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{detailTicket.description}</p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-4">
+                  {[
+                    ['Affected', detailTicket.affected_scope || 'N/A'],
+                    ['Work blocked', detailTicket.work_blocked || 'N/A'],
+                    ['Urgency', detailTicket.urgent_feeling || 'N/A'],
+                    ['Workaround', detailTicket.workaround_available ? 'Available' : 'None'],
+                  ].map(([label, value]) => (
+                    <div key={label} className={`rounded-2xl p-4 ${isDark ? 'bg-gray-900' : 'bg-slate-50'}`}>
+                      <p className="text-xs text-slate-500 uppercase">{label}</p>
+                      <p className={`mt-2 text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{value}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              {canViewClassification && (
+                <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>AI Classification</p>
+                      <p className={`mt-1 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Internal agent view</p>
+                    </div>
+                    {classification?.model_version && <span className="text-xs text-slate-500">{String(classification.model_version)}</span>}
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {[
+                      ['Category', categoryMeta.value || detailTicket.category || 'N/A'],
+                      ['Category confidence', categoryMeta.confidence != null ? `${Math.round(categoryMeta.confidence * 100)}%` : categoryConfidence != null ? `${Math.round(categoryConfidence * 100)}%` : 'N/A'],
+                      ['Subcategory', subcategoryMeta.value || detailTicket.subcategory || 'N/A'],
+                      ['Severity model', severityMeta.value || detailTicket.severity || 'N/A'],
+                    ].map(([label, value]) => (
+                      <div key={label} className={`rounded-2xl border p-4 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-100 bg-slate-50'}`}>
+                        <p className="text-xs text-slate-500 uppercase">{label}</p>
+                        <p className={`mt-2 font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{String(value)}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {isAgentWorkspace && can('OVERRIDE_CLASSIFICATION') && (
+                    <div className="mt-5 border-t pt-5 dark:border-gray-800">
+                      <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Override classification</p>
+                      <div className="mt-3 grid gap-3 md:grid-cols-2">
+                        <input value={overrideCategory} onChange={e => setOverrideCategory(e.target.value)} placeholder="Correct category" className={`rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`} />
+                        <select value={overrideSeverity} onChange={e => setOverrideSeverity(e.target.value)} className={`rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                          {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map(value => <option key={value}>{value}</option>)}
+                        </select>
+                      </div>
+                      <button onClick={handleOverride} disabled={actionBusy} className="mt-3 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+                        {actionBusy ? 'Saving...' : 'Apply override'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+                {isAgentWorkspace && (
+                  <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <p className={`text-xs uppercase tracking-[0.2em] font-semibold mr-auto ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Agent Actions</p>
+                      {detailTicket.status === 'Open' && can('CHANGE_TICKET_STATUS') && <button onClick={() => handleStatusChange('In Progress')} disabled={actionBusy} className="rounded-2xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50">Start work</button>}
+                      {detailTicket.status === 'In Progress' && can('RESOLVE_TICKET') && !isResolving && <button onClick={() => { setActionError(""); setIsResolving(true); }} disabled={actionBusy} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Resolve</button>}
+                    </div>
+                    {isResolving && (
+                      <div className={`mt-4 rounded-2xl border p-4 ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-slate-50'}`}>
+                        <label htmlFor="resolution-summary" className={`block text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Resolution summary</label>
+                        <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Describe how the ticket was resolved. This is required before the ticket can be closed.</p>
+                        <textarea
+                          id="resolution-summary"
+                          value={resolutionSummary}
+                          onChange={event => setResolutionSummary(event.target.value)}
+                          rows={4}
+                          disabled={actionBusy}
+                          placeholder="Example: Reset the VPN profile, restarted the client, and confirmed the user could connect."
+                          className={`mt-3 w-full rounded-2xl border px-3 py-2.5 text-sm outline-none transition-colors focus:border-emerald-500 disabled:opacity-60 ${isDark ? 'border-gray-700 bg-gray-950 text-white placeholder-gray-500' : 'border-gray-200 bg-white text-gray-900 placeholder-gray-400'}`}
+                        />
+                        <div className="mt-3 flex flex-wrap justify-end gap-3">
+                          <button onClick={() => { setActionError(""); setIsResolving(false); setResolutionSummary(""); }} disabled={actionBusy} className={`rounded-2xl border px-4 py-2 text-sm font-semibold disabled:opacity-50 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-slate-700 hover:bg-white'}`}>Cancel</button>
+                          <button onClick={() => handleStatusChange('Resolved')} disabled={actionBusy || !resolutionSummary.trim()} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{actionBusy ? 'Resolving...' : 'Confirm resolve'}</button>
+                        </div>
+                      </div>
+                    )}
+                    {actionError && <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{actionError}</p>}
+                  </div>
+                )}
+
+              <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Timeline</p>
+                    <p className={`mt-1 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Status changes and visible comments</p>
+                  </div>
+                  {timelineLoading && <span className="text-xs text-slate-500">Loading...</span>}
+                </div>
+                <div className="mt-4 space-y-3">
+                  {!timelineLoading && timeline.length === 0 ? <p className="text-sm text-slate-500">No timeline events yet.</p> : timeline.map((event, index) => (
+                    <div key={`${event.created_at}-${index}`} className={`rounded-2xl border p-4 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-100 bg-slate-50'}`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <span className={`text-xs font-semibold ${event.event_type === 'STATUS_CHANGE' ? 'text-blue-600' : 'text-emerald-600'}`}>{event.event_type === 'STATUS_CHANGE' ? 'Status change' : `Comment · ${event.visibility || 'PUBLIC'}`}</span>
+                        <span className="text-xs text-slate-500">{new Date(event.created_at).toLocaleString()}</span>
+                      </div>
+                      <p className={`mt-2 text-sm ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{event.event_type === 'STATUS_CHANGE' ? `${event.from_status || '—'} → ${event.to_status || '—'}` : event.comment || '—'}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {isAgentWorkspace && (
+                  <div className="mt-5 border-t pt-5 dark:border-gray-800">
+                    <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Add comment</p>
+                    <textarea value={commentText} onChange={e => setCommentText(e.target.value)} rows={3} placeholder="Write a response or internal note..." className={`mt-3 w-full rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`} />
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <select value={commentVisibility} onChange={e => setCommentVisibility(e.target.value as "PUBLIC" | "INTERNAL")} className={`rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                        <option value="PUBLIC">Public</option>
+                        {can('ADD_INTERNAL_COMMENT') && <option value="INTERNAL">Internal</option>}
+                      </select>
+                      <button onClick={handleComment} disabled={actionBusy || !commentText.trim()} className="rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">Add comment</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {detailTicket.resolution?.summary && (
+                <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-emerald-950/10' : 'border-gray-200 bg-emerald-50/50'}`}>
+                  <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Resolution</p>
+                  <p className={`mt-3 text-sm leading-7 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.resolution.summary}</p>
+                  {detailTicket.resolution.resolved_at && <p className="mt-2 text-xs text-slate-500">Resolved {new Date(detailTicket.resolution.resolved_at).toLocaleString()}</p>}
+                </div>
+              )}
             </div>
           ) : null}
         </div>
@@ -605,8 +794,7 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
 
   // If My Queue page layout
   if (title === 'My queue') {
-    const queueIds = ['IT-2026-004519', 'IT-2026-004510', 'IT-2026-004521', 'IT-2026-004520', 'IT-2026-004517'];
-    const queueRows = queueIds.map(id => MY_TICKET_ROWS.find(r => r.id === id)!).filter(Boolean);
+    const queueRows = queueTickets;
 
     const getRowNumberColor = (index: number) => {
       switch (index) {
@@ -627,7 +815,9 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
       }
     };
 
-    const getPriBadgeStyle = (priority: string) => {
+    const getPriBadgeStyle = (
+      priority: string | null
+    ) => {
       switch (priority) {
         case 'P1': return 'bg-red-600 text-white';
         case 'P2': return 'bg-amber-600 text-white';
@@ -636,11 +826,11 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
       }
     };
 
-    const getBreachBarColor = (id: string) => {
-      switch (id) {
-        case 'IT-2026-004519': return 'bg-red-600';
-        case 'IT-2026-004510': return 'bg-amber-600';
-        case 'IT-2026-004517': return 'bg-amber-500';
+    const getBreachBarColor = (priority: string | null) => {
+      switch (priority) {
+        case 'P1': return 'bg-red-600';
+        case 'P2': return 'bg-amber-600';
+        case 'P3': return 'bg-blue-500';
         default: return 'bg-emerald-500';
       }
     };
@@ -649,8 +839,9 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className={`text-[10px] uppercase tracking-[0.25em] font-semibold ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Tickets / Queue</p>
-            <h2 className={`text-2xl font-bold mt-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
+            <p className={`text-[10px] uppercase tracking-[0.25em] font-semibold ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+              Tickets / {title === 'My queue' ? 'Queue' : 'My tickets'}
+            </p>
           </div>
           <div>
             <select className={`rounded-xl border px-3 py-2 text-xs font-semibold outline-none shadow-sm cursor-pointer ${isDark ? 'bg-gray-900 border-gray-800 text-white' : 'bg-white border-slate-200 text-slate-700'}`}>
@@ -679,21 +870,33 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
                 </tr>
               </thead>
               <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-                {queueRows.map((row, index) => {
-                  const isClaim = row.id === 'IT-2026-004519' || row.id === 'IT-2026-004510' || row.id === 'IT-2026-004521';
-                  const actionText = isClaim ? 'Claim' : 'Open';
-                  
+                {queueLoading ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">Loading agent queue...</td>
+                  </tr>
+                ) : queueError ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-red-500">{queueError}</td>
+                  </tr>
+                ) : queueRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">No active tickets in the queue.</td>
+                  </tr>
+                ) : queueRows.map((row, index) => {
+                  const actionText = 'Open';
+                  const slaDisplay = row.sla?.priority || 'N/A';
+
                   return (
-                    <tr key={row.id} className={`transition-colors ${isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}`}>
+                    <tr key={row.ticket_id} className={`transition-colors ${isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}`}>
                       <td className={`px-4 py-4 text-center font-bold text-base ${getRowNumberColor(index)}`}>
                         {index + 1}
                       </td>
                       <td className="px-4 py-4">
-                        <button onClick={() => onOpenTicket(row.id)} className={`text-left font-semibold text-sm hover:underline block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <button onClick={() => onOpenTicket(row.ticket_id)} className={`text-left font-semibold text-sm hover:underline block ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {row.subject}
                         </button>
                         <span className="text-xs text-slate-400 dark:text-gray-500 mt-1 block">
-                          {row.id} · {row.id === 'IT-2026-004521' ? '12 min ago' : row.id === 'IT-2026-004519' ? '34 min ago' : row.id === 'IT-2026-004520' ? '28 min ago' : '1 hour ago'}
+                          {row.ticket_id} · created {new Date(row.created_at).toLocaleString()}
                         </span>
                       </td>
                       <td className="px-4 py-4">
@@ -709,25 +912,23 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-16 h-1 rounded-full bg-slate-200 dark:bg-gray-800 overflow-hidden">
-                            <div className={`h-full w-full ${getBreachBarColor(row.id)}`} />
+                            <div className={`h-full w-full ${getBreachBarColor(row.priority)}`} />
                           </div>
                           <span className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                            {row.sla}
+                            {slaDisplay}
                           </span>
                         </div>
                       </td>
                       <td className={`px-4 py-4 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                        {row.requesterName}
+                        {row.requester?.username || 'User'}
                       </td>
                       <td className="px-4 py-4 text-right">
                         <button
-                          onClick={() => onOpenTicket(row.id)}
+                          onClick={() => onOpenTicket(row.ticket_id)}
                           className={`rounded-2xl px-4 py-1.5 text-xs font-semibold border transition ${
-                            isClaim
-                              ? 'border-emerald-700 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 bg-transparent'
-                              : isDark
-                                ? 'border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent'
-                                : 'border-slate-300 text-slate-700 hover:bg-slate-50 bg-transparent'
+                            isDark
+                              ? 'border-gray-700 text-gray-300 hover:bg-gray-800 bg-transparent'
+                              : 'border-slate-300 text-slate-700 hover:bg-slate-50 bg-transparent'
                           }`}
                         >
                           {actionText}
@@ -781,7 +982,7 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
           </div>
           <button
             type="button"
-            onClick={() => {}}
+            onClick={exportFilteredTickets}
             className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
             ↓ Export
@@ -818,26 +1019,29 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
               <input
                 ref={searchRef}
                 type="search"
+                value={searchTerm}
+                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                 placeholder="Ticket no, subject, requester..."
                 className={`ml-3 w-full bg-transparent text-sm outline-none ${isDark ? 'text-white placeholder-gray-500' : 'text-gray-900 placeholder-gray-500'}`}
               />
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <select className={filterField}>
-                {['All statuses', 'Open', 'In progress', 'Resolved'].map(option => <option key={option}>{option}</option>)}
+              <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
+                {['All statuses', 'Open', 'In Progress', 'Resolved', 'Closed'].map(option => <option key={option}>{option}</option>)}
               </select>
-              <select className={filterField}>
+              <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
                 {['All priorities', 'P1', 'P2', 'P3', 'P4'].map(option => <option key={option}>{option}</option>)}
               </select>
-              <select className={filterField}>
-                {['All categories', 'VPN', 'Access', 'Network', 'Email', 'Unclassified'].map(option => <option key={option}>{option}</option>)}
+              <select value={categoryFilter} onChange={e => { setCategoryFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
+                {['All categories', 'VPN', 'ACCESS', 'NETWORK', 'EMAIL', 'HARDWARE', 'SOFTWARE', 'APPLICATION', 'UNCLASSIFIED'].map(option => <option key={option}>{option}</option>)}
               </select>
-              <select className={filterField}>
-                {['All assignees', 'Unassigned', 'Arun K.', 'Network Team'].map(option => <option key={option}>{option}</option>)}
+              <select value={assigneeFilter} onChange={e => { setAssigneeFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
+                <option>All assignees</option>
+                {Array.from(new Set(tickets.map(ticket => ticket.assignee || 'Unassigned'))).map(option => <option key={option}>{option}</option>)}
               </select>
             </div>
           </div>
-          <button className="mt-3 inline-flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:mt-0">
+          <button onClick={() => { setSearchTerm(''); setStatusFilter('All statuses'); setPriorityFilter('All priorities'); setCategoryFilter('All categories'); setAssigneeFilter('All assignees'); setCurrentPage(1); }} className="mt-3 inline-flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:mt-0">
             Clear
           </button>
         </div>
@@ -851,8 +1055,7 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
 ) : tickets.length === 0 ? (
   <p className="text-center py-6 text-sm text-gray-500">No tickets found. Click "Raise ticket" to create one!</p>
 ) : (
-  tickets.map(row => (
-    <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+  paginatedTickets.map(row => (    <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
       <div className="flex items-center gap-4">
         <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold text-xs ${row.priority === 'P1' ? 'bg-red-600 text-white' : row.priority === 'P2' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-white'}`}>
           {row.priority || 'P3'}
@@ -880,10 +1083,10 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
           </div>
         </div>
         <div className="flex flex-col gap-3 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Showing {tickets.length > 0 ? 1 : 0}–{tickets.length} of {tickets.length}</p>
+          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Showing {filteredTickets.length === 0 ? 0 : (safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, filteredTickets.length)} of {filteredTickets.length}</p>
           <div className="flex items-center gap-3">
-            <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">← Prev</button>
-            <button className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Next →</button>
+            <button onClick={() => setCurrentPage(page => Math.max(1, page - 1))} disabled={safePage <= 1} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">← Prev</button>
+            <button onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))} disabled={safePage >= totalPages} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
           </div>
         </div>
       </div>
@@ -891,48 +1094,263 @@ function MyTicketsPage({ title, isDark, selectedTicketId, onOpenTicket, onBack, 
   );
 }
 
-function CreateTicketPage({ isDark }: { isDark: boolean }) {
-  const [form, setForm] = useState({
-    subject: '',
-    description: '',
-    category: 'Not sure — let AI decide',
-    affectedSystem: 'Cisco AnyConnect',
-    started: 'Today',
-    impact: 'My team',
-    blocked: 'Yes, completely',
-    workaround: false,
-    department: 'Finance',
-    location: 'Chennai — DLF IT Park',
-    assetTag: 'LT-04821',
-    preferredContact: 'Email',
+type ClassificationPreview = {
+  category?: {
+    value: string;
+    confidence: number;
+    route?: string;
+  };
+  subcategory?: {
+    value: string;
+    confidence: number;
+    route?: string;
+  };
+};
+
+type DuplicateCandidate = {
+  ticket_id: string;
+  subject?: string;
+  status?: string;
+  score?: number;
+  created_at?: string;
+};
+
+function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean; onCreated?: (ticket?: ApiTicket) => void; onOpenTicket?: (id: string) => void }) {
+  const [form, setForm] = useState(() => {
+    try {
+      const saved = localStorage.getItem('aiticketpilot_ticket_draft');
+      return saved
+        ? {
+            subject: '',
+            description: '',
+            category: 'Not sure — let AI decide',
+            affectedSystem: 'Cisco AnyConnect',
+            started: 'Today',
+            impact: 'My team',
+            blocked: 'Yes, completely',
+            workaround: false,
+            department: 'Finance',
+            location: 'Chennai — DLF IT Park',
+            assetTag: 'LT-04821',
+            preferredContact: 'Email',
+            ...JSON.parse(saved),
+          }
+        : {
+            subject: '',
+            description: '',
+            category: 'Not sure — let AI decide',
+            affectedSystem: 'Cisco AnyConnect',
+            started: 'Today',
+            impact: 'My team',
+            blocked: 'Yes, completely',
+            workaround: false,
+            department: 'Finance',
+            location: 'Chennai — DLF IT Park',
+            assetTag: 'LT-04821',
+            preferredContact: 'Email',
+          };
+    } catch {
+      return {
+        subject: '',
+        description: '',
+        category: 'Not sure — let AI decide',
+        affectedSystem: 'Cisco AnyConnect',
+        started: 'Today',
+        impact: 'My team',
+        blocked: 'Yes, completely',
+        workaround: false,
+        department: 'Finance',
+        location: 'Chennai — DLF IT Park',
+        assetTag: 'LT-04821',
+        preferredContact: 'Email',
+      };
+    }
   });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
+  const [preview, setPreview] = useState<ClassificationPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [duplicateLoading, setDuplicateLoading] = useState(false);
+  const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
+  const [duplicateChecked, setDuplicateChecked] = useState(false);
+  const [duplicateCheckPending, setDuplicateCheckPending] = useState(false);
+  const duplicateRequestId = useRef(0);
+  const set = (k: string, v: string | boolean) => {
+    if (k === 'subject' || k === 'description') {
+      duplicateRequestId.current += 1;
+      setDuplicateLoading(false);
+      setDuplicateCandidates([]);
+      setDuplicateChecked(false);
+    }
+
+    setForm((f: typeof form) => ({
+      ...f,
+      [k]: v,
+    }));
+  };
+
+  const runDuplicateCheck = async (
+    subjectValue: string,
+    descriptionValue: string
+  ) => {
+    const subject = subjectValue.trim();
+    const description = descriptionValue.trim();
+
+    if (!subject || !description) {
+      setDuplicateCandidates([]);
+      setDuplicateChecked(false);
+      return;
+    }
+
+    const requestId = ++duplicateRequestId.current;
+
+    try {
+      setDuplicateLoading(true);
+      const duplicates = await checkDuplicateTickets(
+        subject,
+        description
+      );
+
+      if (requestId !== duplicateRequestId.current) {
+        return;
+      }
+
+      setDuplicateCandidates(duplicates);
+      setDuplicateChecked(true);
+    } catch (error) {
+      if (requestId !== duplicateRequestId.current) {
+        return;
+      }
+
+      console.error('Duplicate check failed:', error);
+      setDuplicateCandidates([]);
+      setDuplicateChecked(false);
+    } finally {
+      if (requestId === duplicateRequestId.current) {
+        setDuplicateLoading(false);
+      }
+    }
+  };
+
+  const handleSubjectBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const subject = event.currentTarget.value;
+
+    if (!subject.trim()) {
+      setDuplicateCheckPending(false);
+      setDuplicateCandidates([]);
+      setDuplicateChecked(false);
+      return;
+    }
+
+    if (!form.description.trim()) {
+      // The subject blur is the trigger. Wait for the required description
+      // instead of sending an invalid or low-information request.
+      setDuplicateCheckPending(true);
+      return;
+    }
+
+    setDuplicateCheckPending(false);
+    void runDuplicateCheck(subject, form.description);
+  };
+
+  const handleDescriptionBlur = () => {
+    if (!duplicateCheckPending) {
+      return;
+    }
+
+    setDuplicateCheckPending(false);
+    void runDuplicateCheck(form.subject, form.description);
+  };
+
+  useEffect(() => {
+    if (!form.subject.trim() || !form.description.trim()) {
+      setPreview(null);
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
+      try {
+        setPreviewLoading(true);
+        const result = await previewClassification(
+          form.subject.trim(),
+          form.description.trim()
+        );
+        setPreview(result);
+      } catch (error) {
+        console.error('Classification preview failed:', error);
+        setPreview(null);
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 800);
+
+    return () => window.clearTimeout(timer);
+  }, [form.subject, form.description]);
+
+  const saveDraft = () => {
+    localStorage.setItem(
+      'aiticketpilot_ticket_draft',
+      JSON.stringify(form)
+    );
+    setSubmitError("Draft saved locally on this device.");
+  };
+
   const submit = async () => {
-  try {
-    setSubmitting(true);
-    setSubmitError("");
+    if (!form.subject.trim() || !form.description.trim()) {
+      setSubmitError("Subject and description are required.");
+      return;
+    }
 
-    await createTicket({
-      subject: form.subject,
-      category: form.category,
-      description: form.description,
-      department: form.department,
-      site: form.location,
-      asset_tag: form.assetTag,
-      preferred_contact: form.preferredContact,
-    });
+    try {
+      setSubmitting(true);
+      setSubmitError("");
 
-    setSubmitted(true);
-  } catch (error) {
-    console.error("Create ticket failed:", error);
-    setSubmitError("Could not create the ticket.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+      const affectedScopeMap: Record<string, string> = {
+        'Just me': 'JUST_ME',
+        'My team': 'TEAM',
+        'My department': 'DEPARTMENT',
+        'Whole org': 'ORGANISATION',
+      };
+
+      const workBlockedMap: Record<string, string> = {
+        'Yes, completely': 'YES',
+        'Partially': 'PARTIALLY',
+        'No': 'NO',
+      };
+
+      const payload = {
+        subject: form.subject.trim(),
+        category: form.category === 'Not sure — let AI decide' ? '' : form.category,
+        description: form.description.trim(),
+        department: form.department,
+        site: form.location,
+        asset_tag: form.assetTag,
+        preferred_contact: form.preferredContact.toUpperCase(),
+        affected_scope: affectedScopeMap[form.impact] || 'JUST_ME',
+        work_blocked: workBlockedMap[form.blocked] || 'NO',
+        urgent_feeling: 'LOW',
+        workaround_available: form.workaround,
+      };
+
+      const result = await createTicket(
+        payload as Parameters<typeof createTicket>[0]
+      );
+
+      localStorage.removeItem('aiticketpilot_ticket_draft');
+      setSubmitted(true);
+      onCreated?.(result?.ticket);
+      console.info('Ticket created:', result?.ticket || result);
+    } catch (error: any) {
+      console.error('Create ticket failed:', error);
+      setSubmitError(
+        error.response?.data?.message ||
+        'Could not create the ticket.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const field = `w-full rounded-2xl border px-3 py-2.5 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`;
   const sectionLabel = `text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`;
@@ -945,15 +1363,21 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
       <div className={`rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
         <div className={`p-6 space-y-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
           <div className={`rounded-3xl border px-5 py-4 ${isDark ? 'bg-yellow-950/10 border-yellow-500/20' : 'bg-yellow-50 border-yellow-200'}`}>
-            <p className="text-sm font-semibold text-yellow-700">You have a similar open ticket</p>
-            <p className="mt-2 text-sm text-slate-600">Adding to an existing ticket is usually faster than raising a new one.</p>
-            <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <p className="font-semibold">VPN disconnects every few minutes</p>
-                <p className="text-xs text-slate-500">IT-2026-004488 · In progress · raised 2 days ago</p>
+            <p className="text-sm font-semibold text-yellow-700">{duplicateLoading ? 'Checking for similar tickets...' : duplicateCandidates.length > 0 ? 'You have a similar open ticket' : duplicateChecked ? 'No likely duplicate found' : 'Duplicate check will run automatically'}</p>
+            <p className="mt-2 text-sm text-slate-600">{duplicateCandidates.length > 0 ? 'Adding to an existing ticket is usually faster than raising a new one.' : duplicateChecked ? 'No matching active ticket passed the duplicate threshold.' : 'Leave the subject and description to let the system compare your ticket with recent active tickets.'}</p>
+            {duplicateCandidates[0] ? (
+              <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{duplicateCandidates[0].subject || duplicateCandidates[0].ticket_id}</p>
+                  <p className="text-xs text-slate-500">{duplicateCandidates[0].ticket_id} · {duplicateCandidates[0].status || 'Active'}{duplicateCandidates[0].score ? ` · ${(duplicateCandidates[0].score * 100).toFixed(0)}% similarity` : ''}</p>
+                </div>
+                <button type="button" onClick={() => {
+                  if (duplicateCandidates[0]?.ticket_id) {
+                    onOpenTicket?.(duplicateCandidates[0].ticket_id);
+                  }
+                }} className="self-start rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Review</button>
               </div>
-              <button type="button" className="self-start rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Add to this →</button>
-            </div>
+            ) : null}
           </div>
 
           <div className="space-y-4">
@@ -971,6 +1395,7 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
                 <input
                   value={form.subject}
                   onChange={e => set('subject', e.target.value)}
+                  onBlur={handleSubjectBlur}
                   placeholder="VPN connection failing on corporate network"
                   className={field}
                   required
@@ -982,6 +1407,7 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
                 <textarea
                   value={form.description}
                   onChange={e => set('description', e.target.value)}
+                  onBlur={handleDescriptionBlur}
                   rows={5}
                   placeholder={'Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.'}
                   className={field}
@@ -1122,7 +1548,7 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button type="button" className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft</button>
+            <button type="button" onClick={saveDraft} className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft</button>
             <button type="button" onClick={submit} disabled={submitting} className="rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">{submitting ? "Submitting..." : "Submit ticket"}</button>
           </div>
 
@@ -1146,11 +1572,11 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
 
         <div className="mt-6 space-y-4">
           {[
-            ['Category', 'VPN'],
-            ['Sub-category', 'Connection failure'],
-            ['Severity', 'HIGH'],
-            ['Priority', 'P2'],
-            ['Est. first response', '1 hour'],
+            ['Category', preview?.category?.value || (previewLoading ? 'Classifying...' : '—')],
+            ['Sub-category', preview?.subcategory?.value || (previewLoading ? 'Classifying...' : '—')],
+            ['Severity', 'Final on submit'],
+            ['Priority', 'Final on submit'],
+            ['Est. first response', 'Final on submit'],
           ].map(([label, value]) => (
             <div key={label} className="flex items-center justify-between rounded-2xl border px-4 py-3">
               <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>{label}</span>
@@ -1162,12 +1588,12 @@ function CreateTicketPage({ isDark }: { isDark: boolean }) {
         <div className="mt-6 rounded-2xl bg-slate-100 p-4">
           <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
             <span>Confidence</span>
-            <span>92%</span>
+            <span>{preview?.category?.confidence ? `${Math.round(preview.category.confidence * 100)}%` : '—'}</span>
           </div>
           <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
-            <div className="h-full w-[92%] rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-sky-500" />
+            <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-sky-500" style={{ width: `${Math.round((preview?.category?.confidence || 0) * 100)}%` }} />
           </div>
-          <p className="mt-3 text-xs text-slate-500">This is a preview only. Final classification runs after you submit and may differ.</p>
+          <p className="mt-3 text-xs text-slate-500">This FAST-only preview updates while you type. Final severity, priority, SLA, and queue are calculated after submission.</p>
         </div>
       </aside>
     </div>
@@ -1557,15 +1983,7 @@ function SLAPoliciesPage({ isDark }: { isDark: boolean }) {
 
 export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   const { isDark, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
-  // compute simple priority counts for sidebar status view
-  const priorityCounts = MY_TICKET_ROWS.reduce((acc: Record<string, number>, t) => {
-    acc[t.priority] = (acc[t.priority] || 0) + 1;
-    return acc;
-  }, {});
-  const p1Count = priorityCounts['P1'] ?? 0;
-  const p2Count = priorityCounts['P2'] ?? 0;
-  const p3Count = priorityCounts['P3'] ?? 0;
+  const { user, signOut, can } = useAuth();
   const [activePage, setActivePage] = useState<NavPage>(initialPage ?? 'Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -1576,25 +1994,60 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   const [aiInput, setAiInput] = useState('');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [homeTickets, setHomeTickets] = useState<ApiTicket[]>([]);
-const [loadingHome, setLoadingHome] = useState(true);
+  const [loadingHome, setLoadingHome] = useState(true);
+  const [homeError, setHomeError] = useState("");
 
 useEffect(() => {
   const loadHomeData = async () => {
     try {
       setLoadingHome(true);
-      const data = await getMyTickets();
+      setHomeError("");
+
+      const data = can('VIEW_AGENT_QUEUE')
+        ? await getAgentQueue()
+        : await getMyTickets();
+
       setHomeTickets(data);
     } catch (err) {
-      console.error("Failed to load home tickets:", err);
+      console.error(
+        "Failed to load dashboard tickets:",
+        err
+      );
+
+      setHomeError(
+        can('VIEW_AGENT_QUEUE')
+          ? "Could not load the agent queue."
+          : "Could not load your tickets."
+      );
     } finally {
       setLoadingHome(false);
     }
   };
-  loadHomeData();
-}, []);
-  const [myTickets, setMyTickets] = useState<Ticket[]>([]);
 
-  const selectedTicket = selectedTicketId ? MY_TICKET_ROWS.find(ticket => ticket.id === selectedTicketId) ?? null : null;
+  loadHomeData();
+}, [can]);
+
+  // Dashboard owns this state, so persist every sidebar/page change here.
+  useEffect(() => {
+    sessionStorage.setItem('dashboardActive', activePage);
+  }, [activePage]);
+
+  useEffect(() => {
+    if (initialPage) {
+      setActivePage(initialPage);
+    }
+  }, [initialPage]);
+
+  // Compute sidebar priority counts from the live dashboard dataset.
+  const priorityCounts = homeTickets.reduce((acc: Record<string, number>, ticket) => {
+    const priority = ticket.priority || 'P4';
+    acc[priority] = (acc[priority] || 0) + 1;
+    return acc;
+  }, {});
+  const p1Count = priorityCounts['P1'] ?? 0;
+  const p2Count = priorityCounts['P2'] ?? 0;
+  const p3Count = priorityCounts['P3'] ?? 0;
+  const p4Count = priorityCounts['P4'] ?? 0;
 
   const handleOpenTicket = (ticketId: string) => {
     setSelectedTicketId(ticketId);
@@ -1602,48 +2055,6 @@ useEffect(() => {
 
   const handleBackToList = () => {
     setSelectedTicketId(null);
-  };
-
-  const exportTicketAsPdf = (ticket: (typeof MY_TICKET_ROWS)[number]) => {
-    const content = `
-      <html>
-        <head>
-          <title>${ticket.id} - ${ticket.subject}</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
-            h1 { font-size: 24px; margin-bottom: 4px; }
-            p { margin: 0 0 12px; line-height: 1.5; }
-            .section { margin-bottom: 18px; }
-            .section-title { font-weight: 700; margin-bottom: 8px; }
-            .grid { display: grid; grid-template-columns: auto auto; gap: 12px 24px; }
-            .label { color: #555; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-            .value { font-weight: 600; }
-          </style>
-        </head>
-        <body>
-          <h1>${ticket.subject}</h1>
-          <p><strong>${ticket.id}</strong></p>
-          <div class="section">
-            <div class="section-title">Requester</div>
-            <p>${ticket.requesterName}</p>
-            <div class="section-title">Description</div>
-            <p>${ticket.description}</p>
-          </div>
-          <div class="section grid">
-            <div><span class="label">Department</span><div class="value">${ticket.department}</div></div>
-            <div><span class="label">Site</span><div class="value">${ticket.site}</div></div>
-            <div><span class="label">Asset tag</span><div class="value">${ticket.assetTag}</div></div>
-            <div><span class="label">Priority</span><div class="value">${ticket.priority}</div></div>
-          </div>
-        </body>
-      </html>
-    `;
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) return;
-    printWindow.document.write(content);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
   };
 
   const sendAi = (text?: string) => {
@@ -1678,9 +2089,19 @@ useEffect(() => {
   const renderPage = () => {
     switch (activePage) {
       case 'My Tickets':
+        return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
       case 'My queue':
-        return <MyTicketsPage title={activePage === 'My queue' ? 'My queue' : 'My Tickets'} isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onExport={exportTicketAsPdf} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} />;
-      case 'Create Ticket': return <CreateTicketPage isDark={isDark} />;
+        if (!can('VIEW_AGENT_QUEUE')) {
+          return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+        }
+        return <MyTicketsPage title="My queue" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+      case 'Create Ticket': return <CreateTicketPage isDark={isDark} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('My Tickets'); }} onCreated={(createdTicket) => {
+        if (createdTicket) {
+          setHomeTickets(current => [createdTicket, ...current.filter(ticket => ticket.ticket_id !== createdTicket.ticket_id)]);
+        }
+        setActivePage('My Tickets');
+        setSelectedTicketId(null);
+      }} />;
       case 'AI Assistant':  return <AIAssistantPage isDark={isDark} chat={aiChat} setChat={setAiChat} />;
       case 'Reports':       return <ReportsPage isDark={isDark} />;
       case 'Knowledge Base':return <KnowledgeBasePage isDark={isDark} />;
@@ -1711,29 +2132,68 @@ useEffect(() => {
 
           {/* Nav */}
           <nav className="flex-1 overflow-y-auto p-3 space-y-4">
-            {sidebarGroups.map(group => (
+           {sidebarGroups.map(group => {
+            const visibleItems = group.items.filter(
+              item =>
+              !item.capability ||
+              can(item.capability)
+            );
+
+            if (visibleItems.length === 0) {
+              return null;
+            }
+
+            return (
               <div key={group.title}>
-                <p className={`px-3 text-[11px] font-semibold uppercase tracking-[0.24em] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{group.title}</p>
-                <div className="mt-2 space-y-1">
-                  {group.items.map(item => {
-                    const active = activePage === item.name;
-                    return (
-                      <button
-                        key={item.name}
-                        onClick={() => { setActivePage(item.name); setSidebarOpen(false); }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all ${active ? 'bg-blue-600 text-white shadow-sm' : isDark ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
-                      >
-                        <item.icon className="w-4 h-4 shrink-0" />
-                        <span>{item.name}</span>
-                        {item.badge && (
-                          <span className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'}`}>{item.badge}</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                <p
+                  className={`px-3 text-[9px] font-semibold uppercase tracking-[0.2em] ${
+                    isDark ? 'text-gray-500' : 'text-slate-400'
+                  }`}
+                >
+                  {group.title}
+              </p>
+
+              <div className="mt-2 space-y-1">
+                {visibleItems.map(item => {
+                  const active = activePage === item.name;
+
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => {
+                        setActivePage(item.name);
+                        setSidebarOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        active
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : isDark
+                            ? 'text-gray-400 hover:text-white hover:bg-gray-800'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      <item.icon className="w-4 h-4 shrink-0" />
+
+                      <span>{item.name}</span>
+
+                      {item.badge && (
+                        <span
+                          className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                            active
+                              ? 'bg-white/20 text-white'
+                              : 'bg-blue-100 text-blue-600'
+                          }`}
+                        >
+                          {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
             {/* Ticket status quick view */}
             <div className="mt-4 px-2">
               <p className={`text-xs font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Ticket status</p>
@@ -1758,6 +2218,13 @@ useEffect(() => {
                     <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>P3 (Medium)</span>
                   </div>
                   <div className="font-semibold">{p3Count}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-slate-500 inline-block" />
+                    <span className={isDark ? 'text-gray-200' : 'text-gray-700'}>P4 (Low)</span>
+                  </div>
+                  <div className="font-semibold">{p4Count}</div>
                 </div>
               </div>
             </div>
@@ -1984,6 +2451,8 @@ useEffect(() => {
                   <div className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
                     {loadingHome ? (
                       <p className="text-center py-6 text-sm text-gray-500">Loading tickets...</p>
+                    ) : homeError ? (
+                      <p className="text-center py-6 text-sm text-red-500">{homeError}</p>
                     ) : homeTickets.length === 0 ? (
                       <p className="text-center py-6 text-sm text-gray-500">No tickets found. Create your first ticket!</p>
                     ) : (
