@@ -62,8 +62,11 @@ CATEGORY_MAP = {
     "EMAIL": 2,
     "HARDWARE": 3,
     "NETWORK": 4,
-    "SOFTWARE": 5,
-    "VPN": 6,
+    "PRINTER": 5,
+    "SECURITY": 6,
+    "SOFTWARE": 7,
+    "UNCLASSIFIED": 8,
+    "VPN": 9,
 }
 
 
@@ -79,6 +82,13 @@ def encode_severity_features(
     into the same numerical features used
     during severity model training.
     """
+
+    category_value = CATEGORY_MAP.get(category)
+
+    if category_value is None:
+        raise ValueError(
+            f"Unknown category for severity prediction: {category}"
+        )
 
     return [[
         SCOPE_MAP.get(
@@ -102,10 +112,7 @@ def encode_severity_features(
             else False
         ),
 
-        CATEGORY_MAP.get(
-            category,
-            0
-        ),
+        category_value,
     ]]
 
 

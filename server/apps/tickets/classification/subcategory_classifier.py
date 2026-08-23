@@ -15,6 +15,18 @@ LABELS_PATH = ARTIFACTS_DIR / "subcategory_labels.json"
 FAST_PATH_THRESHOLD = 0.70
 UNCLASSIFIED_THRESHOLD = 0.40
 
+CATEGORY_SUBCATEGORIES = {
+    "ACCESS": {"Account lockout", "MFA", "Onboarding", "Password reset", "Permissions"},
+    "APPLICATION": {"CRM", "ERP", "Integration failure", "Internal tool", "Performance"},
+    "EMAIL": {"Calendar", "Distribution list", "Mailbox", "Spam", "Storage quota"},
+    "HARDWARE": {"Desktop", "Docking station", "Laptop", "Mobile device", "Peripheral"},
+    "NETWORK": {"Bandwidth", "Connectivity", "DNS", "LAN", "WiFi"},
+    "PRINTER": {"Driver", "Not printing", "Quality", "Queue stuck", "Scan"},
+    "SECURITY": {"Data request", "Malware", "Phishing report", "Suspicious activity"},
+    "SOFTWARE": {"Compatibility", "Crash", "Installation", "Licensing", "Update"},
+    "VPN": {"Certificate", "Client install", "Connection failure", "Timeout"},
+}
+
 _model = lgb.Booster(
     model_file=str(MODEL_PATH)
 )
@@ -37,6 +49,7 @@ LABEL_TO_SUBCATEGORY = {
 def predict_subcategory(
     subject,
     description,
+    category,
 ):
     """
     Predict the subcategory of a support ticket.
@@ -58,8 +71,28 @@ def predict_subcategory(
 
     probabilities = probabilities[0]
 
-    predicted_label = int(
-        probabilities.argmax()
+    allowed_subcategories = CATEGORY_SUBCATEGORIES.get(
+        category,
+        set(),
+    )
+
+    allowed_labels = [
+        label
+        for label, subcategory
+        in LABEL_TO_SUBCATEGORY.items()
+        if subcategory in allowed_subcategories
+    ]
+
+    if not allowed_labels:
+        return {
+            "subcategory": "UNCLASSIFIED",
+            "confidence": 0.0,
+            "route": "LLM",
+        }
+
+    predicted_label = max(
+        allowed_labels,
+        key=lambda label: float(probabilities[label]),
     )
 
     confidence = float(
@@ -98,6 +131,7 @@ def predict_subcategory(
 def predict_subcategory_fast(
     subject,
     description,
+    category,
 ):
     """
     FAST-only subcategory prediction for live preview.
@@ -114,8 +148,28 @@ def predict_subcategory_fast(
         [embedding]
     )[0]
 
-    predicted_label = int(
-        probabilities.argmax()
+    allowed_subcategories = CATEGORY_SUBCATEGORIES.get(
+        category,
+        set(),
+    )
+
+    allowed_labels = [
+        label
+        for label, subcategory
+        in LABEL_TO_SUBCATEGORY.items()
+        if subcategory in allowed_subcategories
+    ]
+
+    if not allowed_labels:
+        return {
+            "subcategory": "UNCLASSIFIED",
+            "confidence": 0.0,
+            "route": "FAST",
+        }
+
+    predicted_label = max(
+        allowed_labels,
+        key=lambda label: float(probabilities[label]),
     )
 
     confidence = float(

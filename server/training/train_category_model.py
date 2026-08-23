@@ -7,8 +7,11 @@ import lightgbm as lgb
 from apps.tickets.classification.embeddings import generate_embedding
 
 
-DATASET_PATH = Path(__file__).parent / "category_seed_data.json"
-
+DATASET_PATH = (
+    Path(__file__).parent
+    / "datasets"
+    / "category_seed_data_v2_final.json"
+)
 
 def load_dataset():
     with open(DATASET_PATH, "r", encoding="utf-8") as file:
@@ -123,14 +126,14 @@ def create_category_labels(train_data, validation_data):
         category_training_counts,
     )
 
-def train_category_model(X_train, y_train):
+def train_category_model(X_train, y_train, num_classes):
     """
     Train LightGBM category classifier.
     """
 
     model = lgb.LGBMClassifier(
         objective="multiclass",
-        num_class=7,
+        num_class=num_classes,
         n_estimators=100,
         learning_rate=0.05,
         num_leaves=15,
@@ -516,6 +519,7 @@ def main():
     model = train_category_model(
         X_train,
         y_train,
+        num_classes=len(category_to_label)
     )
 
     print("LightGBM training complete.")

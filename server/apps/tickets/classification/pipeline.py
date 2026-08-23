@@ -56,6 +56,7 @@ def classify_ticket(
     subcategory_result = predict_subcategory(
         subject=subject,
         description=description,
+        category=category,
     )
 
     subcategory = (
@@ -162,9 +163,9 @@ def classify_ticket(
         "queue": queue,
 
         "model_metadata": {
-          "category_model_version": "category-v1",
-          "subcategory_model_version": "subcategory-v1",
-          "severity_model_version": "severity-v1",
+          "category_model_version": "category-v2",
+          "subcategory_model_version": "subcategory-v2",
+          "severity_model_version": "severity-v2",
           "pipeline_latency_ms": latency_ms,
         },
     }

@@ -6,8 +6,11 @@ import random
 import lightgbm as lgb
 
 
-DATASET_PATH = Path(__file__).parent / "severity_seed_data.json"
-
+DATASET_PATH = (
+    Path(__file__).parent 
+    / "datasets"
+    / "severity_seed_data_v2.json"
+)
 
 def load_dataset():
     with open(
@@ -92,13 +95,24 @@ def encode_features(tickets):
         "EMAIL": 2,
         "HARDWARE": 3,
         "NETWORK": 4,
-        "SOFTWARE": 5,
-        "VPN": 6,
+        "PRINTER": 5,
+        "SECURITY": 6,
+        "SOFTWARE": 7,
+        "UNCLASSIFIED": 8,
+        "VPN": 9,
     }
 
     features = []
 
     for ticket in tickets:
+
+        category = ticket.get("category")
+
+        if category not in category_map:
+            raise ValueError(
+                f"Unknown category in severity dataset: "
+                f"{category}"
+            )
 
         features.append([
             scope_map.get(
@@ -123,10 +137,7 @@ def encode_features(tickets):
                 )
             ),
 
-            category_map.get(
-                ticket.get("category"),
-                0
-            ),
+            category_map[category],
         ])
 
     return features

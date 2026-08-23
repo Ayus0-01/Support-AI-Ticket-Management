@@ -1,0 +1,1724 @@
+{
+  "tickets": [
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "VPN",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "EMAIL",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "HARDWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "EMAIL",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "NO",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "NETWORK",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "VPN",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "NETWORK",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "HARDWARE",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "APPLICATION",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": false,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SOFTWARE",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "ACCESS",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "PRINTER",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "PRINTER",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "SECURITY",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "SECURITY",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "NO",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "LOW",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "LOW"
+    },
+    {
+      "affected_scope": "JUST_ME",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "MEDIUM"
+    },
+    {
+      "affected_scope": "TEAM",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "DEPARTMENT",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "PARTIALLY",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": true,
+      "category": "UNCLASSIFIED",
+      "severity": "HIGH"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "HIGH",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "CRITICAL"
+    },
+    {
+      "affected_scope": "ORGANISATION",
+      "work_blocked": "YES",
+      "urgent_feeling": "MEDIUM",
+      "workaround_available": false,
+      "category": "UNCLASSIFIED",
+      "severity": "CRITICAL"
+    }
+  ]
+}

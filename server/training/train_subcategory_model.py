@@ -8,8 +8,11 @@ import lightgbm as lgb
 from apps.tickets.classification.embeddings import generate_embedding
 
 
-DATASET_PATH = Path(__file__).parent / "category_seed_data.json"
-
+DATASET_PATH = (
+    Path(__file__).parent
+    / "datasets"
+    / "category_seed_data_v2_final.json"
+)
 
 def load_dataset():
     with open(
@@ -340,11 +343,27 @@ def main():
 
     data = load_dataset()
 
-    tickets = data["tickets"]
+    all_tickets = data["tickets"]
+
+    tickets = [
+        ticket
+        for ticket in all_tickets
+        if ticket["category"] != "UNCLASSIFIED"
+        and ticket.get("subcategory") is not None
+    ]
 
     print(
-        f"Loaded {len(tickets)} "
-        f"subcategory tickets."
+        f"Loaded {len(all_tickets)} total tickets."
+    )
+
+    print(
+        f"Subcategory training tickets: "
+        f"{len(tickets)}"
+    )
+
+    print(
+        f"Excluded UNCLASSIFIED tickets: "
+        f"{len(all_tickets) - len(tickets)}"
     )
 
     train_data, validation_data = (
