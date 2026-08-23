@@ -13,3 +13,8 @@ sqlparse==0.5.5
 tzdata==2026.3
 fastembed==0.8.0
 lightgbm
+FlagEmbedding==1.4.0
+torch==2.13.0
+transformers==5.15.1
+sentence-transformers==6.0.0
+accelerate==1.14.0
