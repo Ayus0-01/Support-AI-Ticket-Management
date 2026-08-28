@@ -1,0 +1,1089 @@
+[
+  {
+    "id": "CAND-001",
+    "ticket_id": "6a8f0ac4862aed28d6c8ab4d",
+    "subject": "forget the password",
+    "description": "how to recover password",
+    "category": "ACCESS",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-002",
+    "ticket_id": "6a8f09c05b4964e8198df61d",
+    "subject": "Unable to login",
+    "description": "Getting 500 error when clicking login.",
+    "category": "EMAIL",
+    "department": null,
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-003",
+    "ticket_id": "6a8f09905b4964e8198df619",
+    "subject": "Unable to login to account",
+    "description": "I cannot access my dashboard, getting error.",
+    "category": "UNCLASSIFIED",
+    "department": null,
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-004",
+    "ticket_id": "6a8f03e412eeb6ea3dec8da6",
+    "subject": "vpn not connected",
+    "description": "vpn is not connecting to my system",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.015873015873015872
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.014925373134328358
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031099324975891997
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03036576949620428
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.016129032258064516
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-005",
+    "ticket_id": "6a8da9f0b7bbca6f811b54fc",
+    "subject": "VPN connection timeout - edit test",
+    "description": "My company VPN is timing out and I cannot connect to the corporate network.",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03252247488101534
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03149801587301587
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03200204813108039
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.03131881575727918
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-006",
+    "ticket_id": "6a8d9df37130b682489be307",
+    "subject": "Office printer is not printing",
+    "description": "The office printer is connected but documents remain in the print queue and are not printed. Other users are also experiencing the same issue.",
+    "category": "PRINTER",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-007",
+    "ticket_id": "6a8d9d5a7130b682489be306",
+    "subject": "Unable to log in to company account",
+    "description": "I cannot log in to my company account. I have entered the correct username and password, but the system says that authentication failed.",
+    "category": "ACCESS",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-008",
+    "ticket_id": "6a8d90dc99ad0c2081f34d88",
+    "subject": "Unable to connect to VPN",
+    "description": "I am unable to connect to the company VPN from my laptop. The VPN was working normally yesterday, but today it keeps showing a connection error. I have already restarted my laptop, but the issue still persists.",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.030776515151515152
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03252247488101534
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.0315136476426799
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.032266458495966696
+      },
+      {
+        "rank": 5,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.030536130536130537
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-009",
+    "ticket_id": "6a8d8f2099ad0c2081f34d87",
+    "subject": "email is not opening",
+    "description": "email is not opening",
+    "category": "APPLICATION",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-010",
+    "ticket_id": "6a8d8d84f868c8aef9a7f5f4",
+    "subject": "VPN connection timeout",
+    "description": "My company VPN has been timing out since this morning. I restarted my laptop twice but still cannot connect to the corporate network.",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.0315136476426799
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.032266458495966696
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03200204813108039
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03125
+      },
+      {
+        "rank": 5,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.03177805800756621
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-011",
+    "ticket_id": "6a8d7dd899ad0c2081f34d86",
+    "subject": "vpn is not working",
+    "description": "vpn is not working",
+    "category": "VPN",
+    "department": "IT",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.014925373134328358
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.016129032258064516
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030330882352941176
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.030679156908665108
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03036576949620428
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-012",
+    "ticket_id": "6a8d7a3599ad0c2081f34d85",
+    "subject": "vpn is not working",
+    "description": "vpn is not working",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.014925373134328358
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.016129032258064516
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030330882352941176
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.030679156908665108
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03036576949620428
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-013",
+    "ticket_id": "6a886b35455a87daffda3c8a",
+    "subject": "Printer is not printing",
+    "description": "The office printer is showing online but none of my documents are printing.",
+    "category": "UNCLASSIFIED",
+    "department": "HR",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-014",
+    "ticket_id": "6a886a6b455a87daffda3c89",
+    "subject": "Forgot my password",
+    "description": "I forgot my company login password and cannot access my account.",
+    "category": "ACCESS",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-015",
+    "ticket_id": "6a8869ec455a87daffda3c88",
+    "subject": "VPN is not connecting",
+    "description": "I cannot connect to the company VPN since morning",
+    "category": "VPN",
+    "department": "IT",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.029211087420042643
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-016",
+    "ticket_id": "6a84aefb63ff25074743b658",
+    "subject": "Email isnt opening",
+    "description": "Am unable to access my email",
+    "category": "EMAIL",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-017",
+    "ticket_id": "6a84a87363ff25074743b657",
+    "subject": "EMAIL isnt opening",
+    "description": "AM unable to access my email",
+    "category": "EMAIL",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-018",
+    "ticket_id": "6a84a79863ff25074743b656",
+    "subject": "Email isnt opening",
+    "description": "AM unable to access my email",
+    "category": "EMAIL",
+    "department": "Operations",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-019",
+    "ticket_id": "6a8473803b0e3a51cca723f4",
+    "subject": "VPN not working",
+    "description": "VPN isnt supporting",
+    "category": "VPN",
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-020",
+    "ticket_id": "6a836533c1a3ff6a0e5ab1a3",
+    "subject": "Network DOWN",
+    "description": "The Network is down for the whole company server wide.",
+    "category": "NETWORK",
+    "department": "HR",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-021",
+    "ticket_id": "6a8330cde1456fed91de8eff",
+    "subject": "Access to email is blocked",
+    "description": "Unable to access my email from this morning",
+    "category": null,
+    "department": "Operations",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-022",
+    "ticket_id": "6a81e2b7bf34ff9cca5e78e0",
+    "subject": "Final employee outcome test",
+    "description": "Testing the complete ticket lifecycle from creation to resolution.",
+    "category": "APPLICATION",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-023",
+    "ticket_id": "6a81dcd3de1b27279a613e42",
+    "subject": "test1",
+    "description": "test1",
+    "category": null,
+    "department": "Information Technology",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-024",
+    "ticket_id": "6a81dcafde1b27279a613e41",
+    "subject": "hi",
+    "description": "hi",
+    "category": null,
+    "department": "Information Technology",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-025",
+    "ticket_id": "6a81d3c1de1b27279a613e3d",
+    "subject": "test",
+    "description": "test",
+    "category": null,
+    "department": "Information Technology",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-026",
+    "ticket_id": "6a81d2afe68fc0081e9ac40e",
+    "subject": "Resolution workflow test2",
+    "description": "Testing the final resolution workflow.",
+    "category": "UNCLASSIFIED",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-027",
+    "ticket_id": "6a81d17ae68fc0081e9ac40b",
+    "subject": "Resolution workflow test",
+    "description": "Testing the final resolution workflow.",
+    "category": "UNCLASSIFIED",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-028",
+    "ticket_id": "6a81c7b45b46a89c0a225c0c",
+    "subject": "Test status workflow",
+    "description": "Testing the agent status transition workflow.",
+    "category": "UNCLASSIFIED",
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-029",
+    "ticket_id": "6a8178e614879fd655afc6fd",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN and I cannot access internal systems.",
+    "category": "VPN",
+    "department": "IT",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.03036576949620428
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.031054405392392875
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.030330882352941176
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-030",
+    "ticket_id": "6a8175b7fca609b4d3b74d7a",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN and I cannot access internal systems.",
+    "category": "VPN",
+    "department": "IT",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.03036576949620428
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.031054405392392875
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.030330882352941176
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-031",
+    "ticket_id": "6a804604efe52a33a0b22949",
+    "subject": "VPN connection failing on corporate network",
+    "description": "Unable to connect to VPN since this morning. The connection times out whenever I try to connect. I already restarted the VPN client but the issue persists.",
+    "category": null,
+    "department": null,
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.031754032258064516
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.031024531024531024
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03278688524590164
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.030090497737556562
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03149801587301587
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-032",
+    "ticket_id": "6a8045c6efe52a33a0b22948",
+    "subject": "VPN connection failing on corporate network",
+    "description": "Unable to connect to VPN since this morning. The connection times out whenever I try to connect. I already restarted the VPN client but the issue persists.",
+    "category": null,
+    "department": null,
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.031754032258064516
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.031024531024531024
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03278688524590164
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.030090497737556562
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03149801587301587
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-033",
+    "ticket_id": "6a7f04fcec34701bfd87667e",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.029877369007803793
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03128054740957967
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03007688828584351
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030158730158730156
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-034",
+    "ticket_id": "6a7f04a5ec34701bfd87667d",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.029877369007803793
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03128054740957967
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03007688828584351
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030158730158730156
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-035",
+    "ticket_id": "6a7dc4fea1cd45fec7626cc8",
+    "subject": "VPN connection timing out on corporate network",
+    "description": "Unable to connect to VPN since this morning. Error message: Connection timed out. Tried restarting client but issue persists.",
+    "category": null,
+    "department": "IT",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.031754032258064516
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.031024531024531024
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03278688524590164
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.03057889822595705
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-036",
+    "ticket_id": "6a7db0c2cc2903d4481ae9ec",
+    "subject": "wifi not working",
+    "description": "i am not able to connect to wifi",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-037",
+    "ticket_id": "6a7cd60ad6383dbb8a47a6ce",
+    "subject": "Email is not working",
+    "description": "I cannot send or receive emails. I restarted my computer, but the problem is still there.",
+    "category": null,
+    "department": "IT",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-038",
+    "ticket_id": "6a7cd364d6383dbb8a47a6ca",
+    "subject": "Printer is not working",
+    "description": "The office printer is not printing documents. I restarted the printer, but the issue still continues.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-039",
+    "ticket_id": "6a7cd2c5d6383dbb8a47a6c9",
+    "subject": "VPN connection is not working",
+    "description": "I am unable to connect to the company VPN since this morning. I restarted my laptop and VPN application, but the issue still persists. I need VPN access to connect to internal applications.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.030776515151515152
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.032266458495966696
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03200204813108039
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-040",
+    "ticket_id": "6a7c8d5a748cd7ff51bd7865",
+    "subject": "VPN",
+    "description": "Unable to connect",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.015873015873015872
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.030158730158730156
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.015625
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03131881575727918
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03128054740957967
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-041",
+    "ticket_id": "6a7c8d57748cd7ff51bd7864",
+    "subject": "VPN",
+    "description": "Unable to connect",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a898cccbe0a3ea16dee5ca4",
+        "article_title": "VPN Connection Timeout Troubleshooting v2",
+        "heading_path": "",
+        "score": 0.015873015873015872
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.030158730158730156
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.015625
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03131881575727918
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.03128054740957967
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-042",
+    "ticket_id": "6a7a0978643b20a5f5a351b0",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.029877369007803793
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03128054740957967
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03007688828584351
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030158730158730156
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  },
+  {
+    "id": "CAND-043",
+    "ticket_id": "6a7a061cec97b3d939c10e7e",
+    "subject": "VPN connection failing",
+    "description": "I cannot connect to the company VPN.",
+    "category": null,
+    "department": "Finance",
+    "candidate_articles": [
+      {
+        "rank": 1,
+        "article_id": "6a8e65e699b0749730b4d161",
+        "article_title": "VPN Guide Two",
+        "heading_path": "VPN Guide Two > Client Configuration",
+        "score": 0.029877369007803793
+      },
+      {
+        "rank": 2,
+        "article_id": "6a8e65e699b0749730b4d15f",
+        "article_title": "VPN Guide One",
+        "heading_path": "VPN Guide One > Timeout Errors",
+        "score": 0.03128054740957967
+      },
+      {
+        "rank": 3,
+        "article_id": "6a8ef473f0f4afd9f47b0ab9",
+        "article_title": "M2 API Ingestion Test",
+        "heading_path": "M2 API Ingestion Test > VPN Timeout Troubleshooting",
+        "score": 0.03007688828584351
+      },
+      {
+        "rank": 4,
+        "article_id": "6a8eeb73f0f4afd9f47b0ab5",
+        "article_title": "Thunder Client VPN Test Updated",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.031009615384615385
+      },
+      {
+        "rank": 5,
+        "article_id": "6a8ded71a35623e2b1966cc9",
+        "article_title": "M2 VPN Publish Test",
+        "heading_path": "VPN Troubleshooting > Timeout Errors",
+        "score": 0.030158730158730156
+      }
+    ],
+    "expected_article_ids": [],
+    "review_status": "UNREVIEWED"
+  }
+]

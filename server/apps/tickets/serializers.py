@@ -4,6 +4,11 @@ from rest_framework import serializers
 class CreateTicketSerializer(serializers.Serializer):
     subject = serializers.CharField(max_length=255)
     category = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    affected_system = serializers.CharField(
+        max_length=150,
+        required=False,
+        allow_blank=True,
+    )
     description = serializers.CharField()
     department = serializers.CharField(max_length=100, required=False, allow_blank=True)
     site = serializers.CharField(max_length=150, required=False, allow_blank=True)
@@ -68,6 +73,10 @@ class EmployeeTicketSerializer(serializers.Serializer):
     )
 
     department = serializers.CharField(allow_blank=True, required=False)
+    affected_system = serializers.CharField(
+        allow_blank=True,
+        required=False,
+    )
     site = serializers.CharField(allow_blank=True, required=False)
     asset_tag = serializers.CharField(allow_blank=True, required=False)
     preferred_contact = serializers.CharField(allow_blank=True, required=False)

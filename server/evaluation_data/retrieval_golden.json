@@ -1,0 +1,1904 @@
+{
+  "cases": [
+    {
+      "id": "R001",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0001",
+        "subject": "I forgot my company password",
+        "description": "I cannot sign in because I forgot the password for my corporate account.",
+        "category": "ACCESS",
+        "subcategory": "Password reset",
+        "department": "Finance",
+        "affected_system": "Corporate Account",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the login twice.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fced4fc891957b8ba30dd"
+      ]
+    },
+    {
+      "id": "R002",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0002",
+        "subject": "My work password needs recovery",
+        "description": "My corporate password is no longer known to me and I need the approved recovery process.",
+        "category": "ACCESS",
+        "subcategory": "Password reset",
+        "department": "HR",
+        "affected_system": "Corporate Identity",
+        "severity": "HIGH",
+        "already_tried": "Confirmed the username and retried the login.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fced4fc891957b8ba30dd"
+      ]
+    },
+    {
+      "id": "R003",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0003",
+        "subject": "MFA verification is failing",
+        "description": "My password is accepted but the MFA verification step does not complete.",
+        "category": "ACCESS",
+        "subcategory": "MFA",
+        "department": "Operations",
+        "affected_system": "MFA Authentication",
+        "severity": "HIGH",
+        "already_tried": "Requested a new MFA challenge twice.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd031fc891957b8ba30e0"
+      ]
+    },
+    {
+      "id": "R004",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0004",
+        "subject": "Two-factor authentication is not completing",
+        "description": "The company account accepts my password but the required MFA challenge fails.",
+        "category": "ACCESS",
+        "subcategory": "MFA",
+        "department": "Sales",
+        "affected_system": "MFA Authentication",
+        "severity": "HIGH",
+        "already_tried": "Retried the MFA challenge and checked the registered device.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd031fc891957b8ba30e0"
+      ]
+    },
+    {
+      "id": "R005",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0005",
+        "subject": "Access denied to an internal resource",
+        "description": "I can sign in successfully but my account is not authorized to access a required corporate resource.",
+        "category": "ACCESS",
+        "subcategory": "Permissions",
+        "department": "Engineering",
+        "affected_system": "Internal Resource",
+        "severity": "MEDIUM",
+        "already_tried": "Signed out and signed back in.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e5a15084a3a5966d236"
+      ]
+    },
+    {
+      "id": "R006",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0006",
+        "subject": "I need access to a restricted application",
+        "description": "The application is reachable but my account does not have the required permission.",
+        "category": "ACCESS",
+        "subcategory": "Permissions",
+        "department": "Finance",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the application after signing in again.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e5a15084a3a5966d236"
+      ]
+    },
+    {
+      "id": "R007",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0007",
+        "subject": "My corporate account is locked",
+        "description": "My work account became locked after repeated unsuccessful sign-in attempts.",
+        "category": "ACCESS",
+        "subcategory": "Account lockout",
+        "department": "HR",
+        "affected_system": "Corporate Account",
+        "severity": "HIGH",
+        "already_tried": "Waited and retried the login once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e7415084a3a5966d239"
+      ]
+    },
+    {
+      "id": "R008",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0008",
+        "subject": "Unable to sign in after failed attempts",
+        "description": "The corporate account is locked and normal sign-in is no longer accepted.",
+        "category": "ACCESS",
+        "subcategory": "Account lockout",
+        "department": "Operations",
+        "affected_system": "Corporate Identity",
+        "severity": "HIGH",
+        "already_tried": "Retried the login and confirmed the username.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e7415084a3a5966d239"
+      ]
+    },
+    {
+      "id": "R009",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0009",
+        "subject": "New employee cannot access required systems",
+        "description": "A newly onboarded employee cannot access the corporate systems needed for work.",
+        "category": "ACCESS",
+        "subcategory": "Onboarding",
+        "department": "Sales",
+        "affected_system": "Corporate Access",
+        "severity": "HIGH",
+        "already_tried": "Retried sign-in and confirmed the user account exists.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e8315084a3a5966d23c"
+      ]
+    },
+    {
+      "id": "R010",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0010",
+        "subject": "New starter access is incomplete",
+        "description": "A new employee can sign in but cannot access required approved applications.",
+        "category": "ACCESS",
+        "subcategory": "Onboarding",
+        "department": "Engineering",
+        "affected_system": "Corporate Access",
+        "severity": "MEDIUM",
+        "already_tried": "Signed out and signed back in.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a900e8315084a3a5966d23c"
+      ]
+    },
+    {
+      "id": "R011",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0011",
+        "subject": "Business application is very slow",
+        "description": "The business application takes a long time to respond during normal work.",
+        "category": "APPLICATION",
+        "subcategory": "Performance",
+        "department": "Finance",
+        "affected_system": "Business Application",
+        "severity": "MEDIUM",
+        "already_tried": "Closed and reopened the application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90133215084a3a5966d244"
+      ]
+    },
+    {
+      "id": "R012",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0012",
+        "subject": "Application freezes during use",
+        "description": "The approved application becomes unresponsive while performing normal actions.",
+        "category": "APPLICATION",
+        "subcategory": "Performance",
+        "department": "HR",
+        "affected_system": "Business Application",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the application once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90133215084a3a5966d244"
+      ]
+    },
+    {
+      "id": "R013",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0013",
+        "subject": "ERP transaction is failing",
+        "description": "A required ERP transaction is failing with an application error.",
+        "category": "APPLICATION",
+        "subcategory": "ERP",
+        "department": "Operations",
+        "affected_system": "ERP Application",
+        "severity": "HIGH",
+        "already_tried": "Retried the transaction once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90134815084a3a5966d24a"
+      ]
+    },
+    {
+      "id": "R014",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0014",
+        "subject": "ERP process does not complete",
+        "description": "The ERP application opens but a normal business transaction does not complete.",
+        "category": "APPLICATION",
+        "subcategory": "ERP",
+        "department": "Sales",
+        "affected_system": "ERP Application",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the ERP application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90134815084a3a5966d24a"
+      ]
+    },
+    {
+      "id": "R015",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0015",
+        "subject": "CRM customer action is failing",
+        "description": "A normal customer-record action in the CRM application returns an error.",
+        "category": "APPLICATION",
+        "subcategory": "CRM",
+        "department": "Engineering",
+        "affected_system": "CRM Application",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the action and reopened the application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90135415084a3a5966d24d"
+      ]
+    },
+    {
+      "id": "R016",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0016",
+        "subject": "Unable to update a customer in CRM",
+        "description": "The CRM application is available but a customer update does not complete.",
+        "category": "APPLICATION",
+        "subcategory": "CRM",
+        "department": "Finance",
+        "affected_system": "CRM Application",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the update once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90135415084a3a5966d24d"
+      ]
+    },
+    {
+      "id": "R017",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0017",
+        "subject": "Internal business tool is failing",
+        "description": "An approved internal tool returns an unexpected error during normal use.",
+        "category": "APPLICATION",
+        "subcategory": "Internal tool",
+        "department": "HR",
+        "affected_system": "Internal Business Tool",
+        "severity": "MEDIUM",
+        "already_tried": "Closed and reopened the tool.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90135d15084a3a5966d250"
+      ]
+    },
+    {
+      "id": "R018",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0018",
+        "subject": "Company internal tool is not behaving normally",
+        "description": "A supported internal tool is available but a routine operation is failing.",
+        "category": "APPLICATION",
+        "subcategory": "Internal tool",
+        "department": "Operations",
+        "affected_system": "Internal Business Tool",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the tool and repeated the operation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90135d15084a3a5966d250"
+      ]
+    },
+    {
+      "id": "R019",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0019",
+        "subject": "Application data transfer failed",
+        "description": "An approved application cannot complete a required data transfer to another service.",
+        "category": "APPLICATION",
+        "subcategory": "Integration failure",
+        "department": "Sales",
+        "affected_system": "Application Integration",
+        "severity": "HIGH",
+        "already_tried": "Retried the transfer once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90136715084a3a5966d253"
+      ]
+    },
+    {
+      "id": "R020",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0020",
+        "subject": "Application integration is not synchronizing",
+        "description": "Data is not moving correctly between the approved applications.",
+        "category": "APPLICATION",
+        "subcategory": "Integration failure",
+        "department": "Engineering",
+        "affected_system": "Application Integration",
+        "severity": "HIGH",
+        "already_tried": "Restarted the application and retried the synchronization.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90136715084a3a5966d253"
+      ]
+    },
+    {
+      "id": "R021",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0021",
+        "subject": "Mailbox is not synchronizing",
+        "description": "Recent messages are not appearing in the approved corporate email client.",
+        "category": "EMAIL",
+        "subcategory": "Mailbox",
+        "department": "Finance",
+        "affected_system": "Corporate Email",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the email client.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a8fd09cfc891957b8ba30e9"
+      ]
+    },
+    {
+      "id": "R022",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0022",
+        "subject": "Cannot open the work mailbox",
+        "description": "The corporate mailbox does not open correctly from the approved email client.",
+        "category": "EMAIL",
+        "subcategory": "Mailbox",
+        "department": "HR",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Restarted the workstation and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd09cfc891957b8ba30e9"
+      ]
+    },
+    {
+      "id": "R023",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0023",
+        "subject": "Legitimate email is going to junk",
+        "description": "Messages from a trusted sender are repeatedly being placed in the spam folder.",
+        "category": "EMAIL",
+        "subcategory": "Spam",
+        "department": "Operations",
+        "affected_system": "Corporate Email",
+        "severity": "MEDIUM",
+        "already_tried": "Moved one message from junk to the inbox.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a8fd12ffc891957b8ba30ec"
+      ]
+    },
+    {
+      "id": "R024",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0024",
+        "subject": "Outgoing email is not being delivered",
+        "description": "A message sent from the company mailbox returned a delivery failure.",
+        "category": "EMAIL",
+        "subcategory": "Spam",
+        "department": "Sales",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Checked the recipient address and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd12ffc891957b8ba30ec"
+      ]
+    },
+    {
+      "id": "R025",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0025",
+        "subject": "Corporate calendar is not updating",
+        "description": "New calendar events are not appearing in the approved corporate calendar.",
+        "category": "EMAIL",
+        "subcategory": "Calendar",
+        "department": "Engineering",
+        "affected_system": "Corporate Calendar",
+        "severity": "MEDIUM",
+        "already_tried": "Closed and reopened the email client.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90157015084a3a5966d256"
+      ]
+    },
+    {
+      "id": "R026",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0026",
+        "subject": "Calendar synchronization is failing",
+        "description": "Recent calendar changes are not synchronizing correctly.",
+        "category": "EMAIL",
+        "subcategory": "Calendar",
+        "department": "Finance",
+        "affected_system": "Corporate Calendar",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the email application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90157015084a3a5966d256"
+      ]
+    },
+    {
+      "id": "R027",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0027",
+        "subject": "Message to distribution list failed",
+        "description": "A message sent to an approved distribution list was not delivered successfully.",
+        "category": "EMAIL",
+        "subcategory": "Distribution list",
+        "department": "HR",
+        "affected_system": "Corporate Email",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the message once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90157c15084a3a5966d259"
+      ]
+    },
+    {
+      "id": "R028",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0028",
+        "subject": "I am not receiving distribution-list mail",
+        "description": "Expected messages from an approved distribution list are not arriving.",
+        "category": "EMAIL",
+        "subcategory": "Distribution list",
+        "department": "Operations",
+        "affected_system": "Corporate Email",
+        "severity": "MEDIUM",
+        "already_tried": "Checked the mailbox and waited for another message.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90157c15084a3a5966d259"
+      ]
+    },
+    {
+      "id": "R029",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0029",
+        "subject": "Mailbox storage quota exceeded",
+        "description": "The mailbox reports that storage capacity has been exceeded and new mail is affected.",
+        "category": "EMAIL",
+        "subcategory": "Storage quota",
+        "department": "Sales",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Reviewed the mailbox for unnecessary large messages.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90158715084a3a5966d25c"
+      ]
+    },
+    {
+      "id": "R030",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0030",
+        "subject": "Mailbox is almost full",
+        "description": "The corporate mailbox is showing repeated storage-quota warnings.",
+        "category": "EMAIL",
+        "subcategory": "Storage quota",
+        "department": "Engineering",
+        "affected_system": "Corporate Email",
+        "severity": "MEDIUM",
+        "already_tried": "Reviewed mailbox usage and large attachments.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90158715084a3a5966d25c"
+      ]
+    },
+    {
+      "id": "R031",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0031",
+        "subject": "Company laptop hardware problem",
+        "description": "A hardware component of the company laptop is not functioning normally.",
+        "category": "HARDWARE",
+        "subcategory": "Laptop",
+        "department": "Finance",
+        "affected_system": "Company Laptop",
+        "severity": "HIGH",
+        "already_tried": "Restarted the laptop once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90174215084a3a5966d25f"
+      ]
+    },
+    {
+      "id": "R032",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0032",
+        "subject": "Laptop hardware component is failing",
+        "description": "A physical component of the corporate laptop appears to be malfunctioning.",
+        "category": "HARDWARE",
+        "subcategory": "Laptop",
+        "department": "HR",
+        "affected_system": "Company Laptop",
+        "severity": "HIGH",
+        "already_tried": "Restarted the laptop and checked visible connections.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90174215084a3a5966d25f"
+      ]
+    },
+    {
+      "id": "R033",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0033",
+        "subject": "Keyboard is not responding",
+        "description": "The keyboard is connected but keystrokes are not being detected.",
+        "category": "HARDWARE",
+        "subcategory": "Peripheral",
+        "department": "Operations",
+        "affected_system": "Keyboard",
+        "severity": "MEDIUM",
+        "already_tried": "Disconnected and reconnected the keyboard.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd252fc891957b8ba30f2"
+      ]
+    },
+    {
+      "id": "R034",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0034",
+        "subject": "Mouse is not working",
+        "description": "The mouse is connected but does not respond to movement or clicks.",
+        "category": "HARDWARE",
+        "subcategory": "Peripheral",
+        "department": "Sales",
+        "affected_system": "Mouse",
+        "severity": "MEDIUM",
+        "already_tried": "Reconnected the mouse.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a8fd252fc891957b8ba30f2"
+      ]
+    },
+    {
+      "id": "R035",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0035",
+        "subject": "Desktop workstation hardware failure",
+        "description": "A physical component of the company desktop is not functioning correctly.",
+        "category": "HARDWARE",
+        "subcategory": "Desktop",
+        "department": "Engineering",
+        "affected_system": "Company Desktop",
+        "severity": "HIGH",
+        "already_tried": "Restarted the workstation and checked power.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90174c15084a3a5966d262"
+      ]
+    },
+    {
+      "id": "R036",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0036",
+        "subject": "Desktop hardware stopped responding",
+        "description": "The corporate desktop is running but an affected hardware component is not responding.",
+        "category": "HARDWARE",
+        "subcategory": "Desktop",
+        "department": "Finance",
+        "affected_system": "Company Desktop",
+        "severity": "MEDIUM",
+        "already_tried": "Power-cycled the workstation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90174c15084a3a5966d262"
+      ]
+    },
+    {
+      "id": "R037",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0037",
+        "subject": "Docking station is not detected",
+        "description": "The laptop does not consistently detect the approved docking station.",
+        "category": "HARDWARE",
+        "subcategory": "Docking station",
+        "department": "HR",
+        "affected_system": "Docking Station",
+        "severity": "MEDIUM",
+        "already_tried": "Disconnected and reconnected the dock.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90175515084a3a5966d265"
+      ]
+    },
+    {
+      "id": "R038",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0038",
+        "subject": "External displays through the dock are unavailable",
+        "description": "The docking station connects but attached external displays are unavailable.",
+        "category": "HARDWARE",
+        "subcategory": "Docking station",
+        "department": "Operations",
+        "affected_system": "Docking Station",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the laptop and reconnected the dock.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90175515084a3a5966d265"
+      ]
+    },
+    {
+      "id": "R039",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0039",
+        "subject": "Company mobile device hardware problem",
+        "description": "A managed mobile device is showing a persistent hardware-related fault.",
+        "category": "HARDWARE",
+        "subcategory": "Mobile device",
+        "department": "Sales",
+        "affected_system": "Mobile Device",
+        "severity": "HIGH",
+        "already_tried": "Restarted the device.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90175d15084a3a5966d268"
+      ]
+    },
+    {
+      "id": "R040",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0040",
+        "subject": "Mobile device component is not responding",
+        "description": "A physical component on the company-managed mobile device is not functioning.",
+        "category": "HARDWARE",
+        "subcategory": "Mobile device",
+        "department": "Engineering",
+        "affected_system": "Mobile Device",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the device and checked for visible damage.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a90175d15084a3a5966d268"
+      ]
+    },
+    {
+      "id": "R041",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0041",
+        "subject": "Corporate network is unreachable",
+        "description": "The workstation cannot reach approved internal or external network resources.",
+        "category": "NETWORK",
+        "subcategory": "Connectivity",
+        "department": "Finance",
+        "affected_system": "Corporate Network",
+        "severity": "HIGH",
+        "already_tried": "Restarted the computer and reconnected the network.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd272fc891957b8ba30f5"
+      ]
+    },
+    {
+      "id": "R042",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0042",
+        "subject": "No network access from my workstation",
+        "description": "The company workstation cannot access approved network services.",
+        "category": "NETWORK",
+        "subcategory": "Connectivity",
+        "department": "HR",
+        "affected_system": "Corporate Network",
+        "severity": "HIGH",
+        "already_tried": "Restarted the workstation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd272fc891957b8ba30f5"
+      ]
+    },
+    {
+      "id": "R043",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0043",
+        "subject": "Corporate Wi-Fi keeps disconnecting",
+        "description": "The device repeatedly loses its connection to the approved corporate Wi-Fi network.",
+        "category": "NETWORK",
+        "subcategory": "WiFi",
+        "department": "Operations",
+        "affected_system": "Corporate Wi-Fi",
+        "severity": "MEDIUM",
+        "already_tried": "Disconnected and reconnected to Wi-Fi.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96"
+      ]
+    },
+    {
+      "id": "R044",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0044",
+        "subject": "Unable to connect to office Wi-Fi",
+        "description": "The device cannot establish a connection to the approved corporate wireless network.",
+        "category": "NETWORK",
+        "subcategory": "WiFi",
+        "department": "Sales",
+        "affected_system": "Corporate Wi-Fi",
+        "severity": "HIGH",
+        "already_tried": "Retried the wireless connection.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96"
+      ]
+    },
+    {
+      "id": "R045",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0045",
+        "subject": "Wired LAN connection is unavailable",
+        "description": "The workstation cannot maintain an approved wired LAN connection.",
+        "category": "NETWORK",
+        "subcategory": "LAN",
+        "department": "Engineering",
+        "affected_system": "Office LAN",
+        "severity": "HIGH",
+        "already_tried": "Checked the network cable and reconnected the port.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99"
+      ]
+    },
+    {
+      "id": "R046",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0046",
+        "subject": "Office LAN port is not providing connectivity",
+        "description": "The wired workstation shows no usable connection through the approved LAN port.",
+        "category": "NETWORK",
+        "subcategory": "LAN",
+        "department": "Finance",
+        "affected_system": "Office LAN",
+        "severity": "HIGH",
+        "already_tried": "Tried another approved port.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99"
+      ]
+    },
+    {
+      "id": "R047",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0047",
+        "subject": "Corporate hostname will not resolve",
+        "description": "The network is connected but an approved corporate hostname cannot be resolved.",
+        "category": "NETWORK",
+        "subcategory": "DNS",
+        "department": "HR",
+        "affected_system": "Corporate DNS",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the connection and restarted the workstation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ]
+    },
+    {
+      "id": "R048",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0048",
+        "subject": "DNS resolution fails for an internal service",
+        "description": "An internal hostname does not resolve even though basic network connectivity is available.",
+        "category": "NETWORK",
+        "subcategory": "DNS",
+        "department": "Operations",
+        "affected_system": "Corporate DNS",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the network connection.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ]
+    },
+    {
+      "id": "R049",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0049",
+        "subject": "Network performance is unusually slow",
+        "description": "Approved network activities are experiencing unusually low throughput.",
+        "category": "NETWORK",
+        "subcategory": "Bandwidth",
+        "department": "Sales",
+        "affected_system": "Corporate Network",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the affected network activity.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ]
+    },
+    {
+      "id": "R050",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0050",
+        "subject": "File transfers are taking much longer than normal",
+        "description": "Approved file transfers are significantly slower than expected.",
+        "category": "NETWORK",
+        "subcategory": "Bandwidth",
+        "department": "Engineering",
+        "affected_system": "Corporate Network",
+        "severity": "MEDIUM",
+        "already_tried": "Retried a small transfer.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ]
+    },
+    {
+      "id": "R051",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0051",
+        "subject": "Printer is not printing",
+        "description": "The selected approved printer is available but a normal print job produces no output.",
+        "category": "PRINTER",
+        "subcategory": "Not printing",
+        "department": "Finance",
+        "affected_system": "Corporate Printer",
+        "severity": "HIGH",
+        "already_tried": "Submitted a small test document.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5"
+      ]
+    },
+    {
+      "id": "R052",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0052",
+        "subject": "Print job produces no output",
+        "description": "The printer accepts the job but nothing is printed successfully.",
+        "category": "PRINTER",
+        "subcategory": "Not printing",
+        "department": "HR",
+        "affected_system": "Corporate Printer",
+        "severity": "HIGH",
+        "already_tried": "Checked the printer status and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5"
+      ]
+    },
+    {
+      "id": "R053",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0053",
+        "subject": "Printer driver error appears",
+        "description": "The approved printer reports a driver-related issue during printing.",
+        "category": "PRINTER",
+        "subcategory": "Driver",
+        "department": "Operations",
+        "affected_system": "Corporate Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the print application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2"
+      ]
+    },
+    {
+      "id": "R054",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0054",
+        "subject": "Printer driver may be incorrect",
+        "description": "The printer is detected but the installed driver may not match the printer model.",
+        "category": "PRINTER",
+        "subcategory": "Driver",
+        "department": "Sales",
+        "affected_system": "Corporate Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Checked the installed driver version.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2"
+      ]
+    },
+    {
+      "id": "R055",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0055",
+        "subject": "Print queue job is stuck",
+        "description": "A document remains pending in the operating-system print queue.",
+        "category": "PRINTER",
+        "subcategory": "Queue stuck",
+        "department": "Engineering",
+        "affected_system": "Corporate Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Checked the queue and retried a small job.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd38bfc891957b8ba30fb"
+      ]
+    },
+    {
+      "id": "R056",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0056",
+        "subject": "Print job remains in error state",
+        "description": "A submitted print job stays in an error state and does not leave the queue.",
+        "category": "PRINTER",
+        "subcategory": "Queue stuck",
+        "department": "Finance",
+        "affected_system": "Corporate Printer",
+        "severity": "HIGH",
+        "already_tried": "Opened the print queue and checked the error message.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd38bfc891957b8ba30fb"
+      ]
+    },
+    {
+      "id": "R057",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0057",
+        "subject": "Printed output is faded",
+        "description": "The printer produces output but the page is faded and has visible quality defects.",
+        "category": "PRINTER",
+        "subcategory": "Quality",
+        "department": "HR",
+        "affected_system": "Corporate Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Printed a test page.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8"
+      ]
+    },
+    {
+      "id": "R058",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0058",
+        "subject": "Printer output has streaks",
+        "description": "A test page contains visible streaks and other print-quality defects.",
+        "category": "PRINTER",
+        "subcategory": "Quality",
+        "department": "Operations",
+        "affected_system": "Corporate Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Checked paper settings and printed a test page.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8"
+      ]
+    },
+    {
+      "id": "R059",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0059",
+        "subject": "Printer scanner is not detected",
+        "description": "The scanning function of the approved multifunction printer is not available.",
+        "category": "PRINTER",
+        "subcategory": "Scan",
+        "department": "Sales",
+        "affected_system": "Multifunction Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Reopened the scanning application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ]
+    },
+    {
+      "id": "R060",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0060",
+        "subject": "Scan job fails to complete",
+        "description": "The scanner is detected but a simple approved scan does not complete successfully.",
+        "category": "PRINTER",
+        "subcategory": "Scan",
+        "department": "Engineering",
+        "affected_system": "Multifunction Printer",
+        "severity": "MEDIUM",
+        "already_tried": "Retried a simple scan.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ]
+    },
+    {
+      "id": "R061",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0061",
+        "subject": "Suspicious email should be reported",
+        "description": "I received a suspicious message that may be phishing and need to report it safely.",
+        "category": "SECURITY",
+        "subcategory": "Phishing report",
+        "department": "Finance",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Did not click the link and preserved the message.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ]
+    },
+    {
+      "id": "R062",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0062",
+        "subject": "Possible credential phishing message",
+        "description": "An unexpected email asks me to enter company credentials using a linked page.",
+        "category": "SECURITY",
+        "subcategory": "Phishing report",
+        "department": "HR",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Did not enter credentials and kept the message.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ]
+    },
+    {
+      "id": "R063",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0063",
+        "subject": "Unexpected attachment in a suspicious message",
+        "description": "An email contains an unexpected attachment and appears to impersonate a known sender.",
+        "category": "SECURITY",
+        "subcategory": "Phishing report",
+        "department": "Operations",
+        "affected_system": "Corporate Email",
+        "severity": "HIGH",
+        "already_tried": "Did not open the attachment.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ]
+    },
+    {
+      "id": "R064",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0064",
+        "subject": "Unexpected login activity",
+        "description": "I received a login notification for activity that I do not recognize.",
+        "category": "SECURITY",
+        "subcategory": "Suspicious activity",
+        "department": "Sales",
+        "affected_system": "Corporate Identity",
+        "severity": "HIGH",
+        "already_tried": "Recorded the alert details and did not continue interacting.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ]
+    },
+    {
+      "id": "R065",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0065",
+        "subject": "Unfamiliar system activity",
+        "description": "An unfamiliar application or security event appeared on my company device.",
+        "category": "SECURITY",
+        "subcategory": "Suspicious activity",
+        "department": "Engineering",
+        "affected_system": "Corporate Workstation",
+        "severity": "HIGH",
+        "already_tried": "Recorded the alert and stopped interacting with the unfamiliar activity.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ]
+    },
+    {
+      "id": "R066",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0066",
+        "subject": "Account activity I cannot explain",
+        "description": "There is unusual account activity that I cannot confirm as expected behavior.",
+        "category": "SECURITY",
+        "subcategory": "Suspicious activity",
+        "department": "Finance",
+        "affected_system": "Corporate Identity",
+        "severity": "HIGH",
+        "already_tried": "Recorded the time and alert details.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ]
+    },
+    {
+      "id": "R067",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0067",
+        "subject": "Malware warning on company computer",
+        "description": "The company device displays a malware or security warning during normal use.",
+        "category": "SECURITY",
+        "subcategory": "Malware",
+        "department": "HR",
+        "affected_system": "Corporate Workstation",
+        "severity": "HIGH",
+        "already_tried": "Stopped interacting with the suspicious application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd3d1fc891957b8ba3104"
+      ]
+    },
+    {
+      "id": "R068",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0068",
+        "subject": "Security alert suggests possible malware",
+        "description": "A security control reports suspicious software behavior on the workstation.",
+        "category": "SECURITY",
+        "subcategory": "Malware",
+        "department": "Operations",
+        "affected_system": "Corporate Workstation",
+        "severity": "CRITICAL",
+        "already_tried": "Stopped risky activity and recorded the alert.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd3d1fc891957b8ba3104"
+      ]
+    },
+    {
+      "id": "R069",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0069",
+        "subject": "Request for restricted security data",
+        "description": "A requester is asking for security information that may require authorization.",
+        "category": "SECURITY",
+        "subcategory": "Data request",
+        "department": "Sales",
+        "affected_system": "Security Data",
+        "severity": "HIGH",
+        "already_tried": "Did not provide the requested restricted information.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4"
+      ]
+    },
+    {
+      "id": "R070",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0070",
+        "subject": "Request for account or system security records",
+        "description": "A business request asks for controlled security records and the required approval is unclear.",
+        "category": "SECURITY",
+        "subcategory": "Data request",
+        "department": "Engineering",
+        "affected_system": "Security Data",
+        "severity": "HIGH",
+        "already_tried": "Paused the request pending the approved process.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4"
+      ]
+    },
+    {
+      "id": "R071",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0071",
+        "subject": "Application keeps crashing",
+        "description": "An approved corporate application closes unexpectedly during normal use.",
+        "category": "SOFTWARE",
+        "subcategory": "Crash",
+        "department": "Finance",
+        "affected_system": "Corporate Application",
+        "severity": "HIGH",
+        "already_tried": "Restarted the application and repeated the action.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7"
+      ]
+    },
+    {
+      "id": "R072",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0072",
+        "subject": "Software freezes after launch",
+        "description": "The supported application becomes unresponsive shortly after it starts.",
+        "category": "SOFTWARE",
+        "subcategory": "Crash",
+        "department": "HR",
+        "affected_system": "Corporate Application",
+        "severity": "HIGH",
+        "already_tried": "Restarted the workstation and reopened the application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7"
+      ]
+    },
+    {
+      "id": "R073",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0073",
+        "subject": "Software license activation failed",
+        "description": "The approved application reports that activation or licensing is unavailable.",
+        "category": "SOFTWARE",
+        "subcategory": "Licensing",
+        "department": "Operations",
+        "affected_system": "Corporate Application",
+        "severity": "HIGH",
+        "already_tried": "Retried activation through the approved process.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba"
+      ]
+    },
+    {
+      "id": "R074",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0074",
+        "subject": "Application says license is expired",
+        "description": "A supported application reports an invalid or expired license.",
+        "category": "SOFTWARE",
+        "subcategory": "Licensing",
+        "department": "Sales",
+        "affected_system": "Corporate Application",
+        "severity": "HIGH",
+        "already_tried": "Confirmed the installed application version.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba"
+      ]
+    },
+    {
+      "id": "R075",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0075",
+        "subject": "Approved application installation failed",
+        "description": "The approved installer fails before the application can be used.",
+        "category": "SOFTWARE",
+        "subcategory": "Installation",
+        "department": "Engineering",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the approved installer once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd48efc891957b8ba3107"
+      ]
+    },
+    {
+      "id": "R076",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0076",
+        "subject": "Application cannot be configured after installation",
+        "description": "The approved application installed but required configuration cannot be completed.",
+        "category": "SOFTWARE",
+        "subcategory": "Installation",
+        "department": "Finance",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Checked the documented configuration values.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd48efc891957b8ba3107"
+      ]
+    },
+    {
+      "id": "R077",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0077",
+        "subject": "Application update failed",
+        "description": "The approved software update fails and the application remains on the current version.",
+        "category": "SOFTWARE",
+        "subcategory": "Update",
+        "department": "HR",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the approved update once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd"
+      ]
+    },
+    {
+      "id": "R078",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0078",
+        "subject": "Software update is required",
+        "description": "The supported application requires an update before normal use can continue.",
+        "category": "SOFTWARE",
+        "subcategory": "Update",
+        "department": "Operations",
+        "affected_system": "Corporate Application",
+        "severity": "HIGH",
+        "already_tried": "Checked for an approved update.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd"
+      ]
+    },
+    {
+      "id": "R079",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0079",
+        "subject": "Application compatibility error",
+        "description": "The application reports that its version is not compatible with the current environment.",
+        "category": "SOFTWARE",
+        "subcategory": "Compatibility",
+        "department": "Sales",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Recorded the application and operating-system versions.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ]
+    },
+    {
+      "id": "R080",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0080",
+        "subject": "Software and operating system versions do not match",
+        "description": "The approved application does not support the workstation's current operating-system version.",
+        "category": "SOFTWARE",
+        "subcategory": "Compatibility",
+        "department": "Engineering",
+        "affected_system": "Corporate Application",
+        "severity": "MEDIUM",
+        "already_tried": "Checked the approved application version.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ]
+    },
+    {
+      "id": "R081",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0081",
+        "subject": "VPN connection keeps timing out",
+        "description": "The corporate VPN connection repeatedly times out before a stable session is established.",
+        "category": "VPN",
+        "subcategory": "Timeout",
+        "department": "Finance",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Retried the VPN connection twice.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ]
+    },
+    {
+      "id": "R082",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0082",
+        "subject": "VPN disconnects during connection",
+        "description": "The approved VPN client repeatedly fails to maintain the connection.",
+        "category": "VPN",
+        "subcategory": "Timeout",
+        "department": "HR",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Restarted the VPN client and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ]
+    },
+    {
+      "id": "R083",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0083",
+        "subject": "Corporate VPN is slow and times out",
+        "description": "The VPN session does not complete reliably and times out during connection.",
+        "category": "VPN",
+        "subcategory": "Timeout",
+        "department": "Operations",
+        "affected_system": "Corporate VPN",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the connection and restarted the client.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ]
+    },
+    {
+      "id": "R084",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0084",
+        "subject": "VPN cannot establish a stable session",
+        "description": "The VPN client repeatedly fails before a stable corporate session is available.",
+        "category": "VPN",
+        "subcategory": "Timeout",
+        "department": "Sales",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Restarted the client and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ]
+    },
+    {
+      "id": "R085",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0085",
+        "subject": "VPN connection fails intermittently",
+        "description": "The corporate VPN sometimes connects but drops or times out during use.",
+        "category": "VPN",
+        "subcategory": "Timeout",
+        "department": "Engineering",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Reconnected and restarted the workstation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ]
+    },
+    {
+      "id": "R086",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0086",
+        "subject": "VPN certificate authentication failed",
+        "description": "The approved VPN client reports a certificate-related authentication failure.",
+        "category": "VPN",
+        "subcategory": "Certificate",
+        "department": "Finance",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Retried the connection after restarting the VPN client.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ]
+    },
+    {
+      "id": "R087",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0087",
+        "subject": "VPN client cannot validate the certificate",
+        "description": "The VPN connection fails because the client cannot complete certificate validation.",
+        "category": "VPN",
+        "subcategory": "Certificate",
+        "department": "HR",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Restarted the VPN client and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ]
+    },
+    {
+      "id": "R088",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0088",
+        "subject": "Corporate VPN certificate appears invalid",
+        "description": "The approved VPN client reports that the certificate cannot be accepted.",
+        "category": "VPN",
+        "subcategory": "Certificate",
+        "department": "Operations",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Recorded the certificate-related error.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ]
+    },
+    {
+      "id": "R089",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0089",
+        "subject": "VPN certificate authentication problem",
+        "description": "The client reaches authentication but the certificate check fails.",
+        "category": "VPN",
+        "subcategory": "Certificate",
+        "department": "Sales",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Retried the authentication process.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ]
+    },
+    {
+      "id": "R090",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0090",
+        "subject": "VPN client certificate is not accepted",
+        "description": "The corporate VPN client rejects the configured certificate during connection.",
+        "category": "VPN",
+        "subcategory": "Certificate",
+        "department": "Engineering",
+        "affected_system": "Corporate VPN",
+        "severity": "HIGH",
+        "already_tried": "Restarted the client and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ]
+    },
+    {
+      "id": "R091",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0091",
+        "subject": "I need help with an IT issue",
+        "description": "I am experiencing a company IT problem but the affected service is not yet clear.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Finance",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the computer.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ]
+    },
+    {
+      "id": "R092",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0092",
+        "subject": "Something is not working",
+        "description": "A corporate IT service is not behaving as expected but the affected area is unclear.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "HR",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the operation once.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ]
+    },
+    {
+      "id": "R093",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0093",
+        "subject": "General support request",
+        "description": "I need assistance with a company technology issue but cannot identify the service yet.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Operations",
+        "affected_system": "Unknown",
+        "severity": "LOW",
+        "already_tried": "Checked the issue again.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "NO"
+      },
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ]
+    },
+    {
+      "id": "R094",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0094",
+        "subject": "IT problem with unclear symptoms",
+        "description": "There is an issue affecting my work but there is not enough information to identify the technical domain.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Sales",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the workstation.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ]
+    },
+    {
+      "id": "R095",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0095",
+        "subject": "Unclassified issue needs investigation",
+        "description": "The issue cannot yet be classified confidently and requires initial troubleshooting and triage.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "Triage",
+        "department": "Engineering",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Recorded the observable symptoms.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ]
+    },
+    {
+      "id": "R096",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0096",
+        "subject": "Unknown technical problem",
+        "description": "A company IT problem is occurring but the affected category remains unclear.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "Triage",
+        "department": "Finance",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Retried the failing action.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ]
+    },
+    {
+      "id": "R097",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0097",
+        "subject": "Issue category is unclear",
+        "description": "The available symptoms do not clearly map the request to a specific technical category.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "Triage",
+        "department": "HR",
+        "affected_system": "Unknown",
+        "severity": "MEDIUM",
+        "already_tried": "Restarted the affected application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ]
+    },
+    {
+      "id": "R098",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0098",
+        "subject": "Business application login problem",
+        "description": "The internal business application is reachable but the corporate login is rejected.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Operations",
+        "affected_system": "Business Application",
+        "severity": "HIGH",
+        "already_tried": "Restarted the application and retried.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ]
+    },
+    {
+      "id": "R099",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0099",
+        "subject": "Application rejects corporate credentials",
+        "description": "The internal application is available but the normal corporate account cannot complete application authentication.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Sales",
+        "affected_system": "Business Application",
+        "severity": "HIGH",
+        "already_tried": "Retried authentication after reopening the application.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ]
+    },
+    {
+      "id": "R100",
+      "ticket": {
+        "evaluation_ticket_id": "EVAL-0100",
+        "subject": "Cannot authenticate to internal business application",
+        "description": "The business application opens but the company account cannot complete application authentication.",
+        "category": "UNCLASSIFIED",
+        "subcategory": "General",
+        "department": "Engineering",
+        "affected_system": "Internal Application",
+        "severity": "HIGH",
+        "already_tried": "Restarted the browser session and tried again.",
+        "affected_scope": "JUST_ME",
+        "work_blocked": "YES"
+      },
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ]
+    }
+  ]
+}

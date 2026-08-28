@@ -11,6 +11,13 @@ from .views import (
     transition_ticket_status_view,
     add_ticket_comment_view,
     ticket_timeline_view,
+    generate_resolution_view,
+    get_ticket_responses_view,
+    get_resolution_response_view,
+    accept_resolution_view,
+    edit_send_resolution_view,
+    reject_resolution_view,
+    resolution_feedback_view,
 )
 
 
@@ -48,6 +55,48 @@ urlpatterns = [
         "classifications/<str:ticket_id>/",
         classification_override_view,
         name="classification-override",
+    ),
+
+    path(
+        "responses/<str:response_id>/",
+        get_resolution_response_view,
+        name="get-resolution-response",
+    ),
+
+    path(
+        "<str:ticket_id>/responses/",
+        get_ticket_responses_view,
+        name="get-ticket-responses",
+    ),
+
+    path(
+        "responses/<str:response_id>/accept/",
+        accept_resolution_view,
+        name="accept-resolution",
+    ),
+
+    path(
+        "responses/<str:response_id>/edit-send/",
+        edit_send_resolution_view,
+        name="edit-send-resolution",
+    ),
+
+    path(
+        "responses/<str:response_id>/reject/",
+        reject_resolution_view,
+        name="reject-resolution",
+    ),
+
+    path(
+        "responses/<str:response_id>/feedback/",
+        resolution_feedback_view,
+        name="resolution-feedback",
+    ),
+
+    path(
+        "<str:ticket_id>/generate-resolution/",
+        generate_resolution_view,
+        name="generate-resolution",
     ),
 
     path(

@@ -1,0 +1,29 @@
+{
+    "category_to_label": {
+        "ACCESS": 0,
+        "APPLICATION": 1,
+        "EMAIL": 2,
+        "HARDWARE": 3,
+        "NETWORK": 4,
+        "SOFTWARE": 5,
+        "VPN": 6
+    },
+    "label_to_category": {
+        "0": "ACCESS",
+        "1": "APPLICATION",
+        "2": "EMAIL",
+        "3": "HARDWARE",
+        "4": "NETWORK",
+        "5": "SOFTWARE",
+        "6": "VPN"
+    },
+    "category_training_counts": {
+        "ACCESS": 50,
+        "APPLICATION": 50,
+        "EMAIL": 50,
+        "HARDWARE": 50,
+        "NETWORK": 50,
+        "SOFTWARE": 50,
+        "VPN": 49
+    }
+}

@@ -29,4 +29,9 @@ urlpatterns = [
         "api/tickets/",
         include("apps.tickets.urls")
     ),
+
+    path(
+        "api/knowledge/",
+        include("apps.knowledge_base.urls"),
+    ),
 ]

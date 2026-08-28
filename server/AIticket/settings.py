@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.history',
     'apps.reports',
     'apps.admin_panel',
+    'apps.knowledge_base',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,7 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
 "http://localhost:5173",
+"http://127.0.0.1:5173",
 "https://support-ai-ticket-management-team-1-8h0x.onrender.com" # your Vite React dev server
 ]
 

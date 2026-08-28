@@ -22,7 +22,7 @@ def register_service(data):
     "username": data["username"],
     "email": data["email"],
     "mobile": data.get("mobile", ""),
-    "role": data.get("role", "User"),
+    "role": "User",
     "password": make_password(data["password"])
 }
 

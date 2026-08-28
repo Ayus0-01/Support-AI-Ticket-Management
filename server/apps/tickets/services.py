@@ -50,6 +50,11 @@ def create_ticket(data, requester):
     "subject": data["subject"],
     "description": data["description"],
 
+    "affected_system": data.get(
+        "affected_system",
+        "",
+    ),
+
     "department": data.get(
         "department",
         "",
@@ -817,6 +822,7 @@ def add_ticket_comment(
     author_user_id,
     comment,
     visibility,
+    source="HUMAN",
 ):
     """
     Add a public or internal comment to a ticket.
@@ -841,6 +847,8 @@ def add_ticket_comment(
         "comment": comment,
 
         "visibility": visibility,
+
+        "source": source,
 
         "created_at": datetime.now(
             timezone.utc

@@ -1,0 +1,2800 @@
+{
+  "taxonomy_version": "v2",
+  "source_taxonomy_version": "v1",
+  "taxonomy": [
+    {
+      "name": "NETWORK",
+      "subcategories": [
+        "Connectivity",
+        "WiFi",
+        "LAN",
+        "DNS",
+        "Bandwidth"
+      ]
+    },
+    {
+      "name": "VPN",
+      "subcategories": [
+        "Connection failure",
+        "Certificate",
+        "Client install",
+        "Timeout"
+      ]
+    },
+    {
+      "name": "ACCESS",
+      "subcategories": [
+        "Password reset",
+        "Account lockout",
+        "Permissions",
+        "MFA",
+        "Onboarding"
+      ]
+    },
+    {
+      "name": "SOFTWARE",
+      "subcategories": [
+        "Installation",
+        "Licensing",
+        "Crash",
+        "Update",
+        "Compatibility"
+      ]
+    },
+    {
+      "name": "HARDWARE",
+      "subcategories": [
+        "Laptop",
+        "Desktop",
+        "Peripheral",
+        "Docking station",
+        "Mobile device"
+      ]
+    },
+    {
+      "name": "PRINTER",
+      "subcategories": [
+        "Not printing",
+        "Driver",
+        "Queue stuck",
+        "Quality",
+        "Scan"
+      ]
+    },
+    {
+      "name": "EMAIL",
+      "subcategories": [
+        "Mailbox",
+        "Distribution list",
+        "Spam",
+        "Calendar",
+        "Storage quota"
+      ]
+    },
+    {
+      "name": "SECURITY",
+      "subcategories": [
+        "Phishing report",
+        "Malware",
+        "Suspicious activity",
+        "Data request"
+      ]
+    },
+    {
+      "name": "APPLICATION",
+      "subcategories": [
+        "ERP",
+        "CRM",
+        "Internal tool",
+        "Integration failure",
+        "Performance"
+      ]
+    },
+    {
+      "name": "UNCLASSIFIED",
+      "subcategories": []
+    }
+  ],
+  "tickets": [
+    {
+      "subject": "VPN connection failing",
+      "description": "I cannot connect to the company VPN from my laptop.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "Unable to connect to VPN",
+      "description": "The VPN client fails whenever I try to establish a connection.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN will not connect",
+      "description": "I am unable to establish a VPN connection to the company network.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN connection error",
+      "description": "The company VPN keeps failing when I attempt to connect.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "Remote VPN access not working",
+      "description": "I cannot access internal resources because the VPN connection will not start.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN disconnects during connection",
+      "description": "The VPN starts connecting but fails before the connection is established.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN connection refused",
+      "description": "The VPN client refuses to establish a connection to the corporate network.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "Cannot establish remote VPN",
+      "description": "My remote connection to the company VPN is not working.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN authentication keeps failing",
+      "description": "The VPN client starts the connection but fails during authentication and does not let me connect.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN certificate error",
+      "description": "The VPN client reports a certificate error when I try to connect.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate expired",
+      "description": "My VPN certificate appears to have expired.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Certificate authentication failure",
+      "description": "VPN authentication fails because of a certificate problem.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Invalid VPN certificate",
+      "description": "The VPN client says that the certificate is invalid.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate renewal",
+      "description": "I need my VPN certificate renewed so I can connect.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Certificate warning on VPN",
+      "description": "A certificate warning appears whenever I connect to VPN.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Corporate VPN certificate issue",
+      "description": "The corporate VPN is rejecting my certificate.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Network unavailable",
+      "description": "My computer cannot connect to the office network.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Internet connection lost",
+      "description": "I have lost network connectivity at my workstation.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network connection problem",
+      "description": "My system is unable to reach the company network.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Cannot access network",
+      "description": "Network resources are not reachable from my computer.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Office network down",
+      "description": "My workstation has no network connection.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Connectivity failure",
+      "description": "The network connection keeps dropping.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Unable to reach internal network",
+      "description": "I cannot connect to internal network resources.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network access unavailable",
+      "description": "The network is unavailable from my current workstation.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "DNS resolution failing",
+      "description": "Company hostnames are not resolving on my computer.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Cannot resolve server name",
+      "description": "DNS lookup fails when I try to access an internal server.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS issue",
+      "description": "I can connect to the network but domain names are not resolving.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Internal DNS unavailable",
+      "description": "Internal DNS queries are failing.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Hostname resolution problem",
+      "description": "I cannot resolve company hostnames.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS lookup failure",
+      "description": "DNS lookups return errors for internal services.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Server name not resolving",
+      "description": "The server hostname cannot be resolved.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS configuration problem",
+      "description": "The workstation appears to have a DNS configuration issue.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Network bandwidth is low",
+      "description": "The network is extremely slow because available bandwidth appears limited.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Bandwidth problem",
+      "description": "Network performance is poor during periods of high traffic.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "High network usage",
+      "description": "Heavy network usage is causing slow connectivity.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Insufficient bandwidth",
+      "description": "There does not appear to be enough bandwidth for our current workload.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Network congestion",
+      "description": "Network traffic is congested and applications are responding slowly.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Bandwidth saturation",
+      "description": "The network link appears to be saturated.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Slow network due to traffic",
+      "description": "Network performance drops significantly when traffic increases.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "High bandwidth consumption",
+      "description": "A large amount of network traffic is affecting performance.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Application is slow",
+      "description": "The business application takes a long time to respond.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application performance issue",
+      "description": "The application is responding much slower than usual.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Slow application response",
+      "description": "Pages in the application take several seconds to load.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application latency",
+      "description": "There is noticeable delay when using the application.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application running slowly",
+      "description": "The application performance has degraded significantly.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Slow report generation",
+      "description": "Reports in the application take too long to generate.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application response delay",
+      "description": "The application is unusually slow when processing requests.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Performance degradation",
+      "description": "The application's performance has become poor recently.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application crashes",
+      "description": "The application closes unexpectedly whenever I perform an operation.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application error",
+      "description": "I receive an unexpected error while using the application.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application keeps crashing",
+      "description": "The application crashes repeatedly after opening.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Unexpected application failure",
+      "description": "The application stops working during normal use.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application error message",
+      "description": "An error message appears when I try to complete a task.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Business application crashed",
+      "description": "The application crashed while I was working.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application failure",
+      "description": "The application is failing during normal operation.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application stopped responding",
+      "description": "The application becomes unresponsive and eventually closes.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Permission denied",
+      "description": "I do not have permission to access the required resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Access permission missing",
+      "description": "My account does not have the permissions needed for this system.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Need additional permissions",
+      "description": "Please grant me the permissions required for my work.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Resource access denied",
+      "description": "I receive a permission denied message when accessing the resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Permission problem",
+      "description": "My current account permissions are insufficient.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Access rights missing",
+      "description": "I need additional access rights for a business resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Cannot access restricted resource",
+      "description": "The system says I do not have permission to access it.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Request permission",
+      "description": "I need permission to access a company resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Account locked",
+      "description": "My account has been locked after several failed login attempts.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Unable to log in account locked",
+      "description": "My account is locked and I cannot sign in.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Account lockout issue",
+      "description": "The user account is currently locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Locked user account",
+      "description": "Please unlock my company account.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Account repeatedly locking",
+      "description": "My account keeps becoming locked after login attempts.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Need account unlock",
+      "description": "I need assistance unlocking my account.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "User account locked out",
+      "description": "I am unable to access my account because it is locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Login blocked by lockout",
+      "description": "Account lockout is preventing me from signing in.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Mailbox not working",
+      "description": "I cannot send or receive emails from my mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email mailbox issue",
+      "description": "My mailbox is not updating with new messages.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Cannot receive emails",
+      "description": "New messages are not arriving in my mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Cannot send emails",
+      "description": "Outgoing emails are failing from my mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Mailbox unavailable",
+      "description": "I cannot access my company mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email inbox problem",
+      "description": "My inbox is not displaying recent messages.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Mailbox storage issue",
+      "description": "My mailbox appears to have reached its storage limit.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email account problem",
+      "description": "There is an issue with my company email mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Calendar not syncing",
+      "description": "My company calendar is not synchronizing with my device.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar synchronization issue",
+      "description": "Calendar updates are not appearing on my phone.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Meetings not syncing",
+      "description": "New calendar meetings are not appearing on my device.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar sync failure",
+      "description": "The calendar application cannot synchronize with the server.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar update missing",
+      "description": "Changes made to my calendar are not syncing.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar synchronization problem",
+      "description": "My calendar is out of sync with the company account.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Mobile calendar issue",
+      "description": "My work calendar is not updating on my mobile device.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar events missing",
+      "description": "Recent calendar events are not appearing.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Laptop not starting",
+      "description": "My company laptop will not power on.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop overheating",
+      "description": "My laptop becomes extremely hot during normal use.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop keyboard problem",
+      "description": "Several keys on my company laptop are not working.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop battery issue",
+      "description": "The laptop battery is no longer holding a charge.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop freezing",
+      "description": "My laptop frequently freezes during normal work.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop performance problem",
+      "description": "My company laptop has become extremely slow.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop power issue",
+      "description": "The laptop does not turn on even when connected to power.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop hardware failure",
+      "description": "My company laptop appears to have a hardware problem.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Monitor not displaying",
+      "description": "My external monitor shows no image.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor flickering",
+      "description": "The monitor keeps flickering while I work.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Second monitor not working",
+      "description": "My second monitor is not detected by the laptop.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor display issue",
+      "description": "The screen has intermittent display problems.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor connection problem",
+      "description": "The external display is not connecting properly.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor black screen",
+      "description": "My monitor remains black after connecting it.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Display quality problem",
+      "description": "The monitor display has lines and visual distortion.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External monitor failure",
+      "description": "The external monitor has stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Keyboard not working",
+      "description": "My external keyboard is not responding.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Mouse not working",
+      "description": "The company mouse has stopped responding.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Docking station issue",
+      "description": "My docking station is not detecting connected devices.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Headset problem",
+      "description": "My company headset is not working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "USB device failure",
+      "description": "A USB peripheral is not being recognized.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Webcam not working",
+      "description": "The external webcam is not detected.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Peripheral connection issue",
+      "description": "A connected peripheral is not functioning.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External device problem",
+      "description": "One of my work peripherals has stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Software license required",
+      "description": "I need a license for the software required for my work.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License expired",
+      "description": "The software license on my computer has expired.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License activation problem",
+      "description": "I cannot activate the installed software license.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Request software license",
+      "description": "Please provide a license for the required application.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software licensing issue",
+      "description": "The application says that no valid license is available.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License renewal request",
+      "description": "The software license needs to be renewed.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License unavailable",
+      "description": "I cannot use the application because its license is missing.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software activation license",
+      "description": "The software requires a valid license to activate.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software installation request",
+      "description": "I need help installing the required software.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Application installation failing",
+      "description": "The software installer fails during installation.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Cannot install software",
+      "description": "I am unable to install the required application.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Installation error",
+      "description": "An error occurs when installing the software.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Need software installed",
+      "description": "Please install the required application on my workstation.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software setup problem",
+      "description": "The application installation does not complete successfully.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Installation failed",
+      "description": "The software installation fails before completion.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Application installation issue",
+      "description": "I cannot complete installation of the required software.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software update failing",
+      "description": "The application cannot install its latest update.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Patch installation issue",
+      "description": "The required software patch fails to install.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Application update problem",
+      "description": "The application update keeps failing.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Need software patch",
+      "description": "The workstation needs the latest approved software patch.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Software update request",
+      "description": "Please update the installed application to the latest version.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Patch failed",
+      "description": "The latest security patch did not install correctly.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Update installation error",
+      "description": "An error appears when applying the software update.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Application patching issue",
+      "description": "The required application patch is not being applied.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Software compatibility issue",
+      "description": "The application does not work correctly with my operating system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Application incompatible",
+      "description": "The software is incompatible with the current workstation configuration.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Compatibility problem",
+      "description": "The application fails because of a version compatibility issue.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Software version conflict",
+      "description": "The installed software version is not compatible with another application.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Operating system compatibility",
+      "description": "The application does not support the current operating system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Incompatible software",
+      "description": "The required software cannot run on my workstation configuration.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Version compatibility issue",
+      "description": "Different software versions are causing compatibility problems.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Application compatibility failure",
+      "description": "The application cannot operate with the current system configuration.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "VPN cannot connect from home",
+      "description": "I am working remotely and the company VPN refuses to connect.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "Remote VPN access failure",
+      "description": "The corporate VPN is not allowing me to access internal systems.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN drops connection",
+      "description": "My VPN connection disconnects shortly after connecting.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN disconnecting repeatedly",
+      "description": "The VPN keeps disconnecting while I am working remotely.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN connection timeout",
+      "description": "The VPN connection times out before I can access company resources.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN remote access problem",
+      "description": "I cannot establish reliable remote access to the company network.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN access unavailable",
+      "description": "The corporate VPN is unavailable from my workstation.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN tunnel failure",
+      "description": "The VPN tunnel cannot be established successfully.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN remote login issue",
+      "description": "I am unable to access internal applications through the VPN.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN network access problem",
+      "description": "The VPN connects but I cannot reach internal company resources.",
+      "category": "VPN",
+      "subcategory": "Connection failure"
+    },
+    {
+      "subject": "VPN certificate rejected",
+      "description": "The corporate VPN rejects my certificate during connection.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate validation error",
+      "description": "The VPN cannot validate the certificate provided by my workstation.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Expired VPN certificate",
+      "description": "My corporate VPN certificate has expired and prevents connection.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate authentication problem",
+      "description": "Certificate authentication fails when connecting to VPN.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Invalid certificate on VPN",
+      "description": "The VPN client reports that my certificate is invalid.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate needs renewal",
+      "description": "I need my VPN certificate renewed before I can connect.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN trust certificate error",
+      "description": "The VPN reports a certificate trust problem.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Corporate certificate failure",
+      "description": "The corporate certificate is preventing VPN authentication.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate warning",
+      "description": "A certificate warning appears whenever I start the VPN.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "VPN certificate configuration issue",
+      "description": "The VPN certificate configuration appears to be incorrect.",
+      "category": "VPN",
+      "subcategory": "Certificate"
+    },
+    {
+      "subject": "Office network unavailable",
+      "description": "My workstation cannot connect to the company network.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network connection lost",
+      "description": "The network connection suddenly stopped working.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Unable to access network",
+      "description": "I cannot reach any company network resources.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network connectivity problem",
+      "description": "My computer is having trouble connecting to the network.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Internal network unavailable",
+      "description": "Internal network resources cannot be reached.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network connection dropped",
+      "description": "My network connection keeps disconnecting.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network access failure",
+      "description": "The workstation cannot access the company network.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "No network connection",
+      "description": "My computer currently has no network connectivity.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Office connectivity issue",
+      "description": "I cannot connect to the office network from my workstation.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "Network unavailable on workstation",
+      "description": "The network is unavailable on my company computer.",
+      "category": "NETWORK",
+      "subcategory": "Connectivity"
+    },
+    {
+      "subject": "DNS lookup problem",
+      "description": "Internal hostnames cannot be resolved through DNS.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS server issue",
+      "description": "DNS requests to the company server are failing.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Hostname lookup failure",
+      "description": "Company server names cannot be resolved.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS records not resolving",
+      "description": "DNS records are not resolving correctly for internal services.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Internal hostname problem",
+      "description": "I cannot resolve internal application hostnames.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS query failure",
+      "description": "DNS queries are returning errors.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Unable to resolve domain",
+      "description": "The company domain cannot be resolved from my workstation.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS service unavailable",
+      "description": "The internal DNS service appears to be unavailable.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "DNS network configuration",
+      "description": "My computer appears to have incorrect DNS settings.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Server hostname failure",
+      "description": "The server hostname does not resolve on the network.",
+      "category": "NETWORK",
+      "subcategory": "DNS"
+    },
+    {
+      "subject": "Network congestion",
+      "description": "Heavy traffic is causing the network to become slow.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Limited network bandwidth",
+      "description": "Available network bandwidth is insufficient for our workload.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Network traffic saturation",
+      "description": "The network link appears to be saturated.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Bandwidth shortage",
+      "description": "There is not enough bandwidth for current network usage.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "High network traffic",
+      "description": "Large amounts of network traffic are affecting performance.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Network overloaded",
+      "description": "The network becomes extremely slow during periods of heavy usage.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Bandwidth utilization problem",
+      "description": "High bandwidth usage is affecting network performance.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Network capacity issue",
+      "description": "The current network capacity is insufficient.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Traffic congestion problem",
+      "description": "Network congestion is causing slow responses.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Insufficient network throughput",
+      "description": "The network cannot provide enough throughput for current demand.",
+      "category": "NETWORK",
+      "subcategory": "Bandwidth"
+    },
+    {
+      "subject": "Application running slowly",
+      "description": "The business application is taking a long time to respond.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Slow business application",
+      "description": "The application has become noticeably slower.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application response time problem",
+      "description": "Application requests take much longer than expected.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application performance degradation",
+      "description": "The performance of the business application has deteriorated.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Slow application processing",
+      "description": "The application takes too long to process requests.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application latency issue",
+      "description": "There is significant delay when using the application.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application response slowdown",
+      "description": "Pages and actions in the application are responding slowly.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Business application delay",
+      "description": "The application has a noticeable response delay.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application processing slow",
+      "description": "Application operations are taking too long to complete.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Poor application performance",
+      "description": "The application performance is significantly worse than usual.",
+      "category": "APPLICATION",
+      "subcategory": "Performance"
+    },
+    {
+      "subject": "Application crashes unexpectedly",
+      "description": "The business application closes without warning.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application failure",
+      "description": "The application stops working during normal use.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application error encountered",
+      "description": "An unexpected error appears while using the application.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application stops responding",
+      "description": "The application becomes unresponsive during normal work.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Repeated application crash",
+      "description": "The application crashes every time I perform a certain operation.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application runtime error",
+      "description": "The application displays an error while running.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Unexpected software failure",
+      "description": "The business application suddenly stops functioning.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application error popup",
+      "description": "An error popup appears while completing a task.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application crash problem",
+      "description": "The application keeps crashing during normal use.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Application stopped working",
+      "description": "The business application has stopped working completely.",
+      "category": "SOFTWARE",
+      "subcategory": "Crash"
+    },
+    {
+      "subject": "Permission denied",
+      "description": "I cannot access a resource because my permissions are insufficient.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Missing access rights",
+      "description": "My account does not have the required access rights.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Permission request",
+      "description": "I need additional permissions for my work.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Restricted resource access",
+      "description": "The system denies access to a restricted resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Insufficient permissions",
+      "description": "My account permissions are not sufficient.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Access rights problem",
+      "description": "I am missing the access rights required for my job.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Resource permission issue",
+      "description": "I cannot access the required company resource.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Request additional permissions",
+      "description": "Please grant the permissions needed for my role.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Access permission failure",
+      "description": "The system reports that I do not have permission.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Permission configuration problem",
+      "description": "My account permissions need to be updated.",
+      "category": "ACCESS",
+      "subcategory": "Permissions"
+    },
+    {
+      "subject": "Account locked",
+      "description": "My company account has been locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "User account lockout",
+      "description": "I cannot log in because my account is locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Unlock account request",
+      "description": "Please help me unlock my company account.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Repeated account lockout",
+      "description": "My account keeps getting locked after login attempts.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Locked company account",
+      "description": "My company account is currently locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Login blocked by account lock",
+      "description": "The account lockout prevents me from signing in.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Account access locked",
+      "description": "I cannot access my account because it has been locked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Need account unlock",
+      "description": "My user account needs to be unlocked.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Account lockout problem",
+      "description": "I am unable to sign in due to an account lockout.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "User login locked",
+      "description": "My user account is locked after failed login attempts.",
+      "category": "ACCESS",
+      "subcategory": "Account lockout"
+    },
+    {
+      "subject": "Mailbox unavailable",
+      "description": "I cannot access my company mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email inbox problem",
+      "description": "My company inbox is not working correctly.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Cannot receive email",
+      "description": "New company emails are not arriving.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Cannot send email",
+      "description": "Outgoing company emails are failing.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Mailbox synchronization problem",
+      "description": "My mailbox is not updating with new messages.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email account issue",
+      "description": "There is a problem with my work email account.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Mailbox access failure",
+      "description": "I am unable to access my company mailbox.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email inbox unavailable",
+      "description": "My company email inbox is unavailable.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Mailbox storage problem",
+      "description": "My mailbox has reached its storage limit.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Email mailbox failure",
+      "description": "My work mailbox is not functioning correctly.",
+      "category": "EMAIL",
+      "subcategory": "Mailbox"
+    },
+    {
+      "subject": "Calendar synchronization failure",
+      "description": "My work calendar is not syncing correctly.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar events missing",
+      "description": "Recent meetings are missing from my calendar.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar update problem",
+      "description": "Calendar changes are not appearing on my device.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Work calendar not updating",
+      "description": "My company calendar is not receiving new updates.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Meeting synchronization issue",
+      "description": "New meetings are not appearing on my phone.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar sync error",
+      "description": "The calendar cannot synchronize with the company server.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Mobile calendar problem",
+      "description": "My work calendar is not updating on my mobile device.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar events not syncing",
+      "description": "Calendar events are not synchronized across devices.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Calendar server sync issue",
+      "description": "The company calendar is out of sync with the server.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Missing calendar updates",
+      "description": "Changes made to the calendar are not appearing.",
+      "category": "EMAIL",
+      "subcategory": "Calendar"
+    },
+    {
+      "subject": "Laptop power failure",
+      "description": "My company laptop will not turn on.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop overheating problem",
+      "description": "My laptop becomes extremely hot during normal work.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop keyboard failure",
+      "description": "Several keys on my company laptop have stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop battery problem",
+      "description": "The laptop battery is no longer holding a charge.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop freezing issue",
+      "description": "My laptop frequently freezes while I work.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop hardware problem",
+      "description": "My company laptop appears to have a hardware failure.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop startup failure",
+      "description": "The laptop does not start even when connected to power.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop slow performance",
+      "description": "My company laptop has become very slow.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop power problem",
+      "description": "The laptop does not respond when I press the power button.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Laptop device failure",
+      "description": "My work laptop is experiencing a hardware issue.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop"
+    },
+    {
+      "subject": "Monitor black screen",
+      "description": "My external monitor displays a black screen.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor flicker problem",
+      "description": "The external monitor keeps flickering.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor not detected",
+      "description": "My laptop cannot detect the external monitor.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External display failure",
+      "description": "The external display has stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor image problem",
+      "description": "The monitor does not display the correct image.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Second monitor issue",
+      "description": "My second monitor is not working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor display distortion",
+      "description": "The monitor shows lines and distorted images.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Monitor connection failure",
+      "description": "The external monitor cannot connect to my laptop.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Display screen problem",
+      "description": "The screen has intermittent display problems.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External monitor problem",
+      "description": "My external monitor is not functioning correctly.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Keyboard peripheral failure",
+      "description": "My external keyboard is not responding.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Mouse peripheral issue",
+      "description": "My company mouse has stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Docking station failure",
+      "description": "My docking station does not detect connected devices.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Headset not working",
+      "description": "My work headset is not functioning.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "USB device not recognized",
+      "description": "A USB peripheral is not being detected.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Webcam peripheral problem",
+      "description": "My external webcam is not detected.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External keyboard issue",
+      "description": "The connected keyboard has stopped responding.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Peripheral device failure",
+      "description": "A connected work peripheral is not functioning.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "USB peripheral problem",
+      "description": "My computer cannot recognize a USB device.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "External device not working",
+      "description": "One of my company peripherals has stopped working.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral"
+    },
+    {
+      "subject": "Software license request",
+      "description": "I need a valid license for software required for my work.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License activation failure",
+      "description": "I cannot activate the software license.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Expired software license",
+      "description": "The installed software license has expired.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License renewal needed",
+      "description": "Please renew the license for the software.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software license missing",
+      "description": "The application reports that no valid license is available.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License unavailable",
+      "description": "I cannot use the software because its license is unavailable.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Request application license",
+      "description": "Please provide a license for the required application.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software licensing problem",
+      "description": "The application is reporting a licensing problem.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "License validation issue",
+      "description": "The software cannot validate its license.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Software activation issue",
+      "description": "The software will not activate because of a license problem.",
+      "category": "SOFTWARE",
+      "subcategory": "Licensing"
+    },
+    {
+      "subject": "Install required software",
+      "description": "I need help installing software on my workstation.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software installer failure",
+      "description": "The software installer fails during installation.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Application installation problem",
+      "description": "I cannot complete the installation of the required application.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Installation error",
+      "description": "An error occurs while installing the software.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software setup failure",
+      "description": "The application setup does not complete successfully.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Cannot install application",
+      "description": "The required application cannot be installed.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Installation request",
+      "description": "Please install the required software on my computer.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software installation issue",
+      "description": "The software installation fails before completion.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Application setup problem",
+      "description": "I am having trouble completing the application installation.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Failed software installation",
+      "description": "The software installation process fails repeatedly.",
+      "category": "SOFTWARE",
+      "subcategory": "Installation"
+    },
+    {
+      "subject": "Software update problem",
+      "description": "The latest software update will not install.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Patch installation failure",
+      "description": "The required software patch fails to install.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Application update failure",
+      "description": "The application update keeps failing.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Security patch issue",
+      "description": "The latest security patch did not install correctly.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Software patch request",
+      "description": "The workstation needs the latest approved software patch.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Update installation error",
+      "description": "An error appears when applying the software update.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Application patching problem",
+      "description": "The required application patch cannot be applied.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Software update request",
+      "description": "Please update the installed application.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Failed application update",
+      "description": "The latest application update is failing.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Patch update problem",
+      "description": "The software patching process is not working.",
+      "category": "SOFTWARE",
+      "subcategory": "Update"
+    },
+    {
+      "subject": "Software compatibility issue",
+      "description": "The application is incompatible with my operating system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Application version conflict",
+      "description": "Different software versions are causing compatibility problems.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Operating system incompatibility",
+      "description": "The software does not support the current operating system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Application compatibility failure",
+      "description": "The application cannot run with the current system configuration.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Software version mismatch",
+      "description": "The installed software version is incompatible.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Incompatible application",
+      "description": "The required application cannot run on this workstation.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Software compatibility problem",
+      "description": "The application fails because of a compatibility issue.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Version compatibility failure",
+      "description": "The current software version conflicts with the system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Operating system compatibility problem",
+      "description": "The application does not support the installed operating system.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Application version compatibility",
+      "description": "The application cannot operate with the current software environment.",
+      "category": "SOFTWARE",
+      "subcategory": "Compatibility"
+    },
+    {
+      "subject": "Forgot my account password",
+      "description": "I forgot my company account password and need to reset it.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Need password reset",
+      "description": "I cannot remember my corporate password and need help resetting it.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Reset corporate password",
+      "description": "Please help me reset the password for my work account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Password forgotten",
+      "description": "I have forgotten my login password and need to create a new one.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Unable to remember password",
+      "description": "I cannot remember my company account password and need a reset.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Change forgotten account password",
+      "description": "My work account password is forgotten and needs to be reset.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Password reset assistance",
+      "description": "I need assistance resetting my corporate account password.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Reset my login password",
+      "description": "Please reset the login password for my company account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Cannot access account after forgetting password",
+      "description": "I cannot sign in because I forgot my account password.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Corporate password reset request",
+      "description": "I need a password reset for my corporate user account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Work account password forgotten",
+      "description": "I forgot the password used for my work account and need a reset.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Help resetting account password",
+      "description": "Please help me reset the password associated with my company account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Lost password",
+      "description": "I no longer remember my corporate login password.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Password recovery request",
+      "description": "I need to recover access by resetting my forgotten work password.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Account password needs reset",
+      "description": "My company account password needs to be reset because I forgot it.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Reset forgotten work password",
+      "description": "Please assist with resetting the forgotten password for my work account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Forgotten corporate login credentials",
+      "description": "I forgot my login password and need assistance recovering access.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "Password recovery for work account",
+      "description": "I need to reset the password on my company account.",
+      "category": "ACCESS",
+      "subcategory": "Password reset"
+    },
+    {
+      "subject": "MFA code not received",
+      "description": "I am not receiving the verification code required for MFA login.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Multi-factor authentication failing",
+      "description": "My MFA verification is failing when I try to sign in.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Authenticator app problem",
+      "description": "The authenticator app is not generating a valid verification code.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA verification issue",
+      "description": "I cannot complete the multi-factor authentication step during login.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA device changed",
+      "description": "I changed my phone and need my new device configured for MFA.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Cannot complete MFA login",
+      "description": "My account login stops because MFA verification cannot be completed.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Authenticator code rejected",
+      "description": "The MFA code generated by my authenticator is being rejected.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA prompt not working",
+      "description": "The multi-factor authentication prompt is not completing successfully.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Verification code problem",
+      "description": "The verification code for my work account MFA is not working.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA enrollment issue",
+      "description": "I am unable to enroll my account in multi-factor authentication.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "New phone MFA setup",
+      "description": "I need to register my new phone as the MFA device for my work account.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA authentication failure",
+      "description": "The MFA authentication step fails every time I sign in.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Authenticator not approving login",
+      "description": "The authenticator approval is not allowing me to complete login.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA reset request",
+      "description": "I need my multi-factor authentication configuration reset.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Unable to verify MFA",
+      "description": "I cannot verify my identity using the configured MFA method.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA token invalid",
+      "description": "The MFA token provided during login is being reported as invalid.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "MFA challenge failing",
+      "description": "The authentication challenge fails when I attempt to access my work account.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "Multi-factor login issue",
+      "description": "I am unable to complete the MFA portion of my corporate login.",
+      "category": "ACCESS",
+      "subcategory": "MFA"
+    },
+    {
+      "subject": "New employee access setup",
+      "description": "A new employee has joined the team and needs initial system access.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New starter account setup",
+      "description": "Please arrange the required accounts and access for a new starter.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Onboarding access request",
+      "description": "A newly joined employee needs the standard systems required for onboarding.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New hire system access",
+      "description": "Our new hire needs initial access to the systems required for their role.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Set up access for new employee",
+      "description": "Please provision the standard work accounts for a new employee joining the team.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Employee onboarding accounts",
+      "description": "A new employee requires the necessary accounts and permissions for their first day.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New starter access provisioning",
+      "description": "Please provision access for a new starter joining our department.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "First day access setup",
+      "description": "A new employee needs their standard company systems configured before their first day.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New joiner account provisioning",
+      "description": "Please create and provision the required work access for a new joiner.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New employee system provisioning",
+      "description": "Our new employee needs the standard accounts and system access for their role.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Employee onboarding support",
+      "description": "Please arrange initial system access for an employee starting with the company.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New hire account creation",
+      "description": "A new hire needs the standard corporate accounts created for their first day.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Onboarding permissions setup",
+      "description": "Please configure the standard permissions required by a newly hired employee.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New employee access provisioning",
+      "description": "Our new employee needs initial access to the approved systems for their position.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New starter login setup",
+      "description": "Please prepare the corporate account and required access for a new starter.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "New hire IT access",
+      "description": "A new team member requires the standard IT access needed for their job.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Employee joining next week",
+      "description": "Please prepare the required accounts and systems for an employee joining next week.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Initial access for new employee",
+      "description": "A new employee needs initial corporate system access as part of onboarding.",
+      "category": "ACCESS",
+      "subcategory": "Onboarding"
+    },
+    {
+      "subject": "Office WiFi not connecting",
+      "description": "My laptop cannot connect to the office WiFi network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi keeps disconnecting",
+      "description": "The office WiFi connection repeatedly disconnects while I am working.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Unable to join corporate WiFi",
+      "description": "I cannot connect my work laptop to the corporate wireless network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Office wireless network unavailable",
+      "description": "The WiFi network at the office is not available on my laptop.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi connection drops",
+      "description": "My wireless connection keeps dropping several times during the day.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Corporate WiFi authentication problem",
+      "description": "My laptop cannot successfully connect to the company WiFi.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi signal keeps disappearing",
+      "description": "The office wireless network disappears from the available network list.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Laptop cannot detect office WiFi",
+      "description": "The office WiFi network is not appearing on my work laptop.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Wireless connection failure",
+      "description": "I am unable to establish a connection to the company's wireless network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi connectivity issue",
+      "description": "My laptop connects to WiFi briefly and then loses the connection.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Office wireless access problem",
+      "description": "I cannot get reliable access to the office wireless network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi disconnects during work",
+      "description": "The corporate WiFi connection keeps disconnecting while I use internal systems.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Cannot connect to company wireless",
+      "description": "My work device is unable to connect to the company wireless network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "WiFi network not visible",
+      "description": "The expected office WiFi network is missing from the list of available networks.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Wireless network connection problem",
+      "description": "My laptop is having trouble maintaining a connection to office WiFi.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Company WiFi keeps dropping",
+      "description": "The corporate wireless connection repeatedly drops from my workstation.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Work laptop WiFi problem",
+      "description": "I cannot reliably connect my work laptop to the office wireless network.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "Wireless access failure",
+      "description": "The office wireless network is not allowing my device to connect.",
+      "category": "NETWORK",
+      "subcategory": "WiFi"
+    },
+    {
+      "subject": "LAN connection not working",
+      "description": "My workstation cannot connect to the company network through the LAN cable.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Ethernet connection failure",
+      "description": "The wired Ethernet connection to my workstation is not working.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Office LAN unavailable",
+      "description": "My desktop cannot access the office network using the wired LAN connection.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Wired network connection problem",
+      "description": "The network cable is connected but my workstation has no LAN connectivity.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Ethernet port not connecting",
+      "description": "My workstation is unable to establish a wired network connection.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "LAN connection keeps dropping",
+      "description": "The wired network connection repeatedly disconnects while I am working.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Cannot access network over Ethernet",
+      "description": "My computer cannot reach company network resources through its Ethernet connection.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Wired network unavailable",
+      "description": "The wired office network is unavailable on my workstation.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Ethernet cable connection issue",
+      "description": "My computer is not getting network connectivity through the Ethernet cable.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "LAN access problem",
+      "description": "I cannot access internal network resources through the office LAN.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Desktop wired network failure",
+      "description": "The wired network connection on my desktop has stopped working.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Corporate Ethernet not working",
+      "description": "My workstation cannot connect to the corporate network using Ethernet.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Wired connection disconnected",
+      "description": "The LAN connection on my work computer keeps disconnecting.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Network cable connection failure",
+      "description": "The network cable is connected but the workstation has no network access.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Office Ethernet connection issue",
+      "description": "I am unable to use the wired office network from my workstation.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "LAN connectivity problem",
+      "description": "My wired connection to the internal network is not functioning correctly.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Wired office network unavailable",
+      "description": "The office LAN is unavailable on my company computer.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Ethernet network access failure",
+      "description": "My workstation cannot establish network access using the wired connection.",
+      "category": "NETWORK",
+      "subcategory": "LAN"
+    },
+    {
+      "subject": "Install VPN client",
+      "description": "I need the corporate VPN client installed on my work laptop.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN client installation request",
+      "description": "Please install the approved VPN client on my company computer.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Need VPN software installed",
+      "description": "My laptop does not have the corporate VPN application installed.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Set up VPN client",
+      "description": "I need the company VPN client installed and configured on my workstation.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN application missing",
+      "description": "The corporate VPN application is not installed on my work laptop.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Request corporate VPN client",
+      "description": "Please provide and install the approved VPN client for my work device.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN software setup needed",
+      "description": "I need the VPN software installed so I can connect remotely.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Install remote access VPN",
+      "description": "Please install the corporate VPN software required for remote access.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN client not installed",
+      "description": "My new work laptop does not have the required VPN client.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN setup on new laptop",
+      "description": "I need the corporate VPN client installed on my new company laptop.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Configure VPN application",
+      "description": "Please install the approved VPN application on my workstation.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Remote VPN software installation",
+      "description": "I need the VPN software installed for remote work access.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN client deployment",
+      "description": "The corporate VPN client needs to be installed on my work computer.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Corporate VPN application setup",
+      "description": "Please set up the approved VPN client on my company device.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "Need remote VPN client",
+      "description": "I need the corporate VPN application installed before I can work remotely.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN installer request",
+      "description": "Please install the approved VPN client required for corporate remote access.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "New workstation VPN setup",
+      "description": "The VPN client needs to be installed on my newly issued workstation.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN client required",
+      "description": "I need the company VPN application installed on my device for remote connectivity.",
+      "category": "VPN",
+      "subcategory": "Client install"
+    },
+    {
+      "subject": "VPN connection timeout",
+      "description": "The VPN connection attempt times out before it can connect.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN request keeps timing out",
+      "description": "My VPN connection repeatedly times out while trying to establish a session.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN server timeout",
+      "description": "The VPN client reports a timeout when connecting to the corporate server.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "Remote VPN connection timeout",
+      "description": "The remote VPN connection times out before authentication completes.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN connection attempt times out",
+      "description": "Every attempt to connect to the corporate VPN ends with a timeout.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN gateway timeout",
+      "description": "The VPN client cannot reach the gateway before the connection times out.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN timeout error",
+      "description": "A timeout error appears whenever I try to establish the VPN connection.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN connection expires during setup",
+      "description": "The VPN setup process times out before a connection is established.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "Corporate VPN timeout",
+      "description": "The corporate VPN cannot complete the connection because the request times out.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN keeps timing out",
+      "description": "My VPN client repeatedly reaches a connection timeout.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "Timeout while connecting to VPN",
+      "description": "The connection to the company VPN server times out every time.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN connection deadline exceeded",
+      "description": "The VPN client cannot establish the connection before the timeout period expires.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN gateway not responding in time",
+      "description": "The VPN gateway does not respond before the connection attempt times out.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "Remote access VPN timeout",
+      "description": "My remote access VPN connection times out before it is established.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN session initialization timeout",
+      "description": "The VPN session cannot initialize because the connection request times out.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN handshake timeout",
+      "description": "The VPN handshake does not complete before the connection times out.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN login connection timeout",
+      "description": "The VPN connection times out while the client is trying to establish the session.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    },
+    {
+      "subject": "VPN connection timed out",
+      "description": "The corporate VPN connection repeatedly ends with a timeout message.",
+      "category": "VPN",
+      "subcategory": "Timeout"
+    }
+  ]
+}

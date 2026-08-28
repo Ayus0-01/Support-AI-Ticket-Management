@@ -14,6 +14,8 @@ from bson import ObjectId
 from AIticket.db import (
     users_collection,
     tickets_collection,
+    ticket_responses_collection,
+    response_citations_collection,
 )
 
 from .serializers import (
@@ -44,6 +46,17 @@ from .classification.category_classifier import (
 
 from .classification.subcategory_classifier import (
     predict_subcategory_fast,
+)
+from apps.knowledge_base.resolution_service import(
+    generate_and_persist_resolution,
+)
+
+from apps.knowledge_base.review_service import (
+    get_response_for_review,
+    accept_response,
+    edit_and_send_response,
+    reject_response,
+    submit_feedback,
 )
 
 @api_view(["POST"])
@@ -501,9 +514,17 @@ def agent_queue_view(request):
 
     tickets = get_agent_queue()
 
+    # Queue documents can carry internal Mongo references such as
+    # ``latest_response_id``. Use the same public ticket representation as
+    # the other ticket endpoints instead of returning raw database documents.
+    safe_tickets = EmployeeTicketSerializer(
+        tickets,
+        many=True,
+    ).data
+
     return Response(
         {
-            "tickets": tickets
+            "tickets": safe_tickets
         },
         status=status.HTTP_200_OK
     )
@@ -1112,4 +1133,766 @@ def ticket_timeline_view(
             "timeline": timeline,
         },
         status=status.HTTP_200_OK,
+    )
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def generate_resolution_view(
+    request,
+    ticket_id,
+):
+    """
+    Generate and persist an M2 resolution draft.
+
+    Agent/Admin only. Generated M2 responses include internal
+    review information and must not be exposed to requesters.
+    """
+
+    auth_header = request.headers.get(
+        "Authorization"
+    )
+
+    if not auth_header:
+        return Response(
+            {
+                "message": (
+                    "Authorization header missing."
+                )
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        parts = auth_header.split(" ")
+
+        if (
+            len(parts) != 2
+            or parts[0] != "Bearer"
+        ):
+            return Response(
+                {
+                    "message": (
+                        "Invalid Authorization header."
+                    )
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        access_token = AccessToken(
+            parts[1]
+        )
+
+        user_id = access_token[
+            "user_id"
+        ]
+
+    except Exception:
+        return Response(
+            {
+                "message": (
+                    "Invalid or expired token."
+                )
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        user = users_collection.find_one(
+            {
+                "_id": ObjectId(
+                    user_id
+                )
+            }
+        )
+
+    except Exception:
+        return Response(
+            {
+                "message": "Invalid user ID."
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    if not user:
+        return Response(
+            {
+                "message": "User not found."
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    ticket = tickets_collection.find_one(
+        {
+            "ticket_id": ticket_id
+        }
+    )
+
+    if not ticket:
+        return Response(
+            {
+                "message": "Ticket not found."
+            },
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    role = user.get(
+        "role",
+        "User",
+    )
+
+    if role not in {
+        "Agent",
+        "Admin",
+    }:
+        return Response(
+            {
+                "message": (
+                    "Only Agent or Admin users can generate "
+                    "resolution drafts."
+                )
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    if ticket.get(
+        "resolution_status"
+    ) == "DRAFT":
+        return Response(
+            {
+                "message": (
+                    "A resolution draft already "
+                    "exists for this ticket."
+                ),
+                "resolution_status": "DRAFT",
+                "latest_response_id": (
+                    str(
+                        ticket.get(
+                            "latest_response_id"
+                        )
+                    )
+                    if ticket.get(
+                        "latest_response_id"
+                    )
+                    else None
+                ),
+            },
+            status=status.HTTP_409_CONFLICT,
+        )
+
+    classification = (
+        ticket.get(
+            "classification"
+        )
+        or {}
+    )
+
+    category = (
+        ticket.get(
+            "category"
+        )
+        or (
+            classification.get(
+                "category"
+            )
+            or {}
+        ).get(
+            "value",
+            "",
+        )
+    )
+
+    severity = (
+        ticket.get(
+            "severity"
+        )
+        or (
+            classification.get(
+                "severity"
+            )
+            or {}
+        ).get(
+            "value",
+            "",
+        )
+    )
+
+    category_confidence = float(
+        (
+            classification.get(
+                "category"
+            )
+            or {}
+        ).get(
+            "confidence",
+            0.0,
+        )
+        or 0.0
+    )
+
+    severity_confidence = float(
+        (
+            classification.get(
+                "severity"
+            )
+            or {}
+        ).get(
+            "confidence",
+            0.0,
+        )
+        or 0.0
+    )
+
+    classification_confidence = max(
+        category_confidence,
+        severity_confidence,
+    )
+
+    ticket["category"] = category
+
+    ticket["severity"] = severity
+
+    try:
+        response_document = (
+            generate_and_persist_resolution(
+                ticket=ticket,
+                classification_confidence=(
+                    classification_confidence
+                ),
+            )
+        )
+
+    except Exception as exc:
+        return Response(
+            {
+                "message": (
+                    "Resolution generation failed."
+                ),
+                "error": str(exc),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    return Response(
+        {
+            "message": (
+                "Resolution draft generated successfully."
+            ),
+            "response": {
+                "id": str(
+                    response_document["_id"]
+                ),
+                "ticket_id": response_document.get(
+                    "ticket_number"
+                ),
+                "status": response_document.get(
+                    "status"
+                ),
+                "sufficient_context": (
+                    response_document.get(
+                        "sufficient_context"
+                    )
+                ),
+                "summary": response_document.get(
+                    "summary"
+                ),
+                "steps": response_document.get(
+                    "steps"
+                ),
+                "escalation_recommended": (
+                    response_document.get(
+                        "escalation_recommended"
+                    )
+                ),
+                "escalation_reason": (
+                    response_document.get(
+                        "escalation_reason"
+                    )
+                ),
+                "confidence": response_document.get(
+                    "confidence"
+                ),
+                "confidence_parts": (
+                    response_document.get(
+                        "confidence_parts"
+                    )
+                ),
+            },
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+def _serialize_response_citation(citation):
+    article_id = citation.get("article_id")
+    chunk_index = citation.get("chunk_index")
+
+    return {
+        "article_id": str(article_id) if article_id else None,
+        "article_title": citation.get("article_title"),
+        "section": citation.get("heading_path", ""),
+        "chunk_index": chunk_index,
+        "snippet": citation.get("snippet", ""),
+        "step_order": citation.get("step_order"),
+        "source": (
+            f"[SOURCE:{article_id}#{chunk_index}]"
+            if article_id is not None and chunk_index is not None
+            else None
+        ),
+    }
+
+
+def _get_response_citations(response_id):
+    citations = response_citations_collection.find(
+        {"response_id": ObjectId(str(response_id))}
+    ).sort([
+        ("step_order", 1),
+        ("retrieval_rank", 1),
+    ])
+
+    return [
+        _serialize_response_citation(citation)
+        for citation in citations
+    ]
+
+
+def _serialize_resolution_response(response_document):
+    return {
+        "id": str(response_document["_id"]),
+        "ticket_id": response_document.get("ticket_number"),
+        "status": response_document.get("status"),
+        "sufficient_context": response_document.get(
+            "sufficient_context"
+        ),
+        "summary": response_document.get("summary"),
+        "steps": response_document.get("steps", []),
+        "sources": response_document.get("sources", []),
+        "citations": _get_response_citations(
+            response_document["_id"]
+        ),
+        "escalation_recommended": response_document.get(
+            "escalation_recommended"
+        ),
+        "escalation_reason": response_document.get(
+            "escalation_reason"
+        ),
+        "confidence": response_document.get("confidence"),
+        "confidence_parts": response_document.get(
+            "confidence_parts"
+        ),
+        "steps_dropped": response_document.get(
+            "steps_dropped",
+            0,
+        ),
+        "reject_reason": response_document.get("reject_reason"),
+    }
+
+
+def _get_authenticated_user(request):
+    auth_header = request.headers.get(
+        "Authorization"
+    )
+
+    if not auth_header:
+        return None, Response(
+            {"message": "Authorization header missing."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        parts = auth_header.split(" ")
+
+        if len(parts) != 2 or parts[0] != "Bearer":
+            raise ValueError()
+
+        access_token = AccessToken(parts[1])
+
+        user_id = access_token["user_id"]
+
+        user = users_collection.find_one(
+            {"_id": ObjectId(user_id)}
+        )
+
+        if not user:
+            return None, Response(
+                {"message": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return user, None
+
+    except Exception:
+        return None, Response(
+            {"message": "Invalid or expired token."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+def _require_agent_or_admin(user):
+    role = user.get("role", "User")
+
+    if role not in {
+        "Agent",
+        "Admin",
+    }:
+        return Response(
+            {
+                "message": (
+                    "Only Agent or Admin users can "
+                    "perform this action."
+                )
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    return None
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def get_ticket_responses_view(
+    request,
+    ticket_id,
+):
+    """
+    Return persisted M2 response drafts and review states for an
+    agent-visible ticket. Internal resolution data is deliberately
+    unavailable to requester-facing views.
+    """
+    user, error = _get_authenticated_user(request)
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(user)
+
+    if role_error:
+        return role_error
+
+    ticket = tickets_collection.find_one(
+        {"ticket_id": ticket_id}
+    )
+
+    if not ticket:
+        return Response(
+            {"message": "Ticket not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    responses = ticket_responses_collection.find(
+        {"ticket_id": ticket["_id"]}
+    ).sort("created_at", -1)
+
+    return Response(
+        {
+            "ticket_id": ticket_id,
+            "responses": [
+                _serialize_resolution_response(response_document)
+                for response_document in responses
+            ],
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def get_resolution_response_view(
+    request,
+    response_id,
+):
+    user, error = _get_authenticated_user(request)
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(user)
+
+    if role_error:
+        return role_error
+
+    try:
+        response_document = get_response_for_review(
+            response_id=response_id
+        )
+    except Exception:
+        response_document = None
+
+    if not response_document:
+        return Response(
+            {"message": "Resolution response not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    return Response(
+        _serialize_resolution_response(response_document),
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def accept_resolution_view(
+    request,
+    response_id,
+):
+    user, error = _get_authenticated_user(request)
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(
+        user
+    )
+
+    if role_error:
+        return role_error
+
+    try:
+        response_document = accept_response(
+            response_id=response_id,
+            reviewer_id=user["_id"],
+        )
+
+    except ValueError as exc:
+        return Response(
+            {
+                "message": str(exc)
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "message": (
+                "Resolution accepted and sent."
+            ),
+            "response": {
+                "id": str(
+                    response_document["_id"]
+                ),
+                "status": response_document.get(
+                    "status"
+                ),
+                "ticket_id": response_document.get(
+                    "ticket_number"
+                ),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def edit_send_resolution_view(
+    request,
+    response_id,
+):
+    user, error = _get_authenticated_user(
+        request
+    )
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(
+        user
+    )
+
+    if role_error:
+        return role_error
+
+    edited_summary = request.data.get(
+        "summary",
+        "",
+    )
+
+    edited_steps = request.data.get(
+        "steps",
+        [],
+    )
+
+    if not isinstance(
+        edited_steps,
+        list,
+    ):
+        return Response(
+            {
+                "message": (
+                    "steps must be a list."
+                )
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        response_document = (
+            edit_and_send_response(
+                response_id=response_id,
+                reviewer_id=user["_id"],
+                edited_summary=edited_summary,
+                edited_steps=edited_steps,
+            )
+        )
+
+    except ValueError as exc:
+        return Response(
+            {
+                "message": str(exc)
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "message": (
+                "Edited resolution sent."
+            ),
+            "response": {
+                "id": str(
+                    response_document["_id"]
+                ),
+                "status": response_document.get(
+                    "status"
+                ),
+                "ticket_id": response_document.get(
+                    "ticket_number"
+                ),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def reject_resolution_view(
+    request,
+    response_id,
+):
+    user, error = _get_authenticated_user(
+        request
+    )
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(
+        user
+    )
+
+    if role_error:
+        return role_error
+
+    reason = request.data.get(
+        "reason",
+        "",
+    )
+
+    try:
+        response_document = reject_response(
+            response_id=response_id,
+            reviewer_id=user["_id"],
+            reason=reason,
+        )
+
+    except ValueError as exc:
+        return Response(
+            {
+                "message": str(exc)
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "message": (
+                "Resolution rejected."
+            ),
+            "response": {
+                "id": str(
+                    response_document["_id"]
+                ),
+                "status": response_document.get(
+                    "status"
+                ),
+                "ticket_id": response_document.get(
+                    "ticket_number"
+                ),
+                "reject_reason": response_document.get(
+                    "reject_reason"
+                ),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def resolution_feedback_view(
+    request,
+    response_id,
+):
+    user, error = _get_authenticated_user(
+        request
+    )
+
+    if error:
+        return error
+
+    was_helpful = request.data.get(
+        "was_helpful"
+    )
+
+    if not isinstance(
+        was_helpful,
+        bool,
+    ):
+        return Response(
+            {
+                "message": (
+                    "was_helpful must be boolean."
+                )
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        feedback = submit_feedback(
+            response_id=response_id,
+            user_id=user["_id"],
+            was_helpful=was_helpful,
+            comment=request.data.get(
+                "comment",
+                "",
+            ),
+            resolved_ticket=request.data.get(
+                "resolved_ticket",
+                False,
+            ),
+        )
+
+    except ValueError as exc:
+        return Response(
+            {
+                "message": str(exc)
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    return Response(
+        {
+            "message": "Feedback recorded.",
+            "feedback_id": str(
+                feedback["_id"]
+            ),
+        },
+        status=status.HTTP_201_CREATED,
     )

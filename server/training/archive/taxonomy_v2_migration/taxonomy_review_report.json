@@ -1,0 +1,1322 @@
+{
+  "approved_categories": [
+    "ACCESS",
+    "APPLICATION",
+    "EMAIL",
+    "HARDWARE",
+    "NETWORK",
+    "PRINTER",
+    "SECURITY",
+    "SOFTWARE",
+    "UNCLASSIFIED",
+    "VPN"
+  ],
+  "groups": [
+    {
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "tickets": [
+        {
+          "subject": "Request new system access",
+          "description": "I need access to a system that I have never used before.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New application access",
+          "description": "Please provide access to the required business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request access to resource",
+          "description": "I need access to a company resource for my work.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Access request",
+          "description": "Please grant me access to the requested system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Need access to application",
+          "description": "My role requires access to an application I cannot currently use.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request access for work",
+          "description": "I need a new access permission for my current responsibilities.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New resource access",
+          "description": "Please provide access to the required internal resource.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application access needed",
+          "description": "I need access to a business system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request new access",
+          "description": "I need access to a system for my work.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New system access request",
+          "description": "Please provide access to the required internal system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application access request",
+          "description": "I need access to a business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request access to resource",
+          "description": "Please grant me access to the required company resource.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New user access",
+          "description": "I need access to a system I have not used before.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Access needed for work",
+          "description": "My work requires access to a new application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request business system access",
+          "description": "Please provide access to the required business system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New resource permission request",
+          "description": "I need access to a new internal resource.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Access provisioning request",
+          "description": "Please provision access for my account.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "System access needed",
+          "description": "I require access to a company system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "tickets": [
+        {
+          "subject": "Change user role",
+          "description": "My job role has changed and my system role needs to be updated.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Role update request",
+          "description": "Please update my access role to match my new responsibilities.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Employee role changed",
+          "description": "I need my application role changed after moving teams.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Update access role",
+          "description": "My current role no longer matches my position.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Role modification",
+          "description": "Please modify my assigned system role.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Change permissions role",
+          "description": "My new position requires a different access role.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Department role update",
+          "description": "Please update my role after my internal transfer.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New job role access",
+          "description": "My job responsibilities changed and my system role needs updating.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Change system role",
+          "description": "My role has changed and my system access needs updating.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Update employee role",
+          "description": "Please update my access role after my department change.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Role modification request",
+          "description": "I need my assigned application role changed.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New role access",
+          "description": "My new responsibilities require a different system role.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Change access role",
+          "description": "Please modify my current system role.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Employee role update",
+          "description": "My job responsibilities have changed.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Department transfer access",
+          "description": "I moved departments and need my system role updated.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Role change request",
+          "description": "My account role needs to match my new position.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Update user role",
+          "description": "Please change my assigned role in the system.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Job role access change",
+          "description": "My new job role requires different system access.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "tickets": [
+        {
+          "subject": "Application login failing",
+          "description": "I cannot sign in to the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application authentication error",
+          "description": "The application rejects my login credentials.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Unable to authenticate",
+          "description": "Authentication fails when I try to access the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application sign-in problem",
+          "description": "The application does not allow me to sign in.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Login error in application",
+          "description": "I receive an authentication error when logging into the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application credentials rejected",
+          "description": "My credentials are being rejected by the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Authentication failure",
+          "description": "The application authentication process is failing.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Cannot log into application",
+          "description": "I am unable to authenticate to the required application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Business application login failure",
+          "description": "I cannot log into the company application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application credentials rejected",
+          "description": "The application keeps rejecting my credentials.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application authentication problem",
+          "description": "Authentication fails when accessing the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application sign in unavailable",
+          "description": "I cannot sign into the required application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Login authentication error",
+          "description": "The application displays an authentication error during login.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Unable to authenticate application",
+          "description": "The application will not authenticate my account.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application access login problem",
+          "description": "My login attempt to the application is failing.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application login credentials issue",
+          "description": "My credentials are not being accepted by the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Business system authentication failure",
+          "description": "Authentication to the business system is unsuccessful.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application account login issue",
+          "description": "I am unable to access the application using my account.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "tickets": [
+        {
+          "subject": "Request new application feature",
+          "description": "I would like the application to support an additional feature.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application enhancement request",
+          "description": "Please consider adding a new capability to the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Feature improvement needed",
+          "description": "I have a suggestion for improving the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New functionality request",
+          "description": "We need additional functionality in the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application feature suggestion",
+          "description": "I would like to request a new feature.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request application enhancement",
+          "description": "Please add functionality that would make this workflow easier.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New application capability",
+          "description": "Our team needs a new capability in the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application improvement request",
+          "description": "I have a feature request for the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request application feature",
+          "description": "I would like a new feature added to the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application functionality request",
+          "description": "Our team needs additional functionality in the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request application enhancement",
+          "description": "Please improve the application by adding a new capability.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New application capability",
+          "description": "We need a new capability in the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application feature suggestion",
+          "description": "I have a suggestion for a new application feature.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Business application improvement",
+          "description": "I would like to suggest an improvement to the application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "New application functionality",
+          "description": "Please add functionality to support our workflow.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application enhancement needed",
+          "description": "The application needs an additional feature.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Feature addition request",
+          "description": "We would like to request additional functionality.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Application improvement suggestion",
+          "description": "I have an improvement request for the business application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "tickets": [
+        {
+          "subject": "Cannot send attachment",
+          "description": "My email fails whenever I try to attach a file.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email attachment problem",
+          "description": "Attachments are not being delivered with my emails.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment upload failing",
+          "description": "I cannot attach files to an outgoing email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Large attachment issue",
+          "description": "Sending an email with an attachment fails.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email file attachment error",
+          "description": "I receive an error when adding a file to an email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment missing",
+          "description": "The recipient is not receiving the attached file.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Unable to open email attachment",
+          "description": "I cannot open an attachment received through company email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment sending problem",
+          "description": "Email attachments are causing the message to fail.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email attachment failure",
+          "description": "I cannot send an email with an attached file.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment upload error",
+          "description": "Adding a file to my email causes an error.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment not delivered",
+          "description": "The recipient did not receive the attached file.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Unable to attach file",
+          "description": "The email client will not attach my file.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Large email attachment problem",
+          "description": "Messages containing large attachments fail to send.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email file problem",
+          "description": "Attachments are causing my email to fail.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment download problem",
+          "description": "I cannot open an attachment received by email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Missing email attachment",
+          "description": "The attachment is missing from the received message.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Attachment transmission failure",
+          "description": "Email attachments are not being sent correctly.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email attachment error",
+          "description": "An error occurs when attaching files to emails.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "tickets": [
+        {
+          "subject": "Suspicious email received",
+          "description": "I received a suspicious email asking for my company credentials.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Possible phishing email",
+          "description": "An email appears to be attempting to steal login information.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Phishing message",
+          "description": "I received a suspicious link asking me to verify my account.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Spam email",
+          "description": "My mailbox is receiving a large number of unwanted messages.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Suspicious attachment in email",
+          "description": "I received an unexpected email with a suspicious attachment.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Report phishing",
+          "description": "I would like to report a possible phishing message.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Malicious email suspected",
+          "description": "The message appears to contain a suspicious link.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Potential phishing attempt",
+          "description": "An email is requesting sensitive information and looks suspicious.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Suspicious email",
+          "description": "I received a suspicious message asking for company credentials.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Phishing email report",
+          "description": "I want to report a suspected phishing email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Malicious email",
+          "description": "The email contains a suspicious link.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Spam message received",
+          "description": "My mailbox is receiving many unwanted messages.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Credential phishing attempt",
+          "description": "An email is attempting to collect my login credentials.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Suspicious email attachment",
+          "description": "I received an unexpected attachment from a suspicious sender.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Possible phishing attempt",
+          "description": "The message appears to be trying to steal sensitive information.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Report suspicious email",
+          "description": "I would like to report a suspicious company email.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Unwanted email problem",
+          "description": "My mailbox is receiving a large amount of spam.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Email security concern",
+          "description": "I received an email that appears to be malicious.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "tickets": [
+        {
+          "subject": "Request laptop replacement",
+          "description": "My company laptop needs to be replaced because of hardware failure.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request new monitor",
+          "description": "My damaged monitor needs to be replaced.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Hardware replacement needed",
+          "description": "I need a replacement device for a failed company asset.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Replace faulty keyboard",
+          "description": "The company keyboard is damaged and needs replacement.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Replacement device request",
+          "description": "Please provide a replacement for my faulty hardware.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request replacement laptop",
+          "description": "My current laptop cannot be repaired and needs replacement.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Damaged hardware replacement",
+          "description": "I need a replacement for damaged company equipment.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Equipment replacement",
+          "description": "Please arrange replacement of my faulty work equipment.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Laptop replacement request",
+          "description": "My company laptop needs to be replaced.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Monitor replacement request",
+          "description": "My damaged monitor needs replacement.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Hardware replacement needed",
+          "description": "I need a replacement for a failed company device.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Replace faulty equipment",
+          "description": "A faulty company device needs to be replaced.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Replacement laptop needed",
+          "description": "My current laptop cannot be repaired and needs replacement.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Damaged hardware replacement",
+          "description": "I need replacement equipment for damaged hardware.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request new company device",
+          "description": "Please arrange a replacement for my faulty device.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Equipment replacement request",
+          "description": "My work equipment needs to be replaced.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Faulty hardware replacement",
+          "description": "A failed hardware component requires replacement.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Company device replacement",
+          "description": "I need a replacement company device.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "tickets": [
+        {
+          "subject": "Firewall blocking application",
+          "description": "A firewall rule appears to be blocking access to an internal application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Need firewall rule",
+          "description": "A new firewall rule is required for an application to communicate.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall access denied",
+          "description": "The firewall is preventing traffic to the required server.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Port blocked by firewall",
+          "description": "The required network port appears to be blocked.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall rule request",
+          "description": "Please add a firewall rule for the required service.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Network traffic blocked",
+          "description": "Firewall filtering is preventing the required network connection.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall configuration issue",
+          "description": "The current firewall rules are blocking legitimate traffic.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Request firewall access",
+          "description": "I need firewall access opened for a company service.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall blocking connection",
+          "description": "A firewall is preventing my application from connecting to a server.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Blocked network port",
+          "description": "The required network port is blocked by the firewall.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall access request",
+          "description": "I need a firewall rule added for a business service.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall traffic restriction",
+          "description": "Firewall filtering is preventing required network traffic.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall rule problem",
+          "description": "The current firewall configuration is blocking legitimate traffic.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Open firewall port",
+          "description": "Please allow the required port through the company firewall.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall server access",
+          "description": "The firewall is preventing access to the required server.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Network firewall block",
+          "description": "Network traffic is being blocked by firewall rules.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall configuration request",
+          "description": "I need a firewall rule configured for an internal application.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Firewall connection denied",
+          "description": "The firewall is denying the required connection.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "tickets": [
+        {
+          "subject": "VPN is very slow",
+          "description": "The VPN connects successfully but the connection speed is extremely slow.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Slow VPN performance",
+          "description": "Applications become very slow whenever I am connected through the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN latency is high",
+          "description": "There is significant delay when accessing company resources through the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN connection speed dropped",
+          "description": "The VPN connection has become much slower than usual.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Remote access is slow",
+          "description": "Working through the VPN is unusually slow today.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Slow internal access over VPN",
+          "description": "Company systems take a long time to respond while I am connected to VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN performance issue",
+          "description": "The VPN connection works but network performance is very poor.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN connection is slow",
+          "description": "The VPN works but all company applications are responding very slowly.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Poor VPN speed",
+          "description": "Network performance becomes very slow when using the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "High latency through VPN",
+          "description": "There is a large delay when accessing internal services through VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN traffic delay",
+          "description": "Requests through the VPN take much longer than normal.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN performance degraded",
+          "description": "The VPN connection is working but performance has dropped significantly.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Slow remote VPN access",
+          "description": "Remote access through the company VPN is extremely slow.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN bandwidth problem",
+          "description": "The VPN connection appears to have very poor throughput.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN response delay",
+          "description": "Internal systems are taking a long time to respond over VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN network slowdown",
+          "description": "Everything becomes slower after connecting to the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN latency problem",
+          "description": "There is noticeable network latency while connected to VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    },
+    {
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "tickets": [
+        {
+          "subject": "Need split tunneling",
+          "description": "I need some internet traffic to bypass the company VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Split tunnel configuration",
+          "description": "I need help configuring split tunneling for my VPN connection.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Local traffic through VPN",
+          "description": "My local internet traffic should not go through the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Configure VPN split routing",
+          "description": "I need certain applications to use the local network instead of the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Split tunneling not working",
+          "description": "The configured split tunnel routes are not behaving as expected.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN route configuration",
+          "description": "I need help setting which traffic should use the VPN tunnel.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Internet access with VPN",
+          "description": "I need direct internet access while remaining connected to the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Configure split VPN traffic",
+          "description": "I need certain internet traffic to bypass the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN split route request",
+          "description": "Please configure the VPN so selected traffic uses the local network.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Split VPN access needed",
+          "description": "I need local internet access while remaining connected to the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN routing configuration",
+          "description": "I need help configuring which traffic should pass through the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Split tunnel routing issue",
+          "description": "Some traffic is incorrectly being sent through the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN local traffic request",
+          "description": "I need local network traffic to avoid the VPN tunnel.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Split VPN configuration problem",
+          "description": "My split tunneling configuration is not routing traffic correctly.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN selective routing",
+          "description": "I need only company traffic to use the VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "Internet bypass through VPN",
+          "description": "I need selected internet traffic to bypass the corporate VPN.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        },
+        {
+          "subject": "VPN route exception",
+          "description": "I need a routing exception configured for specific applications.",
+          "recommended_category": null,
+          "recommended_subcategory": null,
+          "review_status": "PENDING"
+        }
+      ]
+    }
+  ]
+}

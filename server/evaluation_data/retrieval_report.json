@@ -1,0 +1,2156 @@
+{
+  "dataset": "evaluation_data/retrieval_golden.json",
+  "summary": {
+    "cases": 100,
+    "recall_at_1": 0.96,
+    "recall_at_5": 1.0,
+    "mrr": 0.98,
+    "mean_rerank_score": 2.522
+  },
+  "cases": [
+    {
+      "id": "R001",
+      "evaluation_ticket_id": "EVAL-0001",
+      "queries": [
+        "forgot corporate account password",
+        "cannot sign in corporate account"
+      ],
+      "retrieved_article_ids": [
+        "6a8fced4fc891957b8ba30dd",
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e5a15084a3a5966d236",
+        "6a900e7415084a3a5966d239",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a8fced4fc891957b8ba30dd"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.6799747943878174
+    },
+    {
+      "id": "R002",
+      "evaluation_ticket_id": "EVAL-0002",
+      "queries": [
+        "How do I recover my corporate password",
+        "Corporate password recovery process"
+      ],
+      "retrieved_article_ids": [
+        "6a8fced4fc891957b8ba30dd",
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e7415084a3a5966d239",
+        "6a900e5a15084a3a5966d236",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a8fced4fc891957b8ba30dd"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.726961612701416
+    },
+    {
+      "id": "R003",
+      "evaluation_ticket_id": "EVAL-0003",
+      "queries": [
+        "MFA verification step fails after password acceptance",
+        "MFA authentication step not completing after password success"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e5a15084a3a5966d236",
+        "6a900e7415084a3a5966d239",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a8fd031fc891957b8ba30e0"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.589463233947754
+    },
+    {
+      "id": "R004",
+      "evaluation_ticket_id": "EVAL-0004",
+      "queries": [
+        "MFA authentication challenge fails after password acceptance",
+        "Two-factor authentication not completing despite password acceptance"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e7415084a3a5966d239",
+        "6a900e5a15084a3a5966d236",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a8fd031fc891957b8ba30e0"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.374019145965576
+    },
+    {
+      "id": "R005",
+      "evaluation_ticket_id": "EVAL-0005",
+      "queries": [
+        "access denied to internal corporate resource",
+        "corporate resource authorization error",
+        "internal resource access authorization issue"
+      ],
+      "retrieved_article_ids": [
+        "6a900e5a15084a3a5966d236",
+        "6a900e8315084a3a5966d23c",
+        "6a8fd031fc891957b8ba30e0",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e7415084a3a5966d239"
+      ],
+      "expected_article_ids": [
+        "6a900e5a15084a3a5966d236"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.369823932647705
+    },
+    {
+      "id": "R006",
+      "evaluation_ticket_id": "EVAL-0006",
+      "queries": [
+        "restricted application access permission issue",
+        "corporate application permission access problem"
+      ],
+      "retrieved_article_ids": [
+        "6a900e5a15084a3a5966d236",
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e8315084a3a5966d23c",
+        "6a900e7415084a3a5966d239",
+        "6a8fced4fc891957b8ba30dd"
+      ],
+      "expected_article_ids": [
+        "6a900e5a15084a3a5966d236"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.4164066314697266
+    },
+    {
+      "id": "R007",
+      "evaluation_ticket_id": "EVAL-0007",
+      "queries": [
+        "corporate account locked after failed sign-in attempts",
+        "work account locked due to repeated sign-in failures"
+      ],
+      "retrieved_article_ids": [
+        "6a900e7415084a3a5966d239",
+        "6a8fd031fc891957b8ba30e0",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e5a15084a3a5966d236",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a900e7415084a3a5966d239"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 5.94951057434082
+    },
+    {
+      "id": "R008",
+      "evaluation_ticket_id": "EVAL-0008",
+      "queries": [
+        "Corporate Identity account locked sign in failure",
+        "Corporate Identity sign in locked out access denied"
+      ],
+      "retrieved_article_ids": [
+        "6a900e7415084a3a5966d239",
+        "6a900e5a15084a3a5966d236",
+        "6a8fd031fc891957b8ba30e0",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e8315084a3a5966d23c"
+      ],
+      "expected_article_ids": [
+        "6a900e7415084a3a5966d239"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 0.382868230342865
+    },
+    {
+      "id": "R009",
+      "evaluation_ticket_id": "EVAL-0009",
+      "queries": [
+        "new employee corporate systems access issue",
+        "new employee unable to access required systems"
+      ],
+      "retrieved_article_ids": [
+        "6a900e8315084a3a5966d23c",
+        "6a900e5a15084a3a5966d236",
+        "6a8fd031fc891957b8ba30e0",
+        "6a8fced4fc891957b8ba30dd",
+        "6a900e7415084a3a5966d239"
+      ],
+      "expected_article_ids": [
+        "6a900e8315084a3a5966d23c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.1577911376953125
+    },
+    {
+      "id": "R010",
+      "evaluation_ticket_id": "EVAL-0010",
+      "queries": [
+        "new employee access to approved applications",
+        "incomplete new starter access corporate"
+      ],
+      "retrieved_article_ids": [
+        "6a900e8315084a3a5966d23c",
+        "6a900e5a15084a3a5966d236",
+        "6a8fd031fc891957b8ba30e0",
+        "6a900e7415084a3a5966d239",
+        "6a8fced4fc891957b8ba30dd"
+      ],
+      "expected_article_ids": [
+        "6a900e8315084a3a5966d23c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.3917245864868164
+    },
+    {
+      "id": "R011",
+      "evaluation_ticket_id": "EVAL-0011",
+      "queries": [
+        "business application slow response time",
+        "business application normal work slow"
+      ],
+      "retrieved_article_ids": [
+        "6a90133215084a3a5966d244",
+        "6a90134815084a3a5966d24a",
+        "6a90135d15084a3a5966d250",
+        "6a90136715084a3a5966d253",
+        "6a90135415084a3a5966d24d"
+      ],
+      "expected_article_ids": [
+        "6a90133215084a3a5966d244"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.8710572719573975
+    },
+    {
+      "id": "R012",
+      "evaluation_ticket_id": "EVAL-0012",
+      "queries": [
+        "application freezes during normal use",
+        "business application unresponsive during actions"
+      ],
+      "retrieved_article_ids": [
+        "6a90133215084a3a5966d244",
+        "6a90134815084a3a5966d24a",
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90136715084a3a5966d253"
+      ],
+      "expected_article_ids": [
+        "6a90133215084a3a5966d244"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.257678031921387
+    },
+    {
+      "id": "R013",
+      "evaluation_ticket_id": "EVAL-0013",
+      "queries": [
+        "ERP transaction failure application error",
+        "ERP transaction failing application error"
+      ],
+      "retrieved_article_ids": [
+        "6a90134815084a3a5966d24a",
+        "6a90136715084a3a5966d253",
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90133215084a3a5966d244"
+      ],
+      "expected_article_ids": [
+        "6a90134815084a3a5966d24a"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.612938404083252
+    },
+    {
+      "id": "R014",
+      "evaluation_ticket_id": "EVAL-0014",
+      "queries": [
+        "ERP application transaction completion issue",
+        "ERP business transaction fails to complete"
+      ],
+      "retrieved_article_ids": [
+        "6a90134815084a3a5966d24a",
+        "6a90136715084a3a5966d253",
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90133215084a3a5966d244"
+      ],
+      "expected_article_ids": [
+        "6a90134815084a3a5966d24a"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.5304102897644043
+    },
+    {
+      "id": "R015",
+      "evaluation_ticket_id": "EVAL-0015",
+      "queries": [
+        "CRM customer action error",
+        "CRM application customer record failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90135415084a3a5966d24d",
+        "6a90136715084a3a5966d253",
+        "6a90135d15084a3a5966d250",
+        "6a90133215084a3a5966d244",
+        "6a90134815084a3a5966d24a"
+      ],
+      "expected_article_ids": [
+        "6a90135415084a3a5966d24d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.952932357788086
+    },
+    {
+      "id": "R016",
+      "evaluation_ticket_id": "EVAL-0016",
+      "queries": [
+        "How to update customer in CRM application",
+        "CRM customer update not completing"
+      ],
+      "retrieved_article_ids": [
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90134815084a3a5966d24a",
+        "6a90133215084a3a5966d244",
+        "6a90136715084a3a5966d253"
+      ],
+      "expected_article_ids": [
+        "6a90135415084a3a5966d24d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -0.25414323806762695
+    },
+    {
+      "id": "R017",
+      "evaluation_ticket_id": "EVAL-0017",
+      "queries": [
+        "internal business tool unexpected error",
+        "internal business tool normal use error"
+      ],
+      "retrieved_article_ids": [
+        "6a90135d15084a3a5966d250",
+        "6a90134815084a3a5966d24a",
+        "6a90135415084a3a5966d24d",
+        "6a90133215084a3a5966d244",
+        "6a90136715084a3a5966d253"
+      ],
+      "expected_article_ids": [
+        "6a90135d15084a3a5966d250"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.520439624786377
+    },
+    {
+      "id": "R018",
+      "evaluation_ticket_id": "EVAL-0018",
+      "queries": [
+        "internal business tool routine operation failing",
+        "internal business tool unavailable for routine tasks"
+      ],
+      "retrieved_article_ids": [
+        "6a90135d15084a3a5966d250",
+        "6a90134815084a3a5966d24a",
+        "6a90136715084a3a5966d253",
+        "6a90135415084a3a5966d24d",
+        "6a90133215084a3a5966d244"
+      ],
+      "expected_article_ids": [
+        "6a90135d15084a3a5966d250"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 0.7368751168251038
+    },
+    {
+      "id": "R019",
+      "evaluation_ticket_id": "EVAL-0019",
+      "queries": [
+        "application data transfer failed to another service",
+        "approved application cannot complete data transfer"
+      ],
+      "retrieved_article_ids": [
+        "6a90136715084a3a5966d253",
+        "6a90134815084a3a5966d24a",
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90133215084a3a5966d244"
+      ],
+      "expected_article_ids": [
+        "6a90136715084a3a5966d253"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.220712184906006
+    },
+    {
+      "id": "R020",
+      "evaluation_ticket_id": "EVAL-0020",
+      "queries": [
+        "application integration synchronization issue",
+        "data synchronization between approved applications"
+      ],
+      "retrieved_article_ids": [
+        "6a90136715084a3a5966d253",
+        "6a90134815084a3a5966d24a",
+        "6a90135415084a3a5966d24d",
+        "6a90135d15084a3a5966d250",
+        "6a90133215084a3a5966d244"
+      ],
+      "expected_article_ids": [
+        "6a90136715084a3a5966d253"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.999448299407959
+    },
+    {
+      "id": "R021",
+      "evaluation_ticket_id": "EVAL-0021",
+      "queries": [
+        "Corporate email client message synchronization issue",
+        "Corporate email client recent messages not appearing"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157015084a3a5966d256",
+        "6a90157c15084a3a5966d259",
+        "6a8fd12ffc891957b8ba30ec",
+        "6a90158715084a3a5966d25c"
+      ],
+      "expected_article_ids": [
+        "6a8fd09cfc891957b8ba30e9"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.3162450790405273
+    },
+    {
+      "id": "R022",
+      "evaluation_ticket_id": "EVAL-0022",
+      "queries": [
+        "How to open corporate mailbox correctly",
+        "Corporate email client mailbox access issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157015084a3a5966d256",
+        "6a90158715084a3a5966d25c",
+        "6a90157c15084a3a5966d259",
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "expected_article_ids": [
+        "6a8fd09cfc891957b8ba30e9"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.9696918725967407
+    },
+    {
+      "id": "R023",
+      "evaluation_ticket_id": "EVAL-0023",
+      "queries": [
+        "Why are trusted emails going to spam folder",
+        "Why trusted sender emails are in spam folder"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd12ffc891957b8ba30ec",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157c15084a3a5966d259",
+        "6a90158715084a3a5966d25c",
+        "6a90157015084a3a5966d256"
+      ],
+      "expected_article_ids": [
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -0.7382086515426636
+    },
+    {
+      "id": "R024",
+      "evaluation_ticket_id": "EVAL-0024",
+      "queries": [
+        "email delivery failure corporate mailbox",
+        "outgoing email not delivered corporate email"
+      ],
+      "retrieved_article_ids": [
+        "6a90157c15084a3a5966d259",
+        "6a8fd12ffc891957b8ba30ec",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90158715084a3a5966d25c",
+        "6a90157015084a3a5966d256"
+      ],
+      "expected_article_ids": [
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 0.5,
+      "rerank_score": 2.114560127258301
+    },
+    {
+      "id": "R025",
+      "evaluation_ticket_id": "EVAL-0025",
+      "queries": [
+        "Corporate calendar events not appearing in approved calendar",
+        "Why new calendar events not showing in corporate calendar"
+      ],
+      "retrieved_article_ids": [
+        "6a90157015084a3a5966d256",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157c15084a3a5966d259",
+        "6a90158715084a3a5966d25c",
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "expected_article_ids": [
+        "6a90157015084a3a5966d256"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.2246692180633545
+    },
+    {
+      "id": "R026",
+      "evaluation_ticket_id": "EVAL-0026",
+      "queries": [
+        "corporate calendar sync issues"
+      ],
+      "retrieved_article_ids": [
+        "6a90157015084a3a5966d256",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157c15084a3a5966d259",
+        "6a90158715084a3a5966d25c",
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "expected_article_ids": [
+        "6a90157015084a3a5966d256"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.190714359283447
+    },
+    {
+      "id": "R027",
+      "evaluation_ticket_id": "EVAL-0027",
+      "queries": [
+        "email distribution list delivery failure",
+        "corporate email distribution list not delivered"
+      ],
+      "retrieved_article_ids": [
+        "6a90157c15084a3a5966d259",
+        "6a8fd12ffc891957b8ba30ec",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157015084a3a5966d256",
+        "6a90158715084a3a5966d25c"
+      ],
+      "expected_article_ids": [
+        "6a90157c15084a3a5966d259"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 5.085659980773926
+    },
+    {
+      "id": "R028",
+      "evaluation_ticket_id": "EVAL-0028",
+      "queries": [
+        "distribution list email not arriving",
+        "approved distribution list messages missing"
+      ],
+      "retrieved_article_ids": [
+        "6a90157c15084a3a5966d259",
+        "6a8fd12ffc891957b8ba30ec",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157015084a3a5966d256",
+        "6a90158715084a3a5966d25c"
+      ],
+      "expected_article_ids": [
+        "6a90157c15084a3a5966d259"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.0801215171813965
+    },
+    {
+      "id": "R029",
+      "evaluation_ticket_id": "EVAL-0029",
+      "queries": [
+        "mailbox storage quota exceeded",
+        "corporate email storage capacity exceeded"
+      ],
+      "retrieved_article_ids": [
+        "6a90158715084a3a5966d25c",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157c15084a3a5966d259",
+        "6a90157015084a3a5966d256",
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "expected_article_ids": [
+        "6a90158715084a3a5966d25c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.472775459289551
+    },
+    {
+      "id": "R030",
+      "evaluation_ticket_id": "EVAL-0030",
+      "queries": [
+        "corporate mailbox storage quota warnings",
+        "email storage space low alert"
+      ],
+      "retrieved_article_ids": [
+        "6a90158715084a3a5966d25c",
+        "6a8fd09cfc891957b8ba30e9",
+        "6a90157c15084a3a5966d259",
+        "6a90157015084a3a5966d256",
+        "6a8fd12ffc891957b8ba30ec"
+      ],
+      "expected_article_ids": [
+        "6a90158715084a3a5966d25c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.1004204750061035
+    },
+    {
+      "id": "R031",
+      "evaluation_ticket_id": "EVAL-0031",
+      "queries": [
+        "company laptop hardware component malfunction",
+        "company laptop hardware issue resolution"
+      ],
+      "retrieved_article_ids": [
+        "6a90174215084a3a5966d25f",
+        "6a90174c15084a3a5966d262",
+        "6a90175d15084a3a5966d268",
+        "6a90175515084a3a5966d265",
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "expected_article_ids": [
+        "6a90174215084a3a5966d25f"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.470178604125977
+    },
+    {
+      "id": "R032",
+      "evaluation_ticket_id": "EVAL-0032",
+      "queries": [
+        "laptop hardware component malfunction",
+        "corporate laptop physical component failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90174215084a3a5966d25f",
+        "6a90174c15084a3a5966d262",
+        "6a90175d15084a3a5966d268",
+        "6a90175515084a3a5966d265",
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "expected_article_ids": [
+        "6a90174215084a3a5966d25f"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.361274003982544
+    },
+    {
+      "id": "R033",
+      "evaluation_ticket_id": "EVAL-0033",
+      "queries": [
+        "keyboard not responding connected device",
+        "keyboard keystrokes not detected issue",
+        "keyboard hardware connection problem"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd252fc891957b8ba30f2",
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a90175d15084a3a5966d268",
+        "6a90175515084a3a5966d265"
+      ],
+      "expected_article_ids": [
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -0.09645818173885345
+    },
+    {
+      "id": "R034",
+      "evaluation_ticket_id": "EVAL-0034",
+      "queries": [
+        "mouse not responding to movement or clicks",
+        "mouse connected but not working properly"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd252fc891957b8ba30f2",
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a90175d15084a3a5966d268",
+        "6a90175515084a3a5966d265"
+      ],
+      "expected_article_ids": [
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.189021110534668
+    },
+    {
+      "id": "R035",
+      "evaluation_ticket_id": "EVAL-0035",
+      "queries": [
+        "desktop workstation hardware failure",
+        "company desktop physical component malfunction"
+      ],
+      "retrieved_article_ids": [
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a90175515084a3a5966d265",
+        "6a90175d15084a3a5966d268",
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "expected_article_ids": [
+        "6a90174c15084a3a5966d262"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.2572808265686035
+    },
+    {
+      "id": "R036",
+      "evaluation_ticket_id": "EVAL-0036",
+      "queries": [
+        "desktop hardware component not responding",
+        "corporate desktop hardware failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a90175d15084a3a5966d268",
+        "6a8fd252fc891957b8ba30f2",
+        "6a90175515084a3a5966d265"
+      ],
+      "expected_article_ids": [
+        "6a90174c15084a3a5966d262"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.5332107543945312
+    },
+    {
+      "id": "R037",
+      "evaluation_ticket_id": "EVAL-0037",
+      "queries": [
+        "laptop docking station detection issue",
+        "docking station not detected consistently"
+      ],
+      "retrieved_article_ids": [
+        "6a90175515084a3a5966d265",
+        "6a90174215084a3a5966d25f",
+        "6a90174c15084a3a5966d262",
+        "6a8fd252fc891957b8ba30f2",
+        "6a90175d15084a3a5966d268"
+      ],
+      "expected_article_ids": [
+        "6a90175515084a3a5966d265"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.318377494812012
+    },
+    {
+      "id": "R038",
+      "evaluation_ticket_id": "EVAL-0038",
+      "queries": [
+        "external displays unavailable through docking station",
+        "docking station external displays not working"
+      ],
+      "retrieved_article_ids": [
+        "6a90175515084a3a5966d265",
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a8fd252fc891957b8ba30f2",
+        "6a90175d15084a3a5966d268"
+      ],
+      "expected_article_ids": [
+        "6a90175515084a3a5966d265"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.852614164352417
+    },
+    {
+      "id": "R039",
+      "evaluation_ticket_id": "EVAL-0039",
+      "queries": [
+        "mobile device hardware fault persistent issue",
+        "managed mobile device hardware problem resolution"
+      ],
+      "retrieved_article_ids": [
+        "6a90175d15084a3a5966d268",
+        "6a90174c15084a3a5966d262",
+        "6a90175515084a3a5966d265",
+        "6a90174215084a3a5966d25f",
+        "6a8fd252fc891957b8ba30f2"
+      ],
+      "expected_article_ids": [
+        "6a90175d15084a3a5966d268"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 5.795826435089111
+    },
+    {
+      "id": "R040",
+      "evaluation_ticket_id": "EVAL-0040",
+      "queries": [
+        "mobile device component not responding",
+        "physical component malfunction on mobile device"
+      ],
+      "retrieved_article_ids": [
+        "6a90175d15084a3a5966d268",
+        "6a90174c15084a3a5966d262",
+        "6a90174215084a3a5966d25f",
+        "6a8fd252fc891957b8ba30f2",
+        "6a90175515084a3a5966d265"
+      ],
+      "expected_article_ids": [
+        "6a90175d15084a3a5966d268"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.4250741004943848
+    },
+    {
+      "id": "R041",
+      "evaluation_ticket_id": "EVAL-0041",
+      "queries": [
+        "Corporate network unreachable workstation",
+        "Workstation cannot reach internal network resources",
+        "Workstation cannot reach external network resources"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a8fd272fc891957b8ba30f5"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.9037668704986572
+    },
+    {
+      "id": "R042",
+      "evaluation_ticket_id": "EVAL-0042",
+      "queries": [
+        "workstation network access issue",
+        "corporate network service access problem"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a8fd272fc891957b8ba30f5"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.45306658744812
+    },
+    {
+      "id": "R043",
+      "evaluation_ticket_id": "EVAL-0043",
+      "queries": [
+        "Corporate Wi-Fi connection loss",
+        "Corporate Wi-Fi disconnection issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.3185582160949707
+    },
+    {
+      "id": "R044",
+      "evaluation_ticket_id": "EVAL-0044",
+      "queries": [
+        "How to connect to corporate Wi-Fi network",
+        "Corporate Wi-Fi connection issue resolution"
+      ],
+      "retrieved_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a902a8d4cc6b6b4c6cd7d96"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.105800151824951
+    },
+    {
+      "id": "R045",
+      "evaluation_ticket_id": "EVAL-0045",
+      "queries": [
+        "wired lan connection unavailable workstation",
+        "office lan connection maintenance issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aaa4cc6b6b4c6cd7d9f",
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ],
+      "expected_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.7216081619262695
+    },
+    {
+      "id": "R046",
+      "evaluation_ticket_id": "EVAL-0046",
+      "queries": [
+        "wired workstation LAN port connectivity issue",
+        "office LAN port no usable connection"
+      ],
+      "retrieved_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902aaa4cc6b6b4c6cd7d9f",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ],
+      "expected_article_ids": [
+        "6a902a994cc6b6b4c6cd7d99"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.4958481788635254
+    },
+    {
+      "id": "R047",
+      "evaluation_ticket_id": "EVAL-0047",
+      "queries": [
+        "Corporate hostname resolution failure",
+        "Approved corporate hostname DNS resolution"
+      ],
+      "retrieved_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.821272611618042
+    },
+    {
+      "id": "R048",
+      "evaluation_ticket_id": "EVAL-0048",
+      "queries": [
+        "internal hostname DNS resolution failure",
+        "corporate DNS internal service resolution issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "expected_article_ids": [
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.3351426124572754
+    },
+    {
+      "id": "R049",
+      "evaluation_ticket_id": "EVAL-0049",
+      "queries": [
+        "network throughput low corporate network",
+        "corporate network activities slow throughput"
+      ],
+      "retrieved_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a994cc6b6b4c6cd7d99",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aa24cc6b6b4c6cd7d9c"
+      ],
+      "expected_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 0.5899323225021362
+    },
+    {
+      "id": "R050",
+      "evaluation_ticket_id": "EVAL-0050",
+      "queries": [
+        "file transfers slower than expected",
+        "corporate network file transfer delays"
+      ],
+      "retrieved_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f",
+        "6a8fd272fc891957b8ba30f5",
+        "6a902a8d4cc6b6b4c6cd7d96",
+        "6a902aa24cc6b6b4c6cd7d9c",
+        "6a902a994cc6b6b4c6cd7d99"
+      ],
+      "expected_article_ids": [
+        "6a902aaa4cc6b6b4c6cd7d9f"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 0.4040710926055908
+    },
+    {
+      "id": "R051",
+      "evaluation_ticket_id": "EVAL-0051",
+      "queries": [
+        "printer not printing no output",
+        "corporate printer job no output"
+      ],
+      "retrieved_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "expected_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.7026128768920898
+    },
+    {
+      "id": "R052",
+      "evaluation_ticket_id": "EVAL-0052",
+      "queries": [
+        "printer job no output",
+        "printer accepts job no print"
+      ],
+      "retrieved_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "expected_article_ids": [
+        "6a902cfe4cc6b6b4c6cd7da5"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.6812400817871094
+    },
+    {
+      "id": "R053",
+      "evaluation_ticket_id": "EVAL-0053",
+      "queries": [
+        "printer driver error during printing",
+        "corporate printer driver issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ],
+      "expected_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.0850502252578735
+    },
+    {
+      "id": "R054",
+      "evaluation_ticket_id": "EVAL-0054",
+      "queries": [
+        "printer driver mismatch corporate printer",
+        "corporate printer driver installation issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a902cfe4cc6b6b4c6cd7da5"
+      ],
+      "expected_article_ids": [
+        "6a902cf74cc6b6b4c6cd7da2"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -1.4019129276275635
+    },
+    {
+      "id": "R055",
+      "evaluation_ticket_id": "EVAL-0055",
+      "queries": [
+        "print queue job stuck corporate printer",
+        "pending document in operating system print queue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8",
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ],
+      "expected_article_ids": [
+        "6a8fd38bfc891957b8ba30fb"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.4769978523254395
+    },
+    {
+      "id": "R056",
+      "evaluation_ticket_id": "EVAL-0056",
+      "queries": [
+        "print job stuck in error state queue",
+        "printer job remains in error state"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "expected_article_ids": [
+        "6a8fd38bfc891957b8ba30fb"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.3549747467041016
+    },
+    {
+      "id": "R057",
+      "evaluation_ticket_id": "EVAL-0057",
+      "queries": [
+        "printer output faded quality defects",
+        "corporate printer faded output issue"
+      ],
+      "retrieved_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a8fd38bfc891957b8ba30fb"
+      ],
+      "expected_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.5290687084198
+    },
+    {
+      "id": "R058",
+      "evaluation_ticket_id": "EVAL-0058",
+      "queries": [
+        "printer output streaks test page defects",
+        "printer test page streaks print quality issues"
+      ],
+      "retrieved_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ],
+      "expected_article_ids": [
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.887380599975586
+    },
+    {
+      "id": "R059",
+      "evaluation_ticket_id": "EVAL-0059",
+      "queries": [
+        "printer scanner not detected",
+        "multifunction printer scanning function unavailable"
+      ],
+      "retrieved_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "expected_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 5.64546537399292
+    },
+    {
+      "id": "R060",
+      "evaluation_ticket_id": "EVAL-0060",
+      "queries": [
+        "scanner scan job fails to complete",
+        "multifunction printer scan job failure"
+      ],
+      "retrieved_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab",
+        "6a902cfe4cc6b6b4c6cd7da5",
+        "6a8fd38bfc891957b8ba30fb",
+        "6a902cf74cc6b6b4c6cd7da2",
+        "6a902d064cc6b6b4c6cd7da8"
+      ],
+      "expected_article_ids": [
+        "6a902d0e4cc6b6b4c6cd7dab"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.15632963180542
+    },
+    {
+      "id": "R061",
+      "evaluation_ticket_id": "EVAL-0061",
+      "queries": [
+        "How to report suspicious email safely",
+        "Report phishing email securely"
+      ],
+      "retrieved_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.309504508972168
+    },
+    {
+      "id": "R062",
+      "evaluation_ticket_id": "EVAL-0062",
+      "queries": [
+        "unexpected email requesting company credentials",
+        "phishing email asking for corporate credentials"
+      ],
+      "retrieved_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a902f374cc6b6b4c6cd7db4",
+        "6a8fd3d1fc891957b8ba3104"
+      ],
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.26340389251709
+    },
+    {
+      "id": "R063",
+      "evaluation_ticket_id": "EVAL-0063",
+      "queries": [
+        "unexpected attachment in suspicious email",
+        "email impersonation detected corporate email"
+      ],
+      "retrieved_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a902f244cc6b6b4c6cd7dae"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.8023457527160645
+    },
+    {
+      "id": "R064",
+      "evaluation_ticket_id": "EVAL-0064",
+      "queries": [
+        "Unexpected login activity notification",
+        "Corporate Identity login notification"
+      ],
+      "retrieved_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 0.7708541750907898
+    },
+    {
+      "id": "R065",
+      "evaluation_ticket_id": "EVAL-0065",
+      "queries": [
+        "unfamiliar application security event corporate workstation",
+        "security event unfamiliar application corporate workstation"
+      ],
+      "retrieved_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -0.7986108064651489
+    },
+    {
+      "id": "R066",
+      "evaluation_ticket_id": "EVAL-0066",
+      "queries": [
+        "unusual account activity explanation",
+        "account activity unexpected behavior"
+      ],
+      "retrieved_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a902f2d4cc6b6b4c6cd7db1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.646590232849121
+    },
+    {
+      "id": "R067",
+      "evaluation_ticket_id": "EVAL-0067",
+      "queries": [
+        "malware warning on corporate workstation",
+        "security warning during normal use"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a8fd3d1fc891957b8ba3104"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -2.4324491024017334
+    },
+    {
+      "id": "R068",
+      "evaluation_ticket_id": "EVAL-0068",
+      "queries": [
+        "security alert workstation malware suspicious behavior",
+        "workstation security alert suspicious software behavior"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "expected_article_ids": [
+        "6a8fd3d1fc891957b8ba3104"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.18259859085083
+    },
+    {
+      "id": "R069",
+      "evaluation_ticket_id": "EVAL-0069",
+      "queries": [
+        "restricted security data access request",
+        "security information authorization required"
+      ],
+      "retrieved_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a8fd3d1fc891957b8ba3104",
+        "6a902f244cc6b6b4c6cd7dae"
+      ],
+      "expected_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 5.006940841674805
+    },
+    {
+      "id": "R070",
+      "evaluation_ticket_id": "EVAL-0070",
+      "queries": [
+        "account security records approval process",
+        "security data controlled records approval"
+      ],
+      "retrieved_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4",
+        "6a902f2d4cc6b6b4c6cd7db1",
+        "6a902f244cc6b6b4c6cd7dae",
+        "6a8fd3d1fc891957b8ba3104"
+      ],
+      "expected_article_ids": [
+        "6a902f374cc6b6b4c6cd7db4"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.374696731567383
+    },
+    {
+      "id": "R071",
+      "evaluation_ticket_id": "EVAL-0071",
+      "queries": [
+        "Corporate application crashes unexpectedly",
+        "Corporate application closes during normal use"
+      ],
+      "retrieved_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a8fd48efc891957b8ba3107",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 6.397127151489258
+    },
+    {
+      "id": "R072",
+      "evaluation_ticket_id": "EVAL-0072",
+      "queries": [
+        "software freezes after application launch",
+        "corporate application unresponsive after startup"
+      ],
+      "retrieved_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a8fd48efc891957b8ba3107",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a90338e4cc6b6b4c6cd7db7"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.3415513038635254
+    },
+    {
+      "id": "R073",
+      "evaluation_ticket_id": "EVAL-0073",
+      "queries": [
+        "software license activation unavailable",
+        "corporate application license activation failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a8fd48efc891957b8ba3107",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.527486801147461
+    },
+    {
+      "id": "R074",
+      "evaluation_ticket_id": "EVAL-0074",
+      "queries": [
+        "application license expired error message",
+        "corporate application license validation failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a8fd48efc891957b8ba3107",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a90339a4cc6b6b4c6cd7dba"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.6621187925338745
+    },
+    {
+      "id": "R075",
+      "evaluation_ticket_id": "EVAL-0075",
+      "queries": [
+        "approved application installer fails before use",
+        "corporate application installation failure"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd48efc891957b8ba3107",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a8fd48efc891957b8ba3107"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.6135711669921875
+    },
+    {
+      "id": "R076",
+      "evaluation_ticket_id": "EVAL-0076",
+      "queries": [
+        "application configuration after installation failure",
+        "corporate application configuration not completed"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd48efc891957b8ba3107",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a8fd48efc891957b8ba3107"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.435699939727783
+    },
+    {
+      "id": "R077",
+      "evaluation_ticket_id": "EVAL-0077",
+      "queries": [
+        "software update fails corporate application",
+        "application update stuck on current version"
+      ],
+      "retrieved_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a8fd48efc891957b8ba3107",
+        "6a9033aa4cc6b6b4c6cd7dc0",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a90339a4cc6b6b4c6cd7dba"
+      ],
+      "expected_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 4.7246527671813965
+    },
+    {
+      "id": "R078",
+      "evaluation_ticket_id": "EVAL-0078",
+      "queries": [
+        "software update required for corporate application",
+        "corporate application update needed before use"
+      ],
+      "retrieved_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a8fd48efc891957b8ba3107",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "expected_article_ids": [
+        "6a9033a14cc6b6b4c6cd7dbd"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.3813514709472656
+    },
+    {
+      "id": "R079",
+      "evaluation_ticket_id": "EVAL-0079",
+      "queries": [
+        "application version compatibility error",
+        "corporate application version incompatibility"
+      ],
+      "retrieved_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0",
+        "6a8fd48efc891957b8ba3107",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90339a4cc6b6b4c6cd7dba"
+      ],
+      "expected_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.0499985218048096
+    },
+    {
+      "id": "R080",
+      "evaluation_ticket_id": "EVAL-0080",
+      "queries": [
+        "software operating system version mismatch",
+        "approved application does not support workstation os"
+      ],
+      "retrieved_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0",
+        "6a90338e4cc6b6b4c6cd7db7",
+        "6a9033a14cc6b6b4c6cd7dbd",
+        "6a90339a4cc6b6b4c6cd7dba",
+        "6a8fd48efc891957b8ba3107"
+      ],
+      "expected_article_ids": [
+        "6a9033aa4cc6b6b4c6cd7dc0"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.1351423263549805
+    },
+    {
+      "id": "R081",
+      "evaluation_ticket_id": "EVAL-0081",
+      "queries": [
+        "corporate vpn connection timeout issue",
+        "vpn session establishment timeout problem"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5a5fc891957b8ba3113",
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.281311511993408
+    },
+    {
+      "id": "R082",
+      "evaluation_ticket_id": "EVAL-0082",
+      "queries": [
+        "VPN client connection instability",
+        "Corporate VPN connection failure"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5a5fc891957b8ba3113",
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.5645837783813477
+    },
+    {
+      "id": "R083",
+      "evaluation_ticket_id": "EVAL-0083",
+      "queries": [
+        "Corporate VPN connection timeout issues",
+        "Corporate VPN session completion reliability problems"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5a5fc891957b8ba3113",
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.0469093322753906
+    },
+    {
+      "id": "R084",
+      "evaluation_ticket_id": "EVAL-0084",
+      "queries": [
+        "VPN client fails to establish stable corporate session",
+        "Corporate VPN session instability issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5a5fc891957b8ba3113",
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.8315507173538208
+    },
+    {
+      "id": "R085",
+      "evaluation_ticket_id": "EVAL-0085",
+      "queries": [
+        "corporate vpn connection drops intermittently",
+        "corporate vpn timeout during use"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5a5fc891957b8ba3113",
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "expected_article_ids": [
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.2407641410827637
+    },
+    {
+      "id": "R086",
+      "evaluation_ticket_id": "EVAL-0086",
+      "queries": [
+        "VPN certificate authentication failure",
+        "Corporate VPN certificate authentication issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5ebfc891957b8ba3116",
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.647127151489258
+    },
+    {
+      "id": "R087",
+      "evaluation_ticket_id": "EVAL-0087",
+      "queries": [
+        "VPN client certificate validation failure",
+        "Corporate VPN certificate validation issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5ebfc891957b8ba3116",
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.418760299682617
+    },
+    {
+      "id": "R088",
+      "evaluation_ticket_id": "EVAL-0088",
+      "queries": [
+        "Corporate VPN certificate validation error",
+        "VPN client certificate acceptance issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5ebfc891957b8ba3116",
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.364806652069092
+    },
+    {
+      "id": "R089",
+      "evaluation_ticket_id": "EVAL-0089",
+      "queries": [
+        "VPN certificate authentication fails",
+        "Corporate VPN certificate check failure"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5ebfc891957b8ba3116",
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.645867347717285
+    },
+    {
+      "id": "R090",
+      "evaluation_ticket_id": "EVAL-0090",
+      "queries": [
+        "VPN client certificate connection rejection",
+        "Corporate VPN certificate acceptance issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd5ebfc891957b8ba3116",
+        "6a8fd5a5fc891957b8ba3113"
+      ],
+      "expected_article_ids": [
+        "6a8fd5ebfc891957b8ba3116"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.3767943382263184
+    },
+    {
+      "id": "R091",
+      "evaluation_ticket_id": "EVAL-0091",
+      "queries": [
+        "help with company IT problem",
+        "identify affected service for IT issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a90133d15084a3a5966d247",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.1906800270080566
+    },
+    {
+      "id": "R092",
+      "evaluation_ticket_id": "EVAL-0092",
+      "queries": [
+        "corporate IT service not behaving as expected",
+        "affected area unclear corporate IT service"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a90133d15084a3a5966d247",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -1.0450668334960938
+    },
+    {
+      "id": "R093",
+      "evaluation_ticket_id": "EVAL-0093",
+      "queries": [
+        "help identify company technology service issue",
+        "assistance with unidentified company technology problem"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a90133d15084a3a5966d247",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -2.2601656913757324
+    },
+    {
+      "id": "R094",
+      "evaluation_ticket_id": "EVAL-0094",
+      "queries": [
+        "What is causing my work issue?",
+        "How can I identify the affected system?",
+        "What technical domain is impacted?"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110",
+        "6a90133d15084a3a5966d247"
+      ],
+      "expected_article_ids": [
+        "6a8fd507fc891957b8ba310d"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": -2.4673116207122803
+    },
+    {
+      "id": "R095",
+      "evaluation_ticket_id": "EVAL-0095",
+      "queries": [
+        "What is the affected system for this unclassified issue",
+        "How to identify the affected service in unclassified tickets",
+        "What information is needed to classify this unclassified issue"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110",
+        "6a90133d15084a3a5966d247"
+      ],
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 0.5,
+      "rerank_score": 1.224935531616211
+    },
+    {
+      "id": "R096",
+      "evaluation_ticket_id": "EVAL-0096",
+      "queries": [
+        "What is the affected system in this IT problem?",
+        "Which system is experiencing the technical issue?"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110",
+        "6a90133d15084a3a5966d247"
+      ],
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 0.5,
+      "rerank_score": -3.230440616607666
+    },
+    {
+      "id": "R097",
+      "evaluation_ticket_id": "EVAL-0097",
+      "queries": [
+        "Can you clarify which application or device is experiencing problems?",
+        "What technical category does this issue belong to?"
+      ],
+      "retrieved_article_ids": [
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110",
+        "6a90133d15084a3a5966d247"
+      ],
+      "expected_article_ids": [
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "recall_at_1": 0.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 0.5,
+      "rerank_score": 1.7782187461853027
+    },
+    {
+      "id": "R098",
+      "evaluation_ticket_id": "EVAL-0098",
+      "queries": [
+        "business application login rejected",
+        "corporate login access denied"
+      ],
+      "retrieved_article_ids": [
+        "6a90133d15084a3a5966d247",
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 2.480771780014038
+    },
+    {
+      "id": "R099",
+      "evaluation_ticket_id": "EVAL-0099",
+      "queries": [
+        "application authentication corporate credentials rejected",
+        "business application corporate account authentication failure"
+      ],
+      "retrieved_article_ids": [
+        "6a90133d15084a3a5966d247",
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 3.1941208839416504
+    },
+    {
+      "id": "R100",
+      "evaluation_ticket_id": "EVAL-0100",
+      "queries": [
+        "internal business application authentication failure",
+        "company account authentication issue"
+      ],
+      "retrieved_article_ids": [
+        "6a90133d15084a3a5966d247",
+        "6a8fd507fc891957b8ba310d",
+        "6a8fd515fc891957b8ba3110"
+      ],
+      "expected_article_ids": [
+        "6a90133d15084a3a5966d247"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_5": 1.0,
+      "rrf_or_rank_score": 1.0,
+      "rerank_score": 1.844713807106018
+    }
+  ]
+}

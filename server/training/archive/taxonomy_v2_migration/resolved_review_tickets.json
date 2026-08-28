@@ -1,0 +1,1608 @@
+{
+  "taxonomy_version": "v2",
+  "source_taxonomy_version": "v1",
+  "tickets": [
+    {
+      "subject": "VPN is very slow",
+      "description": "The VPN connects successfully but the connection speed is extremely slow.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Slow VPN performance",
+      "description": "Applications become very slow whenever I am connected through the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN latency is high",
+      "description": "There is significant delay when accessing company resources through the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN connection speed dropped",
+      "description": "The VPN connection has become much slower than usual.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Remote access is slow",
+      "description": "Working through the VPN is unusually slow today.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Slow internal access over VPN",
+      "description": "Company systems take a long time to respond while I am connected to VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN performance issue",
+      "description": "The VPN connection works but network performance is very poor.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Need split tunneling",
+      "description": "I need some internet traffic to bypass the company VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Split tunnel configuration",
+      "description": "I need help configuring split tunneling for my VPN connection.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Local traffic through VPN",
+      "description": "My local internet traffic should not go through the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Configure VPN split routing",
+      "description": "I need certain applications to use the local network instead of the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Split tunneling not working",
+      "description": "The configured split tunnel routes are not behaving as expected.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN route configuration",
+      "description": "I need help setting which traffic should use the VPN tunnel.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Internet access with VPN",
+      "description": "I need direct internet access while remaining connected to the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall blocking application",
+      "description": "A firewall rule appears to be blocking access to an internal application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Need firewall rule",
+      "description": "A new firewall rule is required for an application to communicate.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall access denied",
+      "description": "The firewall is preventing traffic to the required server.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Port blocked by firewall",
+      "description": "The required network port appears to be blocked.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall rule request",
+      "description": "Please add a firewall rule for the required service.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Network traffic blocked",
+      "description": "Firewall filtering is preventing the required network connection.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall configuration issue",
+      "description": "The current firewall rules are blocking legitimate traffic.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request firewall access",
+      "description": "I need firewall access opened for a company service.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application login failing",
+      "description": "I cannot sign in to the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application authentication error",
+      "description": "The application rejects my login credentials.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Unable to authenticate",
+      "description": "Authentication fails when I try to access the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application sign-in problem",
+      "description": "The application does not allow me to sign in.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Login error in application",
+      "description": "I receive an authentication error when logging into the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application credentials rejected",
+      "description": "My credentials are being rejected by the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Authentication failure",
+      "description": "The application authentication process is failing.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Cannot log into application",
+      "description": "I am unable to authenticate to the required application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request new application feature",
+      "description": "I would like the application to support an additional feature.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application enhancement request",
+      "description": "Please consider adding a new capability to the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Feature improvement needed",
+      "description": "I have a suggestion for improving the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New functionality request",
+      "description": "We need additional functionality in the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application feature suggestion",
+      "description": "I would like to request a new feature.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request application enhancement",
+      "description": "Please add functionality that would make this workflow easier.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New application capability",
+      "description": "Our team needs a new capability in the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application improvement request",
+      "description": "I have a feature request for the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Change user role",
+      "description": "My job role has changed and my system role needs to be updated.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Role update request",
+      "description": "Please update my access role to match my new responsibilities.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Employee role changed",
+      "description": "I need my application role changed after moving teams.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Update access role",
+      "description": "My current role no longer matches my position.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Role modification",
+      "description": "Please modify my assigned system role.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Change permissions role",
+      "description": "My new position requires a different access role.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Department role update",
+      "description": "Please update my role after my internal transfer.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New job role access",
+      "description": "My job responsibilities changed and my system role needs updating.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request new system access",
+      "description": "I need access to a system that I have never used before.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New application access",
+      "description": "Please provide access to the required business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request access to resource",
+      "description": "I need access to a company resource for my work.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Access request",
+      "description": "Please grant me access to the requested system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Need access to application",
+      "description": "My role requires access to an application I cannot currently use.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request access for work",
+      "description": "I need a new access permission for my current responsibilities.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New resource access",
+      "description": "Please provide access to the required internal resource.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application access needed",
+      "description": "I need access to a business system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Cannot send attachment",
+      "description": "My email fails whenever I try to attach a file.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email attachment problem",
+      "description": "Attachments are not being delivered with my emails.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment upload failing",
+      "description": "I cannot attach files to an outgoing email.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Large attachment issue",
+      "description": "Sending an email with an attachment fails.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email file attachment error",
+      "description": "I receive an error when adding a file to an email.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment missing",
+      "description": "The recipient is not receiving the attached file.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Unable to open email attachment",
+      "description": "I cannot open an attachment received through company email.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment sending problem",
+      "description": "Email attachments are causing the message to fail.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Suspicious email received",
+      "description": "I received a suspicious email asking for my company credentials.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Possible phishing email",
+      "description": "An email appears to be attempting to steal login information.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Phishing message",
+      "description": "I received a suspicious link asking me to verify my account.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Spam email",
+      "description": "My mailbox is receiving a large number of unwanted messages.",
+      "category": "EMAIL",
+      "subcategory": "Spam",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Suspicious attachment in email",
+      "description": "I received an unexpected email with a suspicious attachment.",
+      "category": "SECURITY",
+      "subcategory": "Suspicious activity",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Report phishing",
+      "description": "I would like to report a possible phishing message.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Malicious email suspected",
+      "description": "The message appears to contain a suspicious link.",
+      "category": "SECURITY",
+      "subcategory": "Suspicious activity",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Potential phishing attempt",
+      "description": "An email is requesting sensitive information and looks suspicious.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request laptop replacement",
+      "description": "My company laptop needs to be replaced because of hardware failure.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request new monitor",
+      "description": "My damaged monitor needs to be replaced.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Hardware replacement needed",
+      "description": "I need a replacement device for a failed company asset.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Replace faulty keyboard",
+      "description": "The company keyboard is damaged and needs replacement.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Replacement device request",
+      "description": "Please provide a replacement for my faulty hardware.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request replacement laptop",
+      "description": "My current laptop cannot be repaired and needs replacement.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Damaged hardware replacement",
+      "description": "I need a replacement for damaged company equipment.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Equipment replacement",
+      "description": "Please arrange replacement of my faulty work equipment.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN connection is slow",
+      "description": "The VPN works but all company applications are responding very slowly.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Poor VPN speed",
+      "description": "Network performance becomes very slow when using the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "High latency through VPN",
+      "description": "There is a large delay when accessing internal services through VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN traffic delay",
+      "description": "Requests through the VPN take much longer than normal.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN performance degraded",
+      "description": "The VPN connection is working but performance has dropped significantly.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Slow remote VPN access",
+      "description": "Remote access through the company VPN is extremely slow.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN bandwidth problem",
+      "description": "The VPN connection appears to have very poor throughput.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN response delay",
+      "description": "Internal systems are taking a long time to respond over VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN network slowdown",
+      "description": "Everything becomes slower after connecting to the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN latency problem",
+      "description": "There is noticeable network latency while connected to VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Slow connection",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Configure split VPN traffic",
+      "description": "I need certain internet traffic to bypass the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN split route request",
+      "description": "Please configure the VPN so selected traffic uses the local network.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Split VPN access needed",
+      "description": "I need local internet access while remaining connected to the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN routing configuration",
+      "description": "I need help configuring which traffic should pass through the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Split tunnel routing issue",
+      "description": "Some traffic is incorrectly being sent through the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN local traffic request",
+      "description": "I need local network traffic to avoid the VPN tunnel.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Split VPN configuration problem",
+      "description": "My split tunneling configuration is not routing traffic correctly.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN selective routing",
+      "description": "I need only company traffic to use the VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Internet bypass through VPN",
+      "description": "I need selected internet traffic to bypass the corporate VPN.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "VPN route exception",
+      "description": "I need a routing exception configured for specific applications.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "VPN",
+      "source_subcategory": "Split tunneling",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall blocking connection",
+      "description": "A firewall is preventing my application from connecting to a server.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Blocked network port",
+      "description": "The required network port is blocked by the firewall.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall access request",
+      "description": "I need a firewall rule added for a business service.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall traffic restriction",
+      "description": "Firewall filtering is preventing required network traffic.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall rule problem",
+      "description": "The current firewall configuration is blocking legitimate traffic.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Open firewall port",
+      "description": "Please allow the required port through the company firewall.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall server access",
+      "description": "The firewall is preventing access to the required server.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Network firewall block",
+      "description": "Network traffic is being blocked by firewall rules.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall configuration request",
+      "description": "I need a firewall rule configured for an internal application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Firewall connection denied",
+      "description": "The firewall is denying the required connection.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "NETWORK",
+      "source_subcategory": "Firewall rules",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Business application login failure",
+      "description": "I cannot log into the company application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application credentials rejected",
+      "description": "The application keeps rejecting my credentials.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application authentication problem",
+      "description": "Authentication fails when accessing the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application sign in unavailable",
+      "description": "I cannot sign into the required application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Login authentication error",
+      "description": "The application displays an authentication error during login.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Unable to authenticate application",
+      "description": "The application will not authenticate my account.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application access login problem",
+      "description": "My login attempt to the application is failing.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application login credentials issue",
+      "description": "My credentials are not being accepted by the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Business system authentication failure",
+      "description": "Authentication to the business system is unsuccessful.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application account login issue",
+      "description": "I am unable to access the application using my account.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Authentication",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request application feature",
+      "description": "I would like a new feature added to the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application functionality request",
+      "description": "Our team needs additional functionality in the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request application enhancement",
+      "description": "Please improve the application by adding a new capability.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New application capability",
+      "description": "We need a new capability in the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application feature suggestion",
+      "description": "I have a suggestion for a new application feature.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Business application improvement",
+      "description": "I would like to suggest an improvement to the application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New application functionality",
+      "description": "Please add functionality to support our workflow.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application enhancement needed",
+      "description": "The application needs an additional feature.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Feature addition request",
+      "description": "We would like to request additional functionality.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application improvement suggestion",
+      "description": "I have an improvement request for the business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "APPLICATION",
+      "source_subcategory": "Feature request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Change system role",
+      "description": "My role has changed and my system access needs updating.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Update employee role",
+      "description": "Please update my access role after my department change.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Role modification request",
+      "description": "I need my assigned application role changed.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New role access",
+      "description": "My new responsibilities require a different system role.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Change access role",
+      "description": "Please modify my current system role.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Employee role update",
+      "description": "My job responsibilities have changed.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Department transfer access",
+      "description": "I moved departments and need my system role updated.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Role change request",
+      "description": "My account role needs to match my new position.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Update user role",
+      "description": "Please change my assigned role in the system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Job role access change",
+      "description": "My new job role requires different system access.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "Role change",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request new access",
+      "description": "I need access to a system for my work.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New system access request",
+      "description": "Please provide access to the required internal system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Application access request",
+      "description": "I need access to a business application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request access to resource",
+      "description": "Please grant me access to the required company resource.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New user access",
+      "description": "I need access to a system I have not used before.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Access needed for work",
+      "description": "My work requires access to a new application.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request business system access",
+      "description": "Please provide access to the required business system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "New resource permission request",
+      "description": "I need access to a new internal resource.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Access provisioning request",
+      "description": "Please provision access for my account.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "System access needed",
+      "description": "I require access to a company system.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "ACCESS",
+      "source_subcategory": "New access request",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email attachment failure",
+      "description": "I cannot send an email with an attached file.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment upload error",
+      "description": "Adding a file to my email causes an error.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment not delivered",
+      "description": "The recipient did not receive the attached file.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Unable to attach file",
+      "description": "The email client will not attach my file.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Large email attachment problem",
+      "description": "Messages containing large attachments fail to send.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email file problem",
+      "description": "Attachments are causing my email to fail.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment download problem",
+      "description": "I cannot open an attachment received by email.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Missing email attachment",
+      "description": "The attachment is missing from the received message.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Attachment transmission failure",
+      "description": "Email attachments are not being sent correctly.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email attachment error",
+      "description": "An error occurs when attaching files to emails.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "EMAIL",
+      "source_subcategory": "Attachment issue",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Suspicious email",
+      "description": "I received a suspicious message asking for company credentials.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Phishing email report",
+      "description": "I want to report a suspected phishing email.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Malicious email",
+      "description": "The email contains a suspicious link.",
+      "category": "SECURITY",
+      "subcategory": "Suspicious activity",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Spam message received",
+      "description": "My mailbox is receiving many unwanted messages.",
+      "category": "EMAIL",
+      "subcategory": "Spam",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Credential phishing attempt",
+      "description": "An email is attempting to collect my login credentials.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Suspicious email attachment",
+      "description": "I received an unexpected attachment from a suspicious sender.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Possible phishing attempt",
+      "description": "The message appears to be trying to steal sensitive information.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Report suspicious email",
+      "description": "I would like to report a suspicious company email.",
+      "category": "SECURITY",
+      "subcategory": "Phishing report",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Unwanted email problem",
+      "description": "My mailbox is receiving a large amount of spam.",
+      "category": "EMAIL",
+      "subcategory": "Spam",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Email security concern",
+      "description": "I received an email that appears to be malicious.",
+      "category": "SECURITY",
+      "subcategory": "Suspicious activity",
+      "source_category": "EMAIL",
+      "source_subcategory": "Spam/phishing",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Laptop replacement request",
+      "description": "My company laptop needs to be replaced.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Monitor replacement request",
+      "description": "My damaged monitor needs replacement.",
+      "category": "HARDWARE",
+      "subcategory": "Peripheral",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Hardware replacement needed",
+      "description": "I need a replacement for a failed company device.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Replace faulty equipment",
+      "description": "A faulty company device needs to be replaced.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Replacement laptop needed",
+      "description": "My current laptop cannot be repaired and needs replacement.",
+      "category": "HARDWARE",
+      "subcategory": "Laptop",
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Damaged hardware replacement",
+      "description": "I need replacement equipment for damaged hardware.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Request new company device",
+      "description": "Please arrange a replacement for my faulty device.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Equipment replacement request",
+      "description": "My work equipment needs to be replaced.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Faulty hardware replacement",
+      "description": "A failed hardware component requires replacement.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    },
+    {
+      "subject": "Company device replacement",
+      "description": "I need a replacement company device.",
+      "category": "UNCLASSIFIED",
+      "subcategory": null,
+      "source_category": "HARDWARE",
+      "source_subcategory": "Replacement",
+      "migration_status": "RESOLVED"
+    }
+  ]
+}

@@ -25,6 +25,9 @@ import {
   Send, ChevronRight, Tag, Menu, X, Ticket as TicketIcon,
   AlertCircle, Zap, ShieldCheck,
 } from 'lucide-react';
+import ResolutionPanel from "../components/resolution/ResolutionPanel";
+import KnowledgeBaseWorkspace from "../components/knowledge-base/KnowledgeBasePage";
+import SuggestedArticles from "../components/knowledge-base/SuggestedArticles";
 
 interface DashboardProps {
   onNavigate: (page: string) => void;
@@ -743,6 +746,21 @@ useEffect(() => {
                   </div>
                 )}
 
+                {isAgentWorkspace && (
+                  <ResolutionPanel
+                    ticketId={selectedTicketId}
+                    onResponseChanged={async () => {
+                      try {
+                        await refreshQueueTicket();
+                        const timelineData = await getTicketTimeline(selectedTicketId);
+                        setTimeline(timelineData);
+                      } catch (refreshError) {
+                        console.error("Failed to refresh ticket data after resolution update:", refreshError);
+                      }
+                    }}
+                  />
+                )}
+
               <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -1327,6 +1345,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
         site: form.location,
         asset_tag: form.assetTag,
         preferred_contact: form.preferredContact.toUpperCase(),
+        affected_system: form.affectedSystem.trim(),
         affected_scope: affectedScopeMap[form.impact] || 'JUST_ME',
         work_blocked: workBlockedMap[form.blocked] || 'NO',
         urgent_feeling: 'LOW',
@@ -1595,6 +1614,15 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
           </div>
           <p className="mt-3 text-xs text-slate-500">This FAST-only preview updates while you type. Final severity, priority, SLA, and queue are calculated after submission.</p>
         </div>
+
+        <SuggestedArticles
+          subject={form.subject}
+          description={form.description}
+          affectedSystem={form.affectedSystem}
+          category={form.category}
+          department={form.department}
+          isDark={isDark}
+        />
       </aside>
     </div>
   );
@@ -1634,33 +1662,6 @@ function ReportsPage({ isDark }: { isDark: boolean }) {
             ))}
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function KnowledgeBasePage({ isDark }: { isDark: boolean }) {
-  const articles = [
-    { title: 'How to reset your password', views: 1240, category: 'Login' },
-    { title: 'Understanding your invoice', views: 980, category: 'Billing' },
-    { title: 'API rate limiting explained', views: 756, category: 'Integration' },
-    { title: 'Submitting a feature request', views: 543, category: 'Feature Request' },
-    { title: 'Common bug reporting tips', views: 489, category: 'Bug' },
-  ];
-  return (
-    <div className="space-y-4">
-      <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Knowledge Base</h2>
-      <div className="grid gap-3">
-        {articles.map(a => (
-          <div key={a.title} className={`flex items-center gap-4 p-4 rounded-2xl border cursor-pointer transition-colors ${isDark ? 'bg-gray-900 border-gray-800 hover:border-gray-700' : 'bg-white border-gray-200 hover:border-blue-300'}`}>
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0"><BookOpen className="w-5 h-5 text-white" /></div>
-            <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{a.title}</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{a.category} · {a.views.toLocaleString()} views</p>
-            </div>
-            <ChevronRight className={`w-4 h-4 shrink-0 ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
-          </div>
-        ))}
       </div>
     </div>
   );
@@ -2104,7 +2105,7 @@ useEffect(() => {
       }} />;
       case 'AI Assistant':  return <AIAssistantPage isDark={isDark} chat={aiChat} setChat={setAiChat} />;
       case 'Reports':       return <ReportsPage isDark={isDark} />;
-      case 'Knowledge Base':return <KnowledgeBasePage isDark={isDark} />;
+      case 'Knowledge Base':return <KnowledgeBaseWorkspace isDark={isDark} />;
       case 'Users':         return <UsersPage isDark={isDark} />;
       case 'Settings':      return <SettingsPage isDark={isDark} toggleTheme={toggleTheme} />;
       case 'Taxonomy':      return <TaxonomyPage isDark={isDark} />;

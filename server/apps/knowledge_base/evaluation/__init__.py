@@ -1,0 +1,1 @@
+"""M2 evaluation harness for retrieval, generation, refusal, and safety sets."""

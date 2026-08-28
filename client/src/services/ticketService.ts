@@ -8,6 +8,7 @@ export type CreateTicketBody = {
   site: string;
   asset_tag: string;
   preferred_contact: string;
+  affected_system?: string;
   affected_scope?: string;
   work_blocked?: string;
   urgent_feeling?: string;
@@ -42,6 +43,7 @@ export type Ticket = {
   site?: string;
   asset_tag?: string;
   preferred_contact?: string;
+  affected_system?: string;
   status: string;
   priority: string | null;
   priority_reason?: string | null;

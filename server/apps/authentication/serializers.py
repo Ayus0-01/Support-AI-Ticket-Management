@@ -8,10 +8,6 @@ class RegisterSerializer(serializers.Serializer):
         required=False,
         allow_blank=True
     )
-    role = serializers.ChoiceField(
-        choices=["User", "Agent", "Admin"],
-        default="User"
-    )
     password = serializers.CharField(
         min_length=8,
         write_only=True

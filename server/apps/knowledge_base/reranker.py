@@ -54,6 +54,7 @@ def rerank_results(
     query,
     results,
     top_k=5,
+    score_floor=None,
 ):
     """
     Rerank hybrid-search results using the
@@ -62,54 +63,92 @@ def rerank_results(
     Each result receives:
         rerank_score
 
-    Results are returned in descending
-    reranker score order.
+    IMPORTANT:
+    BGE reranker scores are raw model logits.
+    They are used for relative ranking, not as
+    an absolute probability threshold.
+
+    If score_floor is explicitly supplied, it
+    may still be used by callers that need it.
+
+    If the reranker is unavailable, the original
+    RRF order is returned and the run is marked
+    as degraded.
     """
 
     if not results:
         return []
 
-    reranked = []
+    try:
+        reranked = []
 
-    for result in results:
+        for result in results:
+            content = result.get(
+                "content",
+                "",
+            )
 
-        content = result.get(
-            "content",
-            "",
+            title = result.get(
+                "article_title",
+                "",
+            )
+
+            document = (
+                f"{title}\n\n"
+                f"{content}"
+            )
+
+            raw_score = _score_pair(
+                query,
+                document,
+            )
+
+            updated_result = dict(
+                result
+            )
+
+            updated_result[
+                "rerank_score"
+            ] = raw_score
+
+            reranked.append(
+                updated_result
+            )
+
+        reranked.sort(
+            key=lambda item: item[
+                "rerank_score"
+            ],
+            reverse=True,
         )
 
-        title = result.get(
-            "article_title",
-            "",
-        )
+        if score_floor is not None:
+            reranked = [
+                result
+                for result in reranked
+                if result[
+                    "rerank_score"
+                ] >= score_floor
+            ]
 
-        document = (
-            f"{title}\n\n"
-            f"{content}"
-        )
+        return reranked[:top_k]
 
-        raw_score = _score_pair(
-            query,
-            document,
-        )
+    except Exception:
+        fallback_results = []
 
-        updated_result = dict(
-            result
-        )
+        for result in results[:top_k]:
+            fallback_result = dict(
+                result
+            )
 
-        updated_result[
-            "rerank_score"
-        ] = raw_score
+            fallback_result[
+                "degraded"
+            ] = [
+                "RERANKER_UNAVAILABLE"
+            ]
 
-        reranked.append(
-            updated_result
-        )
+            fallback_results.append(
+                fallback_result
+            )
 
-    reranked.sort(
-        key=lambda item: item[
-            "rerank_score"
-        ],
-        reverse=True,
-    )
-
-    return reranked[:top_k]
+        return fallback_results

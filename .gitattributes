@@ -1,1 +1,23 @@
+# Normalize text files to LF across the repository.
+* text=auto eol=lf
+
+# Existing M1 model artifacts.
 server/training/artifacts/*.txt text eol=lf
+
+# Binary files.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.7z binary
+*.rar binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp3 binary
+*.mp4 binary
