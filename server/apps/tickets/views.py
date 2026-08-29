@@ -45,6 +45,7 @@ from .classification.category_classifier import (
 )
 
 from .classification.subcategory_classifier import (
+    CATEGORY_SUBCATEGORIES,
     predict_subcategory_fast,
 )
 from apps.knowledge_base.resolution_service import(
@@ -58,6 +59,49 @@ from apps.knowledge_base.review_service import (
     reject_response,
     submit_feedback,
 )
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def ticket_taxonomy_view(request):
+    """Return the selectable categories from the active classifier taxonomy."""
+
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header:
+        return Response(
+            {"message": "Authorization header missing."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        parts = auth_header.split(" ")
+
+        if len(parts) != 2 or parts[0] != "Bearer":
+            raise ValueError("Invalid Authorization header")
+
+        user_id = AccessToken(parts[1])["user_id"]
+        user = users_collection.find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        return Response(
+            {"message": "Invalid or expired token."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    if not user:
+        return Response(
+            {"message": "User not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    categories = sorted(
+        category
+        for category, subcategories in CATEGORY_SUBCATEGORIES.items()
+        if subcategories
+    )
+
+    return Response({"categories": categories}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 @authentication_classes([])
@@ -398,6 +442,7 @@ def preview_classify_view(request):
     subcategory_result = predict_subcategory_fast(
         subject=subject,
         description=description,
+        category=category_result["category"],
     )
 
     return Response(

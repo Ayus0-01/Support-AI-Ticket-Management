@@ -435,7 +435,13 @@ function GapsView({ isDark }: { isDark: boolean }) {
   );
 }
 
-export default function KnowledgeBasePage({ isDark }: { isDark: boolean }) {
+export default function KnowledgeBasePage({
+  isDark,
+  initialArticleId,
+}: {
+  isDark: boolean;
+  initialArticleId?: string | null;
+}) {
   const { can } = useAuth();
   const canManage = can("ADMIN_SETTINGS");
   const [tab, setTab] = useState<Tab>("articles");
@@ -467,7 +473,7 @@ export default function KnowledgeBasePage({ isDark }: { isDark: boolean }) {
 
   useEffect(() => { void loadArticles(); }, [loadArticles]);
 
-  const openArticle = async (articleId: string) => {
+  const openArticle = useCallback(async (articleId: string) => {
     try {
       setSelectedId(articleId);
       setDetailLoading(true);
@@ -484,7 +490,16 @@ export default function KnowledgeBasePage({ isDark }: { isDark: boolean }) {
     } finally {
       setDetailLoading(false);
     }
-  };
+  }, [canManage]);
+
+  useEffect(() => {
+    if (!initialArticleId) {
+      return;
+    }
+
+    setTab("articles");
+    void openArticle(initialArticleId);
+  }, [initialArticleId, openArticle]);
 
   const startNewArticle = () => {
     setSelectedId(null);

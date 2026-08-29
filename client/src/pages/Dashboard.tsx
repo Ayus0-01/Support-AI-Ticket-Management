@@ -9,6 +9,7 @@ import {
   getMyTickets,
   getTicketDetails,
   getAgentQueue,
+  getTicketCategories,
   checkDuplicateTickets,
   previewClassification,
   overrideClassification,
@@ -37,6 +38,12 @@ interface DashboardProps {
 export type NavPage = 'Dashboard' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies';
 
 const AI_QUICK_ACTIONS = ['Summarize tickets', 'Show unresolved tickets', 'Draft reply', 'Escalate ticket'];
+const AUTO_CATEGORY = 'Not sure — let AI decide';
+
+const formatCategoryLabel = (category: string) => category
+  .replace(/[_-]+/g, ' ')
+  .toLocaleLowerCase()
+  .replace(/\b\p{L}/gu, (character) => character.toLocaleUpperCase());
 
 function DashboardHeroArt({ isDark, compact = false }: { isDark: boolean; compact?: boolean }) {
   return (
@@ -262,13 +269,11 @@ const [queueError, setQueueError] = useState("");
   const [isResolving, setIsResolving] = useState(false);
   const [resolutionSummary, setResolutionSummary] = useState("");
   const [overrideCategory, setOverrideCategory] = useState("");
-  const [overrideSeverity, setOverrideSeverity] = useState("HIGH");
+  const [overrideSeverity, setOverrideSeverity] = useState("");
   const [commentText, setCommentText] = useState("");
   const [commentVisibility, setCommentVisibility] = useState<"PUBLIC" | "INTERNAL">("PUBLIC");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All statuses");
-  const [priorityFilter, setPriorityFilter] = useState("All priorities");
-  const [categoryFilter, setCategoryFilter] = useState("All categories");
   const [assigneeFilter, setAssigneeFilter] = useState("All assignees");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
@@ -362,13 +367,13 @@ useEffect(() => {
           if (queueTicket) {
             setDetailTicket(queueTicket);
             setOverrideCategory(queueTicket.category || "");
-            setOverrideSeverity((queueTicket.severity || "HIGH").toUpperCase());
+            setOverrideSeverity(queueTicket.severity?.toUpperCase() ?? "");
           }
         } else {
           const data = await getTicketDetails(selectedTicketId);
           setDetailTicket(data);
           setOverrideCategory(data.category || "");
-          setOverrideSeverity((data.severity || "HIGH").toUpperCase());
+          setOverrideSeverity(data.severity?.toUpperCase() ?? "");
         }
 
         setTimelineLoading(true);
@@ -406,14 +411,6 @@ useEffect(() => {
       statusFilter === "All statuses" ||
       ticket.status === statusFilter;
 
-    const matchesPriority =
-      priorityFilter === "All priorities" ||
-      ticket.priority === priorityFilter;
-
-    const matchesCategory =
-      categoryFilter === "All categories" ||
-      (ticket.category || "").toUpperCase() === categoryFilter.toUpperCase();
-
     const matchesAssignee =
       assigneeFilter === "All assignees" ||
       (ticket.assignee || "Unassigned") === assigneeFilter;
@@ -421,8 +418,6 @@ useEffect(() => {
     return (
       matchesSearch &&
       matchesStatus &&
-      matchesPriority &&
-      matchesCategory &&
       matchesAssignee
     );
   });
@@ -440,15 +435,11 @@ useEffect(() => {
     }
 
     const rows = [
-      ['Ticket ID', 'Subject', 'Category', 'Subcategory', 'Status', 'Priority', 'Severity', 'Assignee', 'Created At'],
+      ['Ticket ID', 'Subject', 'Status', 'Assignee', 'Created At'],
       ...filteredTickets.map(ticket => [
         ticket.ticket_id,
         ticket.subject,
-        ticket.category || '',
-        ticket.subcategory || '',
         ticket.status || '',
-        ticket.priority || '',
-        ticket.severity || '',
         ticket.assignee || 'Unassigned',
         ticket.created_at,
       ]),
@@ -486,7 +477,7 @@ useEffect(() => {
     const severityMeta = classification.severity || {};
     const priorityMeta = classification.priority || {};
     const categoryConfidence = detailTicket?.confidence ?? categoryMeta.confidence ?? null;
-    const classificationPath = detailTicket?.path || categoryMeta.route || subcategoryMeta.route || 'Standard Queue';
+    const classificationPath = detailTicket?.path || categoryMeta.route || subcategoryMeta.route;
     const priorityReason = detailTicket?.priority_reason || priorityMeta.reason || '';
     const isAgentWorkspace = title === 'My queue' && can('VIEW_AGENT_TICKET');
 
@@ -512,19 +503,21 @@ useEffect(() => {
         setActionError("");
         const result = await overrideClassification(selectedTicketId, {
           category: overrideCategory.trim() || undefined,
-          severity: overrideSeverity as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" || undefined,
+          severity: overrideSeverity
+            ? overrideSeverity as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+            : undefined,
         });
 
         const updatedClassification = result?.updated_classification || {};
         setDetailTicket(current => current ? {
           ...current,
-          category: updatedClassification.category ?? current.category,
-          severity: updatedClassification.severity ?? current.severity,
+          category: updatedClassification.category ?? null,
+          severity: updatedClassification.severity ?? null,
           priority: typeof updatedClassification.priority === 'object'
-            ? updatedClassification.priority?.value ?? current.priority
-            : updatedClassification.priority ?? current.priority,
-          sla: updatedClassification.sla ?? current.sla,
-          queue: updatedClassification.queue ?? current.queue,
+            ? updatedClassification.priority?.value ?? null
+            : updatedClassification.priority ?? null,
+          sla: updatedClassification.sla ?? null,
+          queue: updatedClassification.queue ?? null,
         } : current);
 
         await refreshQueueTicket();
@@ -639,18 +632,18 @@ useEffect(() => {
                   <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status & System Metadata</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold">{detailTicket.status}</span>
-                    <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority || 'P4'}</span>
-                    <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity || 'N/A'}</span>
+                    {detailTicket.priority && <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority}</span>}
+                    {detailTicket.severity && <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity}</span>}
                   </div>
                   <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
                     <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Assignee</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.assignee || 'Unassigned'}</span></div>
                     <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Queue</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.queue || 'N/A'}</span></div>
-                    <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">First response due</span><span className={`text-right ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.sla?.first_response_due ? new Date(detailTicket.sla.first_response_due).toLocaleString() : detailTicket.sla?.priority || 'Standard SLA'}</span></div>
+                    {(detailTicket.sla?.first_response_due || detailTicket.sla?.priority) && <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">First response due</span><span className={`text-right ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.sla.first_response_due ? new Date(detailTicket.sla.first_response_due).toLocaleString() : detailTicket.sla.priority}</span></div>}
                     {canViewClassification && (
                       <>
-                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Confidence</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{categoryConfidence != null ? `${Math.round(categoryConfidence * 100)}%` : 'N/A'}</span></div>
-                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Path</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{classificationPath}</span></div>
-                        <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Priority Reason</span><span className={`text-right max-w-[70%] ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{priorityReason || 'Not supplied'}</span></div>
+                        {categoryConfidence != null && <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Confidence</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{`${Math.round(categoryConfidence * 100)}%`}</span></div>}
+                        {classificationPath && <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Path</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{classificationPath}</span></div>}
+                        {priorityReason && <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Priority Reason</span><span className={`text-right max-w-[70%] ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{priorityReason}</span></div>}
                       </>
                     )}
                     <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Created At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.created_at).toLocaleString()}</span></div>
@@ -705,6 +698,7 @@ useEffect(() => {
                       <div className="mt-3 grid gap-3 md:grid-cols-2">
                         <input value={overrideCategory} onChange={e => setOverrideCategory(e.target.value)} placeholder="Correct category" className={`rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`} />
                         <select value={overrideSeverity} onChange={e => setOverrideSeverity(e.target.value)} className={`rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                          <option value="">Keep backend severity</option>
                           {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map(value => <option key={value}>{value}</option>)}
                         </select>
                       </div>
@@ -823,36 +817,6 @@ useEffect(() => {
       }
     };
 
-    const getCategoryStyle = (category: string) => {
-      switch (category.toUpperCase()) {
-        case 'NETWORK': return isDark ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
-        case 'APPLICATION': return isDark ? 'bg-amber-950/20 text-amber-400 border-amber-500/20' : 'bg-yellow-50 text-yellow-800 border-yellow-200';
-        case 'VPN': return isDark ? 'bg-blue-950/20 text-blue-400 border-blue-500/20' : 'bg-blue-50 text-blue-700 border-blue-200';
-        case 'ACCESS': return isDark ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
-        default: return isDark ? 'bg-gray-800 text-gray-400 border-gray-700' : 'bg-slate-50 text-slate-700 border-slate-200';
-      }
-    };
-
-    const getPriBadgeStyle = (
-      priority: string | null
-    ) => {
-      switch (priority) {
-        case 'P1': return 'bg-red-600 text-white';
-        case 'P2': return 'bg-amber-600 text-white';
-        case 'P3': return 'bg-orange-500 text-white';
-        default: return 'bg-slate-500 text-white';
-      }
-    };
-
-    const getBreachBarColor = (priority: string | null) => {
-      switch (priority) {
-        case 'P1': return 'bg-red-600';
-        case 'P2': return 'bg-amber-600';
-        case 'P3': return 'bg-blue-500';
-        default: return 'bg-emerald-500';
-      }
-    };
-
     return (
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -861,16 +825,11 @@ useEffect(() => {
               Tickets / {title === 'My queue' ? 'Queue' : 'My tickets'}
             </p>
           </div>
-          <div>
-            <select className={`rounded-xl border px-3 py-2 text-xs font-semibold outline-none shadow-sm cursor-pointer ${isDark ? 'bg-gray-900 border-gray-800 text-white' : 'bg-white border-slate-200 text-slate-700'}`}>
-              <option>Sort: SLA risk (default)</option>
-            </select>
-          </div>
         </div>
 
         <div className={`p-4 rounded-2xl border-l-4 ${isDark ? 'bg-emerald-950/10 border-emerald-500/80 border bg-gray-900 border-gray-800' : 'bg-emerald-50/40 border-emerald-500 bg-white border-slate-200'}`}>
-          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>Ordered by time-to-breach, not by creation date</p>
-          <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>A P1 raised five minutes ago outranks a P4 raised yesterday. This is the single ordering rule that keeps SLA performance honest.</p>
+          <p className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>Live assigned tickets</p>
+          <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Open a ticket to review its classification, SLA, and resolution workflow.</p>
         </div>
 
         <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
@@ -880,9 +839,7 @@ useEffect(() => {
                 <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-900/50 border-gray-800 text-gray-400' : 'bg-slate-50 border-gray-150 text-slate-500'}`}>
                   <th className="w-12 px-4 py-3"></th>
                   <th className="text-left px-4 py-3 font-semibold">Ticket</th>
-                  <th className="text-left px-4 py-3 font-semibold">Category</th>
-                  <th className="text-center px-4 py-3 font-semibold">Pri</th>
-                  <th className="text-left px-4 py-3 font-semibold">Time to Breach</th>
+                  <th className="text-left px-4 py-3 font-semibold">Status</th>
                   <th className="text-left px-4 py-3 font-semibold">Requester</th>
                   <th className="px-4 py-3"></th>
                 </tr>
@@ -890,20 +847,18 @@ useEffect(() => {
               <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
                 {queueLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">Loading agent queue...</td>
+                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">Loading agent queue...</td>
                   </tr>
                 ) : queueError ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-red-500">{queueError}</td>
+                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-red-500">{queueError}</td>
                   </tr>
                 ) : queueRows.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">No active tickets in the queue.</td>
+                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">No active tickets in the queue.</td>
                   </tr>
                 ) : queueRows.map((row, index) => {
                   const actionText = 'Open';
-                  const slaDisplay = row.sla?.priority || 'N/A';
-
                   return (
                     <tr key={row.ticket_id} className={`transition-colors ${isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}`}>
                       <td className={`px-4 py-4 text-center font-bold text-base ${getRowNumberColor(index)}`}>
@@ -918,24 +873,9 @@ useEffect(() => {
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold border ${getCategoryStyle(row.category)}`}>
-                          {row.category}
+                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-slate-100 text-slate-700'}`}>
+                          {row.status}
                         </span>
-                      </td>
-                      <td className="px-4 py-4 text-center">
-                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded font-semibold text-[11px] ${getPriBadgeStyle(row.priority)}`}>
-                          {row.priority}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-1 rounded-full bg-slate-200 dark:bg-gray-800 overflow-hidden">
-                            <div className={`h-full w-full ${getBreachBarColor(row.priority)}`} />
-                          </div>
-                          <span className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                            {slaDisplay}
-                          </span>
-                        </div>
                       </td>
                       <td className={`px-4 py-4 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
                         {row.requester?.username || 'User'}
@@ -1043,15 +983,9 @@ useEffect(() => {
                 className={`ml-3 w-full bg-transparent text-sm outline-none ${isDark ? 'text-white placeholder-gray-500' : 'text-gray-900 placeholder-gray-500'}`}
               />
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3">
               <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
                 {['All statuses', 'Open', 'In Progress', 'Resolved', 'Closed'].map(option => <option key={option}>{option}</option>)}
-              </select>
-              <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
-                {['All priorities', 'P1', 'P2', 'P3', 'P4'].map(option => <option key={option}>{option}</option>)}
-              </select>
-              <select value={categoryFilter} onChange={e => { setCategoryFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
-                {['All categories', 'VPN', 'ACCESS', 'NETWORK', 'EMAIL', 'HARDWARE', 'SOFTWARE', 'APPLICATION', 'UNCLASSIFIED'].map(option => <option key={option}>{option}</option>)}
               </select>
               <select value={assigneeFilter} onChange={e => { setAssigneeFilter(e.target.value); setCurrentPage(1); }} className={filterField}>
                 <option>All assignees</option>
@@ -1059,7 +993,7 @@ useEffect(() => {
               </select>
             </div>
           </div>
-          <button onClick={() => { setSearchTerm(''); setStatusFilter('All statuses'); setPriorityFilter('All priorities'); setCategoryFilter('All categories'); setAssigneeFilter('All assignees'); setCurrentPage(1); }} className="mt-3 inline-flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:mt-0">
+          <button onClick={() => { setSearchTerm(''); setStatusFilter('All statuses'); setAssigneeFilter('All assignees'); setCurrentPage(1); }} className="mt-3 inline-flex shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-transparent px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:mt-0">
             Clear
           </button>
         </div>
@@ -1075,15 +1009,15 @@ useEffect(() => {
 ) : (
   paginatedTickets.map(row => (    <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-md flex items-center justify-center font-semibold text-xs ${row.priority === 'P1' ? 'bg-red-600 text-white' : row.priority === 'P2' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-white'}`}>
-          {row.priority || 'P3'}
+        <div className={`w-10 h-10 rounded-md flex items-center justify-center ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-slate-100 text-slate-700'}`}>
+          <TicketIcon className="h-4 w-4" aria-hidden="true" />
         </div>
         <div>
           <button onClick={() => onOpenTicket(row.ticket_id)} className={`font-semibold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {row.subject}
           </button>
           <div className="text-xs text-slate-500 mt-1">
-            {row.ticket_id} · {row.category} {row.subcategory ? `/ ${row.subcategory}` : ''} · created {new Date(row.created_at).toLocaleDateString()}
+            {row.ticket_id} · created {new Date(row.created_at).toLocaleDateString()}
           </div>
         </div>
       </div>
@@ -1133,7 +1067,7 @@ type DuplicateCandidate = {
   created_at?: string;
 };
 
-function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean; onCreated?: (ticket?: ApiTicket) => void; onOpenTicket?: (id: string) => void }) {
+function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArticle }: { isDark: boolean; onCreated?: (ticket?: ApiTicket) => void; onOpenTicket?: (id: string) => void; onOpenKnowledgeArticle: (articleId: string) => void }) {
   const [form, setForm] = useState(() => {
     try {
       const saved = localStorage.getItem('aiticketpilot_ticket_draft');
@@ -1141,7 +1075,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
         ? {
             subject: '',
             description: '',
-            category: 'Not sure — let AI decide',
+            category: AUTO_CATEGORY,
             affectedSystem: 'Cisco AnyConnect',
             started: 'Today',
             impact: 'My team',
@@ -1156,7 +1090,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
         : {
             subject: '',
             description: '',
-            category: 'Not sure — let AI decide',
+            category: AUTO_CATEGORY,
             affectedSystem: 'Cisco AnyConnect',
             started: 'Today',
             impact: 'My team',
@@ -1171,7 +1105,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
       return {
         subject: '',
         description: '',
-        category: 'Not sure — let AI decide',
+        category: AUTO_CATEGORY,
         affectedSystem: 'Cisco AnyConnect',
         started: 'Today',
         impact: 'My team',
@@ -1187,6 +1121,9 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [ticketCategories, setTicketCategories] = useState<string[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState("");
   const [preview, setPreview] = useState<ClassificationPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [duplicateLoading, setDuplicateLoading] = useState(false);
@@ -1194,6 +1131,52 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
   const [duplicateChecked, setDuplicateChecked] = useState(false);
   const [duplicateCheckPending, setDuplicateCheckPending] = useState(false);
   const duplicateRequestId = useRef(0);
+
+  useEffect(() => {
+    let active = true;
+
+    void (async () => {
+      try {
+        setCategoriesLoading(true);
+        setCategoriesError("");
+        const categories = await getTicketCategories();
+
+        if (!active) {
+          return;
+        }
+
+        setTicketCategories(categories);
+        setForm((current: typeof form) => {
+          if (current.category === AUTO_CATEGORY) {
+            return current;
+          }
+
+          const matchingCategory = categories.find(
+            (category) => category.toLocaleLowerCase() === current.category.trim().toLocaleLowerCase(),
+          );
+
+          return matchingCategory
+            ? { ...current, category: matchingCategory }
+            : { ...current, category: AUTO_CATEGORY };
+        });
+      } catch {
+        if (active) {
+          setTicketCategories([]);
+          setCategoriesError("Specific categories could not be loaded. You can still let AI classify the ticket.");
+          setForm((current: typeof form) => current.category === AUTO_CATEGORY ? current : { ...current, category: AUTO_CATEGORY });
+        }
+      } finally {
+        if (active) {
+          setCategoriesLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const set = (k: string, v: string | boolean) => {
     if (k === 'subject' || k === 'description') {
       duplicateRequestId.current += 1;
@@ -1339,7 +1322,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
 
       const payload = {
         subject: form.subject.trim(),
-        category: form.category === 'Not sure — let AI decide' ? '' : form.category,
+        category: form.category === AUTO_CATEGORY ? '' : form.category,
         description: form.description.trim(),
         department: form.department,
         site: form.location,
@@ -1437,9 +1420,12 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-2">Category (if you know)</label>
-                  <select value={form.category} onChange={e => set('category', e.target.value)} className={field}>
-                    {['Not sure — let AI decide', 'VPN', 'Network', 'Software', 'Hardware', 'Access'].map(c => <option key={c}>{c}</option>)}
+                  <select value={form.category} onChange={e => set('category', e.target.value)} className={field} disabled={categoriesLoading || Boolean(categoriesError)}>
+                    <option value={AUTO_CATEGORY}>{AUTO_CATEGORY}</option>
+                    {ticketCategories.map(category => <option key={category} value={category}>{formatCategoryLabel(category)}</option>)}
                   </select>
+                  {categoriesLoading && <p className="mt-2 text-xs text-slate-500">Loading supported categories…</p>}
+                  {categoriesError && <p className="mt-2 text-xs text-amber-700">{categoriesError}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Affected system (optional)</label>
@@ -1622,6 +1608,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket }: { isDark: boolean
           category={form.category}
           department={form.department}
           isDark={isDark}
+          onOpenArticle={onOpenKnowledgeArticle}
         />
       </aside>
     </div>
@@ -1994,6 +1981,7 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   ]);
   const [aiInput, setAiInput] = useState('');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [knowledgeArticleId, setKnowledgeArticleId] = useState<string | null>(null);
   const [homeTickets, setHomeTickets] = useState<ApiTicket[]>([]);
   const [loadingHome, setLoadingHome] = useState(true);
   const [homeError, setHomeError] = useState("");
@@ -2041,7 +2029,12 @@ useEffect(() => {
 
   // Compute sidebar priority counts from the live dashboard dataset.
   const priorityCounts = homeTickets.reduce((acc: Record<string, number>, ticket) => {
-    const priority = ticket.priority || 'P4';
+    const priority = ticket.priority;
+
+    if (!priority) {
+      return acc;
+    }
+
     acc[priority] = (acc[priority] || 0) + 1;
     return acc;
   }, {});
@@ -2056,6 +2049,16 @@ useEffect(() => {
 
   const handleBackToList = () => {
     setSelectedTicketId(null);
+  };
+
+  const openKnowledgeBase = () => {
+    setKnowledgeArticleId(null);
+    setActivePage('Knowledge Base');
+  };
+
+  const openKnowledgeArticle = (articleId: string) => {
+    setKnowledgeArticleId(articleId);
+    setActivePage('Knowledge Base');
   };
 
   const sendAi = (text?: string) => {
@@ -2090,13 +2093,13 @@ useEffect(() => {
   const renderPage = () => {
     switch (activePage) {
       case 'My Tickets':
-        return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+        return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
       case 'My queue':
         if (!can('VIEW_AGENT_QUEUE')) {
-          return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+          return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
         }
-        return <MyTicketsPage title="My queue" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={() => setActivePage('Knowledge Base')} canViewClassification={can('VIEW_CLASSIFICATION')} />;
-      case 'Create Ticket': return <CreateTicketPage isDark={isDark} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('My Tickets'); }} onCreated={(createdTicket) => {
+        return <MyTicketsPage title="My queue" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+      case 'Create Ticket': return <CreateTicketPage isDark={isDark} onOpenKnowledgeArticle={openKnowledgeArticle} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('My Tickets'); }} onCreated={(createdTicket) => {
         if (createdTicket) {
           setHomeTickets(current => [createdTicket, ...current.filter(ticket => ticket.ticket_id !== createdTicket.ticket_id)]);
         }
@@ -2105,7 +2108,7 @@ useEffect(() => {
       }} />;
       case 'AI Assistant':  return <AIAssistantPage isDark={isDark} chat={aiChat} setChat={setAiChat} />;
       case 'Reports':       return <ReportsPage isDark={isDark} />;
-      case 'Knowledge Base':return <KnowledgeBaseWorkspace isDark={isDark} />;
+      case 'Knowledge Base':return <KnowledgeBaseWorkspace isDark={isDark} initialArticleId={knowledgeArticleId} />;
       case 'Users':         return <UsersPage isDark={isDark} />;
       case 'Settings':      return <SettingsPage isDark={isDark} toggleTheme={toggleTheme} />;
       case 'Taxonomy':      return <TaxonomyPage isDark={isDark} />;
@@ -2442,10 +2445,8 @@ useEffect(() => {
 
                   {/* Table header */}
                   <div className={`grid grid-cols-12 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    <span className="col-span-6">Subject</span>
-                    <span className="col-span-2">Category</span>
-                    <span className="col-span-2">Priority</span>
-                    <span className="col-span-2">Status</span>
+                    <span className="col-span-9">Subject</span>
+                    <span className="col-span-3">Status</span>
                   </div>
 
                   {/* Rows */}
@@ -2459,12 +2460,8 @@ useEffect(() => {
                     ) : (
                       homeTickets.slice(0, 5).map(t => (
                         <div key={t.ticket_id} onClick={() => { setSelectedTicketId(t.ticket_id); setActivePage('My Tickets'); }} className={`grid grid-cols-12 items-center px-5 py-3.5 cursor-pointer transition-colors ${isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}`}>
-                          <span className={`col-span-6 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
-                          <span className={`col-span-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{t.category}</span>
-                          <span className="col-span-2">
-                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">{t.priority || 'P3'}</span>
-                          </span>
-                          <span className="col-span-2">
+                          <span className={`col-span-9 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
+                          <span className="col-span-3">
                             <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">{t.status}</span>
                           </span>
                         </div>

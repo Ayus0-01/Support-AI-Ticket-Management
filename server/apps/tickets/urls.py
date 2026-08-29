@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    ticket_taxonomy_view,
     create_ticket_view,
     get_tickets_view,
     get_ticket_detail_view,
@@ -22,6 +23,12 @@ from .views import (
 
 
 urlpatterns = [
+    path(
+        "taxonomy/",
+        ticket_taxonomy_view,
+        name="ticket-taxonomy",
+    ),
+
     path(
         "",
         create_ticket_view,

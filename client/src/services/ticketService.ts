@@ -37,7 +37,7 @@ export type Ticket = {
     email: string;
   };
   subject: string;
-  category: string;
+  category: string | null;
   description: string;
   department?: string;
   site?: string;
@@ -171,6 +171,17 @@ export const getAgentQueue = async (): Promise<Ticket[]> => {
       "Could not load the agent queue."
     );
   }
+};
+
+export const getTicketCategories = async (): Promise<string[]> => {
+  const response = await api.get("/api/tickets/taxonomy/");
+  const categories = response.data?.categories;
+
+  if (!Array.isArray(categories) || !categories.every((category) => typeof category === "string")) {
+    throw new Error("Ticket taxonomy response did not contain a category list.");
+  }
+
+  return categories;
 };
 
 export type ClassificationOverrideBody = {
