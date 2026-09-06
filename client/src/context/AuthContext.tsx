@@ -77,8 +77,7 @@ interface AuthContextType {
     username: string,
     email: string,
     password: string,
-    mobile: string,
-    role: "User" | "Agent" | "Admin"
+    mobile: string
   ) => Promise<{ success: boolean; message?: string }>;
   can: (capability: Capability) => boolean;
 }
@@ -101,8 +100,7 @@ const AuthContext = createContext<AuthContextType>({
   _username: string,
   _email: string,
   _password: string,
-  _mobile: string,
-  _role: "User" | "Agent" | "Admin"
+  _mobile: string
 ): Promise<{ success: boolean; message?: string }> => {
   return { success: false };
 },
@@ -203,8 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     username: string,
     email: string,
     password: string,
-    mobile: string,
-    role: "User" | "Agent" | "Admin"
+    mobile: string
   ): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await api.post("/api/auth/register/", {
@@ -212,7 +209,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         mobile,
-        role,
       });
 
       const data = response.data;

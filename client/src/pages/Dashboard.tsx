@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { 
   useAuth,
@@ -19,12 +19,18 @@ import {
   Ticket as ApiTicket,
   TimelineEvent,
 } from "../services/ticketService";
+import {
+  createManagedUser,
+  getManagedUsers,
+  ManagedUser,
+  updateManagedUser,
+} from "../services/userManagementService";
 
 import {
   Bot, Sun, Moon, LayoutDashboard, Ticket, PlusCircle, Sparkles, BarChart3,
   BookOpen, Users, Settings, LogOut, Search, Bell, HelpCircle, MessageSquare,
   Send, ChevronRight, Tag, Menu, X, Ticket as TicketIcon,
-  AlertCircle, Zap, ShieldCheck,
+  AlertCircle, Zap, ShieldCheck, RefreshCw, UserPlus,
 } from 'lucide-react';
 import ResolutionPanel from "../components/resolution/ResolutionPanel";
 import UserResolutionCard from "../components/resolution/UserResolutionCard";
@@ -790,9 +796,9 @@ useEffect(() => {
                         setDetailTicket(updatedTicket);
                         const timelineData = await getTicketTimeline(selectedTicketId);
                         setTimeline(timelineData);
-                        if (activeTab === 'my-tickets') {
+                        if (title === 'My Tickets') {
                           const refreshedTickets = await getMyTickets();
-                          setMyTickets(refreshedTickets);
+                          setTickets(refreshedTickets);
                         }
                       } catch (refreshError) {
                         console.error("Failed to refresh ticket data after user resolution confirmation:", refreshError);
@@ -1700,49 +1706,280 @@ function ReportsPage({ isDark }: { isDark: boolean }) {
   );
 }
 
+function getApiErrorMessage(error: unknown, fallback: string) {
+  const responseData = (error as { response?: { data?: unknown } })?.response?.data;
+
+  if (typeof responseData === 'object' && responseData !== null) {
+    const message = (responseData as { message?: unknown }).message;
+    if (typeof message === 'string') return message;
+
+    const firstError = Object.entries(responseData)[0]?.[1];
+    if (Array.isArray(firstError)) return String(firstError[0] ?? fallback);
+    if (typeof firstError === 'string') return firstError;
+  }
+
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
+}
+
+function formatAccountDate(value: string | null) {
+  if (!value) return '—';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
 function UsersPage({ isDark }: { isDark: boolean }) {
-  const users = [
-    {
-      name: 'Current User',
-      email: 'user@example.com',
-      avatar: 'U',
-      role: 'User',
-      tickets: 0,
-    },
-  ];
-  return (
-    <div className="space-y-4">
-      <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Users</h2>
-      <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className={isDark ? 'bg-gray-800' : 'bg-gray-50'}>
-              {['User', 'Role', 'Tickets Assigned'].map(h => (
-                <th key={h} className={`text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-            {users.map(u => (
-              <tr key={u.email} className={isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold">{u.avatar}</div>
-                    <div>
-                      <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{u.name}</p>
-                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{u.email}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${u.role === 'Admin' ? isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-100 text-blue-600' : isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>{u.role}</span>
-                </td>
-                <td className={`px-4 py-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{u.tickets ?? 0}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  const { can, user: currentUser } = useAuth();
+  const [users, setUsers] = useState<ManagedUser[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [actionId, setActionId] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [query, setQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [newAccount, setNewAccount] = useState({
+    username: '',
+    email: '',
+    mobile: '',
+    password: '',
+    confirmPassword: '',
+    role: '',
+  });
+
+  const loadUsers = useCallback(async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const directory = await getManagedUsers();
+      setUsers(directory.users);
+      setRoles(directory.roles);
+      setNewAccount((account) => (
+        directory.roles.includes(account.role)
+          ? account
+          : { ...account, role: directory.roles[0] ?? '' }
+      ));
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, 'Unable to load the user directory.'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadUsers();
+  }, [loadUsers]);
+
+  if (!can('MANAGE_USERS')) {
+    return (
+      <div className={`rounded-2xl border p-6 ${isDark ? 'bg-gray-900 border-gray-800 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`}>
+        Administrator access is required to manage application accounts.
       </div>
+    );
+  }
+
+  const filteredUsers = users.filter((account) => {
+    const matchingText = `${account.username} ${account.email}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+    const matchingRole = !roleFilter || account.role === roleFilter;
+    const matchingStatus = !statusFilter || (statusFilter === 'active' ? account.is_active : !account.is_active);
+    return matchingText && matchingRole && matchingStatus;
+  });
+
+  const submitNewAccount = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setActionError('');
+
+    if (newAccount.password !== newAccount.confirmPassword) {
+      setActionError('Passwords do not match.');
+      return;
+    }
+
+    if (!newAccount.role) {
+      setActionError('Choose an account role returned by the server.');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      await createManagedUser({
+        username: newAccount.username,
+        email: newAccount.email,
+        mobile: newAccount.mobile,
+        password: newAccount.password,
+        role: newAccount.role,
+      });
+      setNewAccount({
+        username: '',
+        email: '',
+        mobile: '',
+        password: '',
+        confirmPassword: '',
+        role: roles[0] ?? '',
+      });
+      setIsCreateOpen(false);
+      await loadUsers();
+    } catch (requestError) {
+      setActionError(getApiErrorMessage(requestError, 'Unable to create the account.'));
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const updateAccount = async (account: ManagedUser, updates: { role?: string; is_active?: boolean }) => {
+    setActionId(account.id);
+    setActionError('');
+    try {
+      await updateManagedUser(account.id, updates);
+      await loadUsers();
+    } catch (requestError) {
+      setActionError(getApiErrorMessage(requestError, 'Unable to update this account.'));
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const fieldClassName = `w-full rounded-xl border px-3 py-2 text-sm outline-none ${isDark ? 'border-gray-700 bg-gray-800 text-white placeholder-gray-500 focus:border-blue-500' : 'border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-blue-500'}`;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>User Management</h2>
+          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Accounts are loaded from the application database and managed through administrator-only controls.</p>
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => void loadUsers()} disabled={isLoading} className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+          <button type="button" onClick={() => { setActionError(''); setIsCreateOpen((open) => !open); }} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+            <UserPlus className="h-4 w-4" /> {isCreateOpen ? 'Close form' : 'Create account'}
+          </button>
+        </div>
+      </div>
+
+      {isCreateOpen && (
+        <form onSubmit={submitNewAccount} className={`rounded-2xl border p-5 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+          <div className="mb-4">
+            <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Create application account</h3>
+            <p className={`mt-1 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>The password is used only to create the account and is never returned by the API.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Username
+              <input required value={newAccount.username} onChange={(event) => setNewAccount({ ...newAccount, username: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="username" />
+            </label>
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Email
+              <input required type="email" value={newAccount.email} onChange={(event) => setNewAccount({ ...newAccount, email: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="email" />
+            </label>
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Mobile <span className="font-normal opacity-70">(optional)</span>
+              <input value={newAccount.mobile} onChange={(event) => setNewAccount({ ...newAccount, mobile: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="tel" />
+            </label>
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Role
+              <select required value={newAccount.role} onChange={(event) => setNewAccount({ ...newAccount, role: event.target.value })} className={`mt-1.5 ${fieldClassName}`} disabled={!roles.length}>
+                {!newAccount.role && <option value="">Choose a role</option>}
+                {roles.map((role) => <option key={role} value={role}>{role}</option>)}
+              </select>
+            </label>
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Password
+              <input required type="password" minLength={8} value={newAccount.password} onChange={(event) => setNewAccount({ ...newAccount, password: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="new-password" />
+            </label>
+            <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Confirm password
+              <input required type="password" minLength={8} value={newAccount.confirmPassword} onChange={(event) => setNewAccount({ ...newAccount, confirmPassword: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="new-password" />
+            </label>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            {actionError && <p role="alert" className="text-sm text-red-500">{actionError}</p>}
+            <button type="submit" disabled={isCreating || !roles.length} className="ml-auto rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60">
+              {isCreating ? 'Creating account…' : 'Create account'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className={`rounded-2xl border p-4 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+        <div className="grid gap-3 md:grid-cols-3">
+          <input value={query} onChange={(event) => setQuery(event.target.value)} className={fieldClassName} placeholder="Search username or email" aria-label="Search user directory" />
+          <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className={fieldClassName} aria-label="Filter by role">
+            <option value="">All roles</option>
+            {roles.map((role) => <option key={role} value={role}>{role}</option>)}
+          </select>
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={fieldClassName} aria-label="Filter by account status">
+            <option value="">All account statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      {error ? (
+        <div role="alert" className={`rounded-2xl border p-5 text-sm ${isDark ? 'border-red-900 bg-red-950/40 text-red-300' : 'border-red-200 bg-red-50 text-red-700'}`}>
+          <p>{error}</p>
+          <button type="button" onClick={() => void loadUsers()} className="mt-3 font-semibold underline">Try again</button>
+        </div>
+      ) : (
+        <div className={`overflow-hidden rounded-2xl border ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[940px] text-sm">
+              <thead className={isDark ? 'bg-gray-800/80 text-gray-400' : 'bg-gray-50 text-gray-500'}>
+                <tr>
+                  {['Account', 'Role', 'Status', 'Created', 'Last activity', 'Actions'].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide">{heading}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+                {isLoading ? (
+                  <tr><td colSpan={6} className={`px-4 py-10 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Loading accounts…</td></tr>
+                ) : filteredUsers.length === 0 ? (
+                  <tr><td colSpan={6} className={`px-4 py-10 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No accounts match the current filters.</td></tr>
+                ) : filteredUsers.map((account) => {
+                  const isCurrentAccount = account.email === currentUser?.email;
+                  const availableRoles = roles.includes(account.role) ? roles : [account.role, ...roles];
+                  const isUpdating = actionId === account.id;
+                  return (
+                    <tr key={account.id} className={isDark ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'}>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-sm font-bold text-white">{account.username.charAt(0).toUpperCase()}</div>
+                          <div>
+                            <p className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{account.username}</p>
+                            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{account.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <select value={account.role} onChange={(event) => void updateAccount(account, { role: event.target.value })} disabled={isCurrentAccount || Boolean(actionId)} className={`rounded-lg border px-2 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 bg-gray-800 text-gray-200' : 'border-gray-200 bg-white text-gray-700'}`} aria-label={`Change role for ${account.username}`}>
+                          {availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${account.is_active ? (isDark ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600')}`}>{account.is_active ? 'Active' : 'Inactive'}</span>
+                      </td>
+                      <td className={`px-4 py-3 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{formatAccountDate(account.created_at)}</td>
+                      <td className={`px-4 py-3 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{formatAccountDate(account.last_login_at)}</td>
+                      <td className="px-4 py-3">
+                        <button type="button" onClick={() => void updateAccount(account, { is_active: !account.is_active })} disabled={isCurrentAccount || Boolean(actionId)} className={`rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
+                          {isUpdating ? 'Updating…' : account.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        {isCurrentAccount && <p className={`mt-1 text-[11px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Your administrator account is protected.</p>}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {actionError && !isCreateOpen && <p role="alert" className="border-t border-red-200 px-4 py-3 text-sm text-red-500">{actionError}</p>}
+        </div>
+      )}
     </div>
   );
 }
