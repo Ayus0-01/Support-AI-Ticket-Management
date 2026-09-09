@@ -1930,10 +1930,6 @@ def resolution_feedback_view(
                 "comment",
                 "",
             ),
-            resolved_ticket=request.data.get(
-                "resolved_ticket",
-                False,
-            ),
             user_role=user.get("role", "User"),
         )
 
@@ -1975,7 +1971,9 @@ def resolution_feedback_view(
             "ticket_id": ticket_doc.get("ticket_id"),
             "ticket_status": ticket_doc.get("status"),
             "resolution_status": ticket_doc.get("resolution_status"),
-            "confirmed": request.data.get("resolved_ticket", False),
+            "confirmed": bool(
+                feedback_doc.get("resolved_ticket", False)
+            ) if isinstance(feedback_doc, dict) else False,
         })
 
     return Response(
@@ -2057,4 +2055,3 @@ def send_manual_resolution_view(
         },
         status=status.HTTP_200_OK,
     )
-

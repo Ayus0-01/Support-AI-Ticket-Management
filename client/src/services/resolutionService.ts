@@ -39,7 +39,6 @@ export type ResolutionResponse = {
 export type ResolutionFeedbackBody = {
   was_helpful: boolean;
   comment?: string;
-  resolved_ticket?: boolean;
 };
 
 const normalizeStep = (raw: unknown): ResolutionStep => {
@@ -180,4 +179,3 @@ export const sendManualResolution = async (
 
   return getResolutionResponse(responseId);
 };
-

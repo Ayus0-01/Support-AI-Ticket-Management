@@ -392,7 +392,6 @@ class ResolutionViewTests(SimpleTestCase):
             user_id=user_id,
             was_helpful=True,
             comment="Resolved my issue.",
-            resolved_ticket=True,
             user_role="User",
         )
 

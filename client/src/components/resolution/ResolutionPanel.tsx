@@ -218,7 +218,6 @@ export default function ResolutionPanel({
       await submitResolutionFeedback(currentResponse.id, {
         was_helpful: wasHelpful,
         comment: feedbackComment.trim() || undefined,
-        resolved_ticket: currentResponse.status === "SENT" || currentResponse.status === "EDITED_SENT",
       });
       setFeedbackComment("");
       setFeedbackMessage("Feedback recorded.");

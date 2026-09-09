@@ -421,7 +421,6 @@ def submit_feedback(
     user_id,
     was_helpful,
     comment="",
-    resolved_ticket=False,
     user_role="User",
 ):
     response = get_ticket_response(
@@ -472,29 +471,28 @@ def submit_feedback(
             "Feedback has already been submitted for this resolution."
         )
 
-    # 4. Create Feedback Record
+    # 4. A requester may confirm that the resolution helped, but only an
+    # Agent/Admin can explicitly change the ticket status through the existing
+    # status-transition workflow.
+    requester_confirmed = is_owner and bool(was_helpful)
+
+    # 5. Create Feedback Record
     feedback = create_resolution_feedback(
         response_id=response_id,
         ticket_id=response["ticket_id"],
         user_id=user_id,
         was_helpful=was_helpful,
         comment=comment,
-        resolved_ticket=resolved_ticket,
+        resolved_ticket=requester_confirmed,
     )
 
-    # 5. Workflow State & Timeline Update
+    # 6. Workflow State & Timeline Update
     comment_text = (comment or "").strip()
 
-    if resolved_ticket:
-        # YES / SOLVED: Transition ticket status to Resolved and update resolution state
-        if ticket.get("status") in {"Open", "In Progress"}:
-            transition_ticket_status(
-                ticket_id=ticket["ticket_id"],
-                new_status="Resolved",
-                actor_user_id=user_id,
-                resolution_summary=comment_text or response.get("summary", ""),
-            )
-
+    if requester_confirmed:
+        # Requester confirmation is feedback, not an authorization to close a
+        # ticket. The assigned Agent retains the existing explicit status-change
+        # action and decides whether the ticket can be marked Resolved.
         update_ticket_resolution_state(
             ticket_id=ticket["_id"],
             resolution_status="CONFIRMED",
@@ -502,9 +500,9 @@ def submit_feedback(
         )
 
         timeline_comment = (
-            f"Requester confirmed resolution. Feedback: {comment_text}"
+            f"Requester confirmed the resolution helped. Awaiting agent closure. Feedback: {comment_text}"
             if comment_text
-            else "Requester confirmed resolution."
+            else "Requester confirmed the resolution helped. Awaiting agent closure."
         )
         add_ticket_comment(
             ticket_id=ticket["ticket_id"],
@@ -513,7 +511,7 @@ def submit_feedback(
             visibility="PUBLIC",
             source="HUMAN",
         )
-    else:
+    elif is_owner:
         # NO / NOT SOLVED: Keep ticket in In Progress and mark as USER_REJECTED
         update_ticket_resolution_state(
             ticket_id=ticket["_id"],

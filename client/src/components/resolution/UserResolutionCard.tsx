@@ -90,10 +90,9 @@ export default function UserResolutionCard({
       setError("");
       await submitResolutionFeedback(responseId, {
         was_helpful: true,
-        resolved_ticket: true,
       });
       setActionDone(true);
-      setActionMessage("Thank you! Resolution confirmed and ticket marked as Resolved.");
+      setActionMessage("Thank you! Your confirmation was sent to the support agent for review.");
       await onConfirmed?.();
     } catch (submitError) {
       setError(getErrorMessage(submitError, "Could not confirm resolution."));
@@ -112,7 +111,6 @@ export default function UserResolutionCard({
       setError("");
       await submitResolutionFeedback(responseId, {
         was_helpful: false,
-        resolved_ticket: false,
         comment: rejectComment.trim(),
       });
       setActionDone(true);
@@ -219,7 +217,7 @@ export default function UserResolutionCard({
               disabled={submitting}
               className="rounded-2xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {submitting ? "Submitting..." : "Yes, Solved"}
+              {submitting ? "Submitting..." : "Yes, it helped"}
             </button>
             <button
               type="button"

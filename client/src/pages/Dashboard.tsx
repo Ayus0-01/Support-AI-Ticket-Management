@@ -53,6 +53,41 @@ const formatCategoryLabel = (category: string) => category
   .toLocaleLowerCase()
   .replace(/\b\p{L}/gu, (character) => character.toLocaleUpperCase());
 
+type TicketStatusSection = {
+  key: string;
+  label: string;
+  description: string;
+  statuses: string[];
+};
+
+const TICKET_STATUS_SECTIONS: TicketStatusSection[] = [
+  { key: 'open', label: 'Open', description: 'Awaiting support work', statuses: ['Open'] },
+  { key: 'in-progress', label: 'In Progress', description: 'Being worked by support', statuses: ['In Progress'] },
+  { key: 'resolved', label: 'Resolved', description: 'Completed tickets', statuses: ['Resolved', 'Closed'] },
+];
+
+function getTicketStatusClasses(status: string | undefined, isDark: boolean) {
+  switch (status) {
+    case 'Open':
+      return isDark
+        ? 'border-amber-500/30 bg-amber-500/15 text-amber-300'
+        : 'border-amber-200 bg-amber-100 text-amber-800';
+    case 'In Progress':
+      return isDark
+        ? 'border-blue-500/30 bg-blue-500/15 text-blue-300'
+        : 'border-blue-200 bg-blue-100 text-blue-800';
+    case 'Resolved':
+    case 'Closed':
+      return isDark
+        ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
+        : 'border-emerald-200 bg-emerald-100 text-emerald-800';
+    default:
+      return isDark
+        ? 'border-gray-700 bg-gray-800 text-gray-200'
+        : 'border-slate-200 bg-slate-100 text-slate-700';
+  }
+}
+
 function DashboardHeroArt({ isDark, compact = false }: { isDark: boolean; compact?: boolean }) {
   return (
     <div className={`relative w-full overflow-hidden ${compact ? 'h-[180px]' : 'h-[420px]'}`}>
@@ -437,6 +472,28 @@ useEffect(() => {
     safePage * pageSize
   );
 
+  const groupedTicketSections = TICKET_STATUS_SECTIONS.map((section) => ({
+    ...section,
+    total: filteredTickets.filter((ticket) => section.statuses.includes(ticket.status || '')).length,
+    tickets: paginatedTickets.filter((ticket) => section.statuses.includes(ticket.status || '')),
+  }));
+  const unmappedTickets = paginatedTickets.filter(
+    (ticket) => !TICKET_STATUS_SECTIONS.some((section) => section.statuses.includes(ticket.status || '')),
+  );
+  const visibleTicketSections = [
+    ...groupedTicketSections,
+    ...(unmappedTickets.length > 0 ? [{
+      key: 'other',
+      label: 'Other status',
+      description: 'Tickets returned with another current status',
+      statuses: [],
+      total: filteredTickets.filter(
+        (ticket) => !TICKET_STATUS_SECTIONS.some((section) => section.statuses.includes(ticket.status || '')),
+      ).length,
+      tickets: unmappedTickets,
+    }] : []),
+  ].filter((section) => section.tickets.length > 0);
+
   const exportFilteredTickets = () => {
     if (filteredTickets.length === 0) {
       return;
@@ -470,6 +527,8 @@ useEffect(() => {
     switch (tone) {
       case 'green': return 'text-emerald-600';
       case 'red': return 'text-red-600';
+      case 'amber': return 'text-amber-600';
+      case 'blue': return 'text-blue-600';
       case 'gray': return 'text-slate-600';
       default: return 'text-slate-600';
     }
@@ -639,7 +698,7 @@ useEffect(() => {
                 <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                   <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Status & System Metadata</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold">{detailTicket.status}</span>
+                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getTicketStatusClasses(detailTicket.status, isDark)}`}>{detailTicket.status}</span>
                     {detailTicket.priority && <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-xs font-semibold">Priority: {detailTicket.priority}</span>}
                     {detailTicket.severity && <span className="rounded-full bg-slate-100 text-slate-700 px-3 py-1 text-xs font-semibold">Severity: {detailTicket.severity}</span>}
                   </div>
@@ -925,7 +984,7 @@ useEffect(() => {
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-slate-100 text-slate-700'}`}>
+                        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTicketStatusClasses(row.status, isDark)}`}>
                           {row.status}
                         </span>
                       </td>
@@ -956,14 +1015,15 @@ useEffect(() => {
   }
 
   // All tickets card-based list layout (original)
-  const openCount = tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Closed').length;
+  const openCount = tickets.filter(t => t.status === 'Open').length;
+  const inProgressCount = tickets.filter(t => t.status === 'In Progress').length;
   const resolvedCount = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length;
 
   const dynamicSummary = [
-    { label: 'TOTAL TICKETS', value: String(tickets.length), note: 'Total created', tone: 'green' },
-    { label: 'OPEN TICKETS', value: String(openCount), note: 'Active queue', tone: 'red' },
+    { label: 'TOTAL TICKETS', value: String(tickets.length), note: 'Total created', tone: 'gray' },
+    { label: 'OPEN', value: String(openCount), note: 'Awaiting support work', tone: 'amber' },
+    { label: 'IN PROGRESS', value: String(inProgressCount), note: 'Being worked', tone: 'blue' },
     { label: 'RESOLVED', value: String(resolvedCount), note: 'Completed', tone: 'green' },
-    { label: 'UNASSIGNED', value: String(tickets.filter(t => !t.assignee || t.assignee === 'Unassigned').length), note: 'Pending assignment', tone: 'gray' },
   ];
 
   return (
@@ -972,7 +1032,7 @@ useEffect(() => {
         <div>
           <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</h2>
           <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            {openCount} open · {resolvedCount} resolved in the last 30 days
+            {openCount} open · {inProgressCount} in progress · {resolvedCount} resolved
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -1058,8 +1118,20 @@ useEffect(() => {
   <p className="text-center py-6 text-sm text-red-500">{error}</p>
 ) : tickets.length === 0 ? (
   <p className="text-center py-6 text-sm text-gray-500">No tickets found. Click "Raise ticket" to create one!</p>
+) : paginatedTickets.length === 0 ? (
+  <p className="text-center py-6 text-sm text-gray-500">No tickets match the current filters.</p>
 ) : (
-  paginatedTickets.map(row => (    <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+  visibleTicketSections.map(section => (
+    <section key={section.key} className="space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1 pt-2">
+        <div>
+          <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{section.label}</h3>
+          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{section.description}</p>
+        </div>
+        <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getTicketStatusClasses(section.statuses[0], isDark)}`}>{section.total}</span>
+      </div>
+      {section.tickets.map(row => (
+        <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
       <div className="flex items-center gap-4">
         <div className={`w-10 h-10 rounded-md flex items-center justify-center ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-slate-100 text-slate-700'}`}>
           <TicketIcon className="h-4 w-4" aria-hidden="true" />
@@ -1074,14 +1146,16 @@ useEffect(() => {
         </div>
       </div>
       <div className="text-right flex flex-col items-end gap-1">
-        <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+        <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTicketStatusClasses(row.status, isDark)}`}>
           {row.status}
         </div>
         <div className="text-xs text-slate-500">
           Assignee: {row.assignee || 'Unassigned'}
         </div>
       </div>
-    </div>
+        </div>
+      ))}
+    </section>
   ))
 )}
           </div>
@@ -2760,7 +2834,7 @@ useEffect(() => {
                         <div key={t.ticket_id} onClick={() => { setSelectedTicketId(t.ticket_id); setActivePage('My Tickets'); }} className={`grid grid-cols-12 items-center px-5 py-3.5 cursor-pointer transition-colors ${isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}`}>
                           <span className={`col-span-9 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
                           <span className="col-span-3">
-                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">{t.status}</span>
+                            <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getTicketStatusClasses(t.status, isDark)}`}>{t.status}</span>
                           </span>
                         </div>
                       ))
