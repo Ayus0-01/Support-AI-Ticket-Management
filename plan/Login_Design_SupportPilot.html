@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SupportPilot — Login Design</title>
+<style>
+  :root{
+    --brand-900:#0f2b1d; --brand-800:#14532d; --brand-600:#1f7a45; --brand-50:#eef4ef;
+    --ink:#1c2430; --ink-2:#4b5563; --ink-3:#8b95a1;
+    --line:#dfe5e1; --bg:#f4f6f5; --white:#fff;
+    --danger:#b91c1c; --danger-bg:#fef2f2;
+    --r:10px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+  .label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-3);margin:26px 0 10px;font-weight:600}
+
+  /* ---------- screen shell ---------- */
+  .screen{display:grid;grid-template-columns:1fr 1fr;min-height:640px;background:var(--white);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(16,24,40,.06)}
+
+  /* ---------- left brand panel ---------- */
+  .brand{background:var(--brand-900);color:#fff;padding:44px 46px;display:flex;flex-direction:column;
+    justify-content:space-between;position:relative;overflow:hidden}
+  .brand::after{content:"";position:absolute;right:-90px;bottom:-90px;width:300px;height:300px;
+    border-radius:50%;background:rgba(255,255,255,.035)}
+  .brand::before{content:"";position:absolute;right:20px;top:-60px;width:180px;height:180px;
+    border-radius:50%;background:rgba(255,255,255,.03)}
+  .logo{display:flex;align-items:center;gap:11px;position:relative;z-index:1}
+  .logo-mark{width:34px;height:34px;border-radius:8px;background:var(--brand-600);display:grid;place-items:center;
+    font-weight:800;font-size:14px;letter-spacing:-.5px}
+  .logo-name{font-size:17px;font-weight:700;letter-spacing:-.2px}
+  .logo-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:2.2px;color:rgba(255,255,255,.5);margin-top:2px}
+
+  .pitch{position:relative;z-index:1}
+  .pitch h1{font-size:29px;line-height:1.25;font-weight:700;letter-spacing:-.6px;margin-bottom:14px}
+  .pitch p{font-size:14px;line-height:1.65;color:rgba(255,255,255,.62);max-width:330px}
+  .stats{display:flex;gap:34px;margin-top:30px}
+  .stat-n{font-size:22px;font-weight:700}
+  .stat-l{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+  .foot{font-size:11.5px;color:rgba(255,255,255,.38);position:relative;z-index:1}
+
+  /* ---------- right form panel ---------- */
+  .panel{padding:44px 56px;display:flex;flex-direction:column;justify-content:center}
+  .panel-inner{width:100%;max-width:372px;margin:0 auto}
+  .panel h2{font-size:23px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px}
+  .panel .sub{font-size:13.5px;color:var(--ink-2);margin-bottom:26px}
+
+  .sso{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:11px;
+    border:1.5px solid var(--line);border-radius:var(--r);background:#fff;font-size:14px;font-weight:600;
+    color:var(--ink);cursor:pointer;transition:.15s}
+  .sso:hover{border-color:var(--brand-600);background:var(--brand-50)}
+  .ms{width:15px;height:15px;display:grid;grid-template-columns:1fr 1fr;gap:1.5px}
+  .ms i{display:block}
+  .ms i:nth-child(1){background:#f25022}.ms i:nth-child(2){background:#7fba00}
+  .ms i:nth-child(3){background:#00a4ef}.ms i:nth-child(4){background:#ffb900}
+
+  .or{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--ink-3);font-size:11.5px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  .field input{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:var(--r);
+    font-size:14px;font-family:inherit;color:var(--ink);background:#fff;transition:.15s}
+  .field input::placeholder{color:#b4bcc5}
+  .field input:focus{outline:none;border-color:var(--brand-600);box-shadow:0 0 0 3px rgba(31,122,69,.11)}
+  .field.err input{border-color:var(--danger);background:var(--danger-bg)}
+  .hint{font-size:11.5px;color:var(--danger);margin-top:5px;display:flex;gap:5px;align-items:center}
+
+  .pw-wrap{position:relative}
+  .pw-toggle{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:11.5px;
+    color:var(--ink-3);cursor:pointer;font-weight:600;background:none;border:0;font-family:inherit}
+
+  .row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 22px}
+  .check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);cursor:pointer}
+  .check input{width:15px;height:15px;accent-color:var(--brand-800)}
+  .link{font-size:13px;color:var(--brand-600);text-decoration:none;font-weight:600}
+  .link:hover{text-decoration:underline}
+
+  .btn{width:100%;padding:12px;background:var(--brand-800);color:#fff;border:0;border-radius:var(--r);
+    font-size:14.5px;font-weight:650;font-family:inherit;cursor:pointer;transition:.15s;
+    display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:hover{background:var(--brand-900)}
+  .btn.loading{background:var(--brand-600);cursor:wait}
+  .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+    border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  .alert{background:var(--danger-bg);border:1px solid #fecaca;border-left:3px solid var(--danger);
+    border-radius:8px;padding:11px 13px;font-size:13px;color:#7f1d1d;margin-bottom:20px;line-height:1.5}
+
+  .legal{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-3);line-height:1.6}
+
+  /* ---------- MFA ---------- */
+  .otp{display:flex;gap:9px;margin:6px 0 4px}
+  .otp input{width:100%;aspect-ratio:1/1.12;text-align:center;font-size:20px;font-weight:700;
+    border:1.5px solid var(--line);border-radius:var(--r);font-family:var(--mono)}
+  .otp input:focus{outline:none;border-color:var(--brand-600);box-shadow:0 0 0 3px rgba(31,122,69,.11)}
+  .otp input.filled{border-color:var(--brand-600);background:var(--brand-50)}
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);
+    text-decoration:none;margin-bottom:22px;font-weight:600}
+  .badge-mfa{display:inline-flex;align-items:center;gap:6px;background:var(--brand-50);color:var(--brand-800);
+    font-size:11.5px;font-weight:650;padding:5px 10px;border-radius:20px;margin-bottom:16px}
+
+  @media(max-width:920px){.screen{grid-template-columns:1fr}.brand{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="label">Screen 1 — Sign in (default state)</div>
+<div class="screen">
+  <div class="brand">
+    <div class="logo">
+      <div class="logo-mark">SP</div>
+      <div>
+        <div class="logo-name">SupportPilot</div>
+        <div class="logo-sub">AI TICKET RESOLUTION</div>
+      </div>
+    </div>
+    <div class="pitch">
+      <h1>Support that resolves itself.</h1>
+      <p>Every ticket classified, prioritised and routed the moment it arrives — so your engineers spend their time on the problems that actually need them.</p>
+      <div class="stats">
+        <div><div class="stat-n">4.2h</div><div class="stat-l">Avg resolution</div></div>
+        <div><div class="stat-n">67%</div><div class="stat-l">AI resolved</div></div>
+        <div><div class="stat-n">92%</div><div class="stat-l">Satisfaction</div></div>
+      </div>
+    </div>
+    <div class="foot">Internal system · Authorised personnel only</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-inner">
+      <h2>Sign in</h2>
+      <p class="sub">Use your organisation account to continue.</p>
+
+      <button class="sso">
+        <span class="ms"><i></i><i></i><i></i><i></i></span>
+        Continue with Microsoft
+      </button>
+
+      <div class="or">or sign in with email</div>
+
+      <div class="field">
+        <label>Work email</label>
+        <input type="email" placeholder="you@company.com" autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" placeholder="••••••••••" autocomplete="current-password">
+          <button class="pw-toggle">SHOW</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="check"><input type="checkbox"> Keep me signed in</label>
+        <a href="#" class="link">Forgot password?</a>
+      </div>
+
+      <button class="btn">Sign in</button>
+
+      <div class="legal">
+        Access is provisioned by your IT administrator. Need an account?
+        Contact <a href="#" class="link">it-servicedesk@company.com</a>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="label">Screen 2 — Error state + loading button</div>
+<div class="screen">
+  <div class="brand">
+    <div class="logo">
+      <div class="logo-mark">SP</div>
+      <div>
+        <div class="logo-name">SupportPilot</div>
+        <div class="logo-sub">AI TICKET RESOLUTION</div>
+      </div>
+    </div>
+    <div class="pitch">
+      <h1>Support that resolves itself.</h1>
+      <p>Every ticket classified, prioritised and routed the moment it arrives — so your engineers spend their time on the problems that actually need them.</p>
+      <div class="stats">
+        <div><div class="stat-n">4.2h</div><div class="stat-l">Avg resolution</div></div>
+        <div><div class="stat-n">67%</div><div class="stat-l">AI resolved</div></div>
+        <div><div class="stat-n">92%</div><div class="stat-l">Satisfaction</div></div>
+      </div>
+    </div>
+    <div class="foot">Internal system · Authorised personnel only</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-inner">
+      <h2>Sign in</h2>
+      <p class="sub">Use your organisation account to continue.</p>
+
+      <div class="alert">
+        <strong>Sign in failed.</strong> The email or password is incorrect. 2 attempts remaining before your account is temporarily locked.
+      </div>
+
+      <div class="field err">
+        <label>Work email</label>
+        <input type="email" value="priya.sharma@company.com">
+      </div>
+
+      <div class="field err">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" value="wrongpass">
+          <button class="pw-toggle">SHOW</button>
+        </div>
+        <div class="hint">⚠ Check your password and try again</div>
+      </div>
+
+      <div class="row">
+        <label class="check"><input type="checkbox"> Keep me signed in</label>
+        <a href="#" class="link">Forgot password?</a>
+      </div>
+
+      <button class="btn loading"><span class="spin"></span> Signing in…</button>
+
+      <div class="legal">
+        Access is provisioned by your IT administrator. Need an account?
+        Contact <a href="#" class="link">it-servicedesk@company.com</a>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="label">Screen 3 — MFA challenge (separate step, admins &amp; leads)</div>
+<div class="screen">
+  <div class="brand">
+    <div class="logo">
+      <div class="logo-mark">SP</div>
+      <div>
+        <div class="logo-name">SupportPilot</div>
+        <div class="logo-sub">AI TICKET RESOLUTION</div>
+      </div>
+    </div>
+    <div class="pitch">
+      <h1>One more step.</h1>
+      <p>Administrator and team lead accounts require a second factor. This protects the settings that control routing, SLA policy and AI thresholds.</p>
+    </div>
+    <div class="foot">Internal system · Authorised personnel only</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-inner">
+      <a href="#" class="back">← Back to sign in</a>
+      <div class="badge-mfa">🔒 Two-factor required</div>
+      <h2>Enter your code</h2>
+      <p class="sub">Open your authenticator app and enter the 6-digit code for <strong>priya.sharma@company.com</strong>.</p>
+
+      <div class="otp">
+        <input maxlength="1" value="4" class="filled">
+        <input maxlength="1" value="8" class="filled">
+        <input maxlength="1" value="1" class="filled">
+        <input maxlength="1" value="">
+        <input maxlength="1" value="">
+        <input maxlength="1" value="">
+      </div>
+      <p class="sub" style="margin:10px 0 22px">Code expires in <strong>00:47</strong></p>
+
+      <button class="btn">Verify and continue</button>
+
+      <div class="legal">
+        Lost access to your authenticator? Contact your IT administrator to reset it.
+        Recovery codes cannot be issued over email.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

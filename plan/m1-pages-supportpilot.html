@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SupportPilot — Milestone 1 Page Designs</title>
+<style>
+:root{
+  --brand-900:#0f2b1d;--brand-800:#14532d;--brand-600:#1f7a45;--brand-50:#eef4ef;
+  --ink:#1c2430;--ink-2:#4b5563;--ink-3:#8b95a1;
+  --line:#dfe5e1;--bg:#f4f6f5;--white:#fff;
+  --ok:#15803d;--ok-bg:#f0fdf4;--warn:#b45309;--warn-bg:#fffbeb;
+  --danger:#b91c1c;--danger-bg:#fef2f2;--info:#1d4ed8;--info-bg:#eff6ff;
+  --p1:#b91c1c;--p2:#c2410c;--p3:#b45309;--p4:#475569;
+  --r:9px;--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:#e6eae7;color:var(--ink);-webkit-font-smoothing:antialiased;font-size:13px}
+.wrap{max-width:1400px;margin:0 auto;padding:24px 18px 70px}
+.slabel{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:#64748b;margin:34px 0 10px;font-weight:700}
+.slabel span{color:var(--ink-3);font-weight:500;letter-spacing:0;text-transform:none;font-size:12px}
+.screen{background:var(--bg);border:1px solid #cbd5c8;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.08)}
+
+.app{display:grid;grid-template-columns:206px 1fr;min-height:600px}
+.side{background:var(--brand-900);padding:18px 0;display:flex;flex-direction:column}
+.side-logo{display:flex;align-items:center;gap:9px;padding:0 18px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px}
+.side-logo .m{width:28px;height:28px;border-radius:6px;background:var(--brand-600);display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:12px}
+.side-logo .n{color:#fff;font-weight:700;font-size:14px}
+.side-logo .s{font-family:var(--mono);font-size:7.5px;letter-spacing:1.5px;color:rgba(255,255,255,.45)}
+.nav-h{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.32);padding:12px 18px 6px;font-weight:700}
+.nav a{display:flex;align-items:center;gap:9px;padding:8px 18px;color:rgba(255,255,255,.66);text-decoration:none;
+  font-size:12.5px;font-weight:500;border-left:3px solid transparent}
+.nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav a.on{background:rgba(31,122,69,.22);color:#fff;border-left-color:var(--brand-600);font-weight:650}
+.nav .ic{width:15px;text-align:center;opacity:.85}
+.nav .cnt{margin-left:auto;background:rgba(255,255,255,.12);font-size:10px;padding:1px 6px;border-radius:9px;font-weight:700}
+.nav a.on .cnt{background:var(--brand-600)}
+.side-foot{margin-top:auto;padding:14px 18px 0;border-top:1px solid rgba(255,255,255,.08)}
+.side-user{display:flex;align-items:center;gap:9px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--brand-600);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+.side-user .un{color:#fff;font-size:12px;font-weight:600}
+.side-user .ur{color:rgba(255,255,255,.42);font-size:10.5px}
+
+.main{display:flex;flex-direction:column;overflow:hidden}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
+.top h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.top .crumb{font-size:11px;color:var(--ink-3);margin-bottom:2px}
+.top-r{display:flex;gap:9px;align-items:center}
+.content{padding:20px 22px;overflow:auto;flex:1}
+
+.btn{padding:8px 15px;border-radius:var(--r);font-size:12.5px;font-weight:650;border:0;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--brand-800);color:#fff}
+.btn-g{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn-sm{padding:5px 10px;font-size:11.5px}
+.card{background:#fff;border:1px solid var(--line);border-radius:11px}
+.card-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.card-h h3{font-size:13.5px;font-weight:700}
+.card-b{padding:16px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px}
+.t-ok{background:var(--ok-bg);color:var(--ok)}.t-warn{background:var(--warn-bg);color:var(--warn)}
+.t-dan{background:var(--danger-bg);color:var(--danger)}.t-neu{background:#f1f5f9;color:#475569}
+.t-info{background:var(--info-bg);color:var(--info)}.t-br{background:var(--brand-50);color:var(--brand-800)}
+.pri{font-family:var(--mono);font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:5px;color:#fff}
+.pri.P1{background:var(--p1)}.pri.P2{background:var(--p2)}.pri.P3{background:var(--p3)}.pri.P4{background:var(--p4)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:9px 12px;background:#f8faf9;color:var(--ink-2);font-size:10.5px;font-weight:700;
+   text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid #eef2f0;vertical-align:middle}
+tr:hover td{background:#fafbfa}
+.mono{font-family:var(--mono);font-size:11.5px}
+.muted{color:var(--ink-3)}
+.stack{display:flex;flex-direction:column;gap:1px}
+.sub{font-size:10.5px;color:var(--ink-3)}
+
+.step{display:flex;gap:11px;margin-bottom:14px;align-items:flex-start}
+.step-n{width:24px;height:24px;border-radius:6px;background:var(--brand-800);color:#fff;display:grid;place-items:center;font-size:11.5px;font-weight:700;flex-shrink:0}
+.step-n.done{background:var(--ok)}
+.step-t{font-size:14.5px;font-weight:700;letter-spacing:-.2px}
+.step-s{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.f{margin-bottom:13px}
+.f label{display:block;font-size:11.5px;font-weight:650;margin-bottom:5px}
+.f label .req{color:var(--danger)}.f label .opt{color:var(--ink-3);font-weight:500}
+.f input,.f select,.f textarea{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:var(--r);font-size:12.5px;font-family:inherit;background:#fff}
+.f input:focus,.f textarea:focus{outline:none;border-color:var(--brand-600);box-shadow:0 0 0 3px rgba(31,122,69,.1)}
+.f .fh{font-size:10.5px;color:var(--ink-3);margin-top:4px}
+.radio-row{display:flex;gap:7px}
+.radio-row label{flex:1;padding:9px 6px;border:1.5px solid var(--line);border-radius:var(--r);text-align:center;font-size:11.5px;font-weight:600;cursor:pointer;background:#fff}
+.radio-row label.on{border-color:var(--brand-600);background:var(--brand-50);color:var(--brand-800)}
+.chk{display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:7px 0}
+.chk input{width:15px;height:15px;accent-color:var(--brand-800)}
+
+/* live classification */
+.pred{background:var(--brand-900);border-radius:12px;padding:18px;color:#fff;position:sticky;top:16px}
+.pred-h{font-size:10px;letter-spacing:1.8px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:6px}
+.pred-live{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;color:#86efac;margin-bottom:14px}
+.pred-live i{width:6px;height:6px;border-radius:50%;background:#22c55e;display:block}
+.pred-r{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12.5px}
+.pred-r .k{color:rgba(255,255,255,.6)}
+.pred-r .v{font-weight:700}
+.pred-div{height:1px;background:rgba(255,255,255,.12);margin:10px 0}
+.cbar{height:6px;background:rgba(255,255,255,.14);border-radius:3px;overflow:hidden;margin-top:6px}
+.cbar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#86efac);border-radius:3px}
+.pred-note{font-size:10px;color:rgba(255,255,255,.38);margin-top:12px;line-height:1.55}
+.pred-path{display:inline-block;background:rgba(255,255,255,.1);font-family:var(--mono);font-size:9.5px;
+  padding:3px 7px;border-radius:4px;color:rgba(255,255,255,.75)}
+
+.dup{background:var(--warn-bg);border:1px solid #fde68a;border-left:3px solid var(--warn);border-radius:0 var(--r) var(--r) 0;
+  padding:12px 14px;margin-bottom:14px}
+.dup-t{font-size:12.5px;font-weight:700;color:#78350f;margin-bottom:7px}
+.dup-i{background:#fff;border:1px solid #fde68a;border-radius:7px;padding:9px 11px;display:flex;
+  justify-content:space-between;align-items:center;margin-top:6px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filters select,.filters input{padding:7px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:11.5px;font-family:inherit;background:#fff}
+.search{position:relative;flex:1;min-width:180px;max-width:250px}
+.search input{width:100%;padding-left:28px}
+.search::before{content:"⌕";position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:14px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px}
+.kpi .k{font-size:10.5px;color:var(--ink-3);font-weight:600}
+.kpi .v{font-size:24px;font-weight:800;letter-spacing:-.8px;margin:5px 0 2px}
+.kpi .d{font-size:10.5px;font-weight:650}
+.kpi .d.up{color:var(--ok)}.kpi .d.dn{color:var(--danger)}
+
+.sla{display:flex;align-items:center;gap:6px}
+.sla-bar{width:52px;height:5px;background:#eef2f0;border-radius:3px;overflow:hidden}
+.sla-bar i{display:block;height:100%;border-radius:3px}
+.sla-t{font-size:10.5px;font-weight:700;font-family:var(--mono)}
+
+/* ticket detail */
+.tl{position:relative;padding-left:20px}
+.tl::before{content:"";position:absolute;left:5px;top:5px;bottom:5px;width:2px;background:#eef2f0}
+.tl-i{position:relative;padding-bottom:15px}
+.tl-i::before{content:"";position:absolute;left:-19px;top:4px;width:10px;height:10px;border-radius:50%;
+  background:#fff;border:2.5px solid var(--brand-600)}
+.tl-i.sys::before{border-color:var(--ink-3)}
+.tl-t{font-size:12px;font-weight:650}
+.tl-m{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+.tl-b{font-size:12px;color:var(--ink-2);margin-top:5px;line-height:1.55;background:#f8faf9;padding:9px 11px;border-radius:7px}
+
+.cls-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #eef2f0}
+.cls-row:last-child{border-bottom:0}
+.cls-row .k{font-size:11.5px;color:var(--ink-2)}
+.cls-row .v{font-size:12.5px;font-weight:700}
+.meter{height:6px;background:#eef2f0;border-radius:3px;overflow:hidden;margin-top:5px}
+.meter i{display:block;height:100%;background:var(--brand-600);border-radius:3px}
+
+.note{background:var(--brand-50);border-left:3px solid var(--brand-600);padding:10px 12px;border-radius:0 7px 7px 0;
+  font-size:11.5px;line-height:1.55;margin:12px 0}
+.note b{display:block;margin-bottom:3px}
+
+/* portal */
+.pshell{background:#fff;min-height:560px;display:flex;flex-direction:column}
+.pnav{background:var(--brand-900);padding:13px 30px;display:flex;align-items:center;justify-content:space-between}
+.pnav-l{display:flex;align-items:center;gap:26px}
+.pnav-logo{display:flex;align-items:center;gap:9px}
+.pnav-logo .m{width:26px;height:26px;border-radius:6px;background:var(--brand-600);display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px}
+.pnav-logo .n{color:#fff;font-weight:700;font-size:14px}
+.pnav a{color:rgba(255,255,255,.66);text-decoration:none;font-size:12.5px;font-weight:550}
+.pnav a.on{color:#fff;font-weight:700}
+.pbody{padding:26px 30px;background:var(--bg);flex:1}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:15px;margin-bottom:11px;
+  display:flex;justify-content:space-between;align-items:center}
+.pcard:hover{border-color:var(--brand-600)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 1 — <span>/portal/tickets/new · Ticket submission form (employee view)</span></div>
+<div class="screen">
+<div class="pshell">
+  <div class="pnav">
+    <div class="pnav-l">
+      <div class="pnav-logo"><div class="m">SP</div><div class="n">SupportPilot</div></div>
+      <a href="#">My tickets</a><a href="#" class="on">Raise a ticket</a><a href="#">Self-help</a>
+    </div>
+    <div class="av">PS</div>
+  </div>
+  <div class="pbody">
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start;max-width:1050px;margin:0 auto">
+      <div>
+        <div class="dup">
+          <div class="dup-t">⚠ You have a similar open ticket</div>
+          <div style="font-size:11.5px;color:#78350f">Adding to an existing ticket is usually faster than raising a new one.</div>
+          <div class="dup-i">
+            <div><div style="font-size:12px;font-weight:650">VPN disconnects every few minutes</div>
+              <div class="sub mono">IT-2026-004488 · In progress · raised 2 days ago</div></div>
+            <button class="btn btn-g btn-sm">Add to this →</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:13px"><div class="card-b">
+          <div class="step"><div class="step-n done">1</div><div><div class="step-t">The issue</div><div class="step-s">Tell us what's happening</div></div></div>
+          <div class="f"><label>Subject <span class="req">*</span></label>
+            <input value="VPN connection failing on corporate network">
+            <div class="fh">A clear one-line summary. "Help" or "Urgent" will be rejected.</div></div>
+          <div class="f"><label>Description <span class="req">*</span></label>
+            <textarea rows="5">Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.</textarea>
+            <div class="fh">Include: the error message · what you already tried · when it started</div></div>
+          <div class="grid2">
+            <div class="f"><label>Category <span class="opt">(if you know)</span></label>
+              <select><option>Not sure — let AI decide</option><option>Network</option><option>VPN</option><option>Access</option></select></div>
+            <div class="f"><label>Affected system <span class="opt">(optional)</span></label><input value="Cisco AnyConnect"></div>
+          </div>
+          <div class="f" style="margin-bottom:0"><label>When did it start? <span class="opt">(optional)</span></label>
+            <select><option>Today</option><option>Just now</option><option>This week</option><option>Recurring</option></select></div>
+        </div></div>
+
+        <div class="card" style="margin-bottom:13px"><div class="card-b">
+          <div class="step"><div class="step-n done">2</div><div><div class="step-t">Impact</div><div class="step-s">Two questions that set the priority</div></div></div>
+          <div class="f"><label>Who is affected? <span class="req">*</span></label>
+            <div class="radio-row">
+              <label>Just me</label><label class="on">My team</label><label>My department</label><label>Whole org</label>
+            </div>
+            <div class="fh">Feeds the priority matrix directly</div></div>
+          <div class="f"><label>Is your work blocked? <span class="req">*</span></label>
+            <div class="radio-row"><label class="on">Yes, completely</label><label>Partially</label><label>No</label></div></div>
+          <div class="grid2" style="margin-bottom:0">
+            <div class="f" style="margin-bottom:0"><label>How urgent does it feel? <span class="opt">(optional)</span></label>
+              <select><option>Normal</option><option>Low</option><option>High</option></select>
+              <div class="fh">A hint only — the system decides actual priority</div></div>
+            <div class="f" style="margin-bottom:0;display:flex;align-items:flex-end">
+              <label class="chk" style="margin-bottom:9px"><input type="checkbox"> A workaround is available</label></div>
+          </div>
+        </div></div>
+
+        <div class="card"><div class="card-b">
+          <div class="step"><div class="step-n">3</div><div><div class="step-t">Context</div><div class="step-s">Mostly filled from your profile</div></div></div>
+          <div class="grid2">
+            <div class="f"><label>Department <span class="req">*</span></label><select><option>Finance</option><option>IT</option><option>Operations</option></select></div>
+            <div class="f"><label>Location / site</label><select><option>Chennai — DLF IT Park</option><option>Bengaluru</option></select></div>
+          </div>
+          <div class="grid2">
+            <div class="f"><label>Asset tag <span class="opt">(optional)</span></label><input placeholder="LT-04821" class="mono"></div>
+            <div class="f"><label>Preferred contact</label>
+              <div class="radio-row"><label class="on">Email</label><label>Phone</label><label>Teams</label></div></div>
+          </div>
+          <div class="f" style="margin-bottom:0"><label>Attachments <span class="opt">(optional)</span></label>
+            <input type="file">
+            <div class="fh">Screenshots or log files. Max 5 files, 10 MB each.</div></div>
+        </div></div>
+
+        <div style="display:flex;gap:9px;margin-top:14px">
+          <button class="btn btn-p" style="flex:1;justify-content:center;padding:11px">➤ Submit ticket</button>
+          <button class="btn btn-g">Save draft</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="pred">
+          <div class="pred-h">AI CLASSIFICATION PREVIEW</div>
+          <div class="pred-live"><i></i> Updating as you type</div>
+          <div class="pred-r"><span class="k">Category</span><span class="v">VPN</span></div>
+          <div class="pred-r"><span class="k">Sub-category</span><span class="v">Connection failure</span></div>
+          <div class="pred-div"></div>
+          <div class="pred-r"><span class="k">Severity</span><span class="v">HIGH</span></div>
+          <div class="pred-r"><span class="k">Priority</span><span class="v" style="color:#fca5a5">P2</span></div>
+          <div class="pred-r"><span class="k">Est. first response</span><span class="v">1 hour</span></div>
+          <div class="pred-div"></div>
+          <div style="padding:4px 0">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px">
+              <span style="color:rgba(255,255,255,.6)">Confidence</span><span style="font-weight:700">92%</span></div>
+            <div class="cbar"><i style="width:92%"></i></div>
+          </div>
+          <div style="margin-top:12px"><span class="pred-path">PATH: FAST · 47ms</span></div>
+          <div class="pred-note">This is a preview only. Final classification runs after you submit and may differ. Priority is computed from impact, not from how urgent it feels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 2 — <span>/portal/tickets · My tickets (employee view)</span></div>
+<div class="screen">
+<div class="pshell">
+  <div class="pnav">
+    <div class="pnav-l">
+      <div class="pnav-logo"><div class="m">SP</div><div class="n">SupportPilot</div></div>
+      <a href="#" class="on">My tickets</a><a href="#">Raise a ticket</a><a href="#">Self-help</a>
+    </div>
+    <div class="av">PS</div>
+  </div>
+  <div class="pbody">
+    <div style="max-width:850px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div><h1 style="font-size:20px;font-weight:700">My tickets</h1>
+          <div class="sub">3 open · 12 resolved in the last 30 days</div></div>
+        <button class="btn btn-p">+ Raise a ticket</button>
+      </div>
+
+      <div class="pcard">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="pri P2">P2</span>
+            <span style="font-size:13.5px;font-weight:650">VPN connection failing on corporate network</span>
+          </div>
+          <div class="sub mono">IT-2026-004521 · VPN / Connection failure · raised 12 minutes ago</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag t-info">AI processing</span>
+          <div class="sub" style="margin-top:5px">First response due in 48 min</div>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="pri P3">P3</span>
+            <span style="font-size:13.5px;font-weight:650">VPN disconnects every few minutes</span>
+          </div>
+          <div class="sub mono">IT-2026-004488 · VPN / Connection failure · raised 2 days ago</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag t-br">In progress</span>
+          <div class="sub" style="margin-top:5px">Assigned to Network Team</div>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="pri P4">P4</span>
+            <span style="font-size:13.5px;font-weight:650">Request: Adobe Acrobat Pro licence</span>
+          </div>
+          <div class="sub mono">IT-2026-004401 · Software / Licensing · raised 5 days ago</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag t-warn">Waiting on you</span>
+          <div class="sub" style="margin-top:5px">Manager approval needed</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="opacity:.72">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="pri P4">P4</span>
+            <span style="font-size:13.5px;font-weight:650">Printer on 3rd floor not responding</span>
+          </div>
+          <div class="sub mono">IT-2026-004302 · Printer / Not printing · resolved 8 days ago</div>
+        </div>
+        <div style="text-align:right">
+          <span class="tag t-ok">Resolved</span>
+          <div class="sub" style="margin-top:5px">Closed automatically</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 3 — <span>/tickets · Agent master list with filters</span></div>
+<div class="screen">
+<div class="app">
+  <div class="side">
+    <div class="side-logo"><div class="m">SP</div><div><div class="n">SupportPilot</div><div class="s">TICKET RESOLUTION</div></div></div>
+    <div class="nav">
+      <div class="nav-h">Work</div>
+      <a href="#"><span class="ic">▦</span> Dashboard</a>
+      <a href="#" class="on"><span class="ic">▤</span> All tickets <span class="cnt">127</span></a>
+      <a href="#"><span class="ic">◉</span> My queue <span class="cnt">14</span></a>
+      <div class="nav-h">Configuration</div>
+      <a href="#"><span class="ic">☰</span> Taxonomy</a>
+      <a href="#"><span class="ic">⏱</span> SLA policies</a>
+      <a href="#"><span class="ic">☷</span> Audit log</a>
+    </div>
+    <div class="side-foot"><div class="side-user"><div class="av">AK</div><div><div class="un">Arun K.</div><div class="ur">Support Agent</div></div></div></div>
+  </div>
+
+  <div class="main">
+    <div class="top">
+      <div><div class="crumb">Tickets</div><h1>All tickets</h1></div>
+      <div class="top-r"><button class="btn btn-g btn-sm">⬇ Export</button><button class="btn btn-p btn-sm">+ New ticket</button></div>
+    </div>
+    <div class="content">
+      <div class="kpis">
+        <div class="kpi"><div class="k">Received today</div><div class="v">127</div><div class="d up">↑ 12% vs yesterday</div></div>
+        <div class="kpi"><div class="k">Classified</div><div class="v">124</div><div class="d">3 unclassified → general queue</div></div>
+        <div class="kpi"><div class="k">Classification accuracy</div><div class="v">94%</div><div class="d up">✓ target ≥ 90%</div></div>
+        <div class="kpi"><div class="k">SLA at risk</div><div class="v">6</div><div class="d dn">2 breaching within 1h</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-b" style="padding-bottom:0">
+          <div class="filters">
+            <div class="search"><input placeholder="Ticket no, subject, requester…"></div>
+            <select><option>All statuses</option><option>New</option><option>Classified</option><option>In progress</option></select>
+            <select><option>All priorities</option><option>P1</option><option>P2</option><option>P3</option><option>P4</option></select>
+            <select><option>All categories</option><option>VPN</option><option>Network</option><option>Access</option></select>
+            <select><option>All assignees</option><option>Unassigned</option><option>Me</option></select>
+            <button class="btn btn-g btn-sm">Clear</button>
+            <span class="muted" style="margin-left:auto;font-size:11.5px">127 results</span>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Ticket</th><th>Subject</th><th>Category</th><th>Sev</th><th>Pri</th>
+            <th>Conf.</th><th>Path</th><th>SLA</th><th>Assignee</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono" style="font-weight:700">IT-2026-004521</td>
+              <td><div class="stack"><span style="font-weight:600">VPN connection failing on corporate network</span>
+                <span class="sub">Priya Sharma · Finance · 12 min ago</span></div></td>
+              <td><div class="stack"><span class="tag t-br">VPN</span><span class="sub">Connection failure</span></div></td>
+              <td><span class="tag t-dan">HIGH</span></td>
+              <td><span class="pri P2">P2</span></td>
+              <td class="mono" style="color:var(--ok);font-weight:700">92%</td>
+              <td><span class="tag t-neu mono">FAST</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:20%;background:var(--ok)"></i></div><span class="sla-t">48m</span></div></td>
+              <td class="muted">Unassigned</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:700">IT-2026-004520</td>
+              <td><div class="stack"><span style="font-weight:600">Cannot access shared finance drive</span>
+                <span class="sub">Ramesh N. · Finance · 28 min ago</span></div></td>
+              <td><div class="stack"><span class="tag t-br">ACCESS</span><span class="sub">Permissions</span></div></td>
+              <td><span class="tag t-warn">MEDIUM</span></td>
+              <td><span class="pri P3">P3</span></td>
+              <td class="mono" style="color:var(--ok);font-weight:700">88%</td>
+              <td><span class="tag t-neu mono">FAST</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:42%;background:var(--ok)"></i></div><span class="sla-t">2h 10m</span></div></td>
+              <td>Arun K.</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:700">IT-2026-004519</td>
+              <td><div class="stack"><span style="font-weight:600">Entire 4th floor has no network connectivity</span>
+                <span class="sub">Deepa R. · Operations · 34 min ago</span></div></td>
+              <td><div class="stack"><span class="tag t-br">NETWORK</span><span class="sub">Connectivity</span></div></td>
+              <td><span class="tag t-dan">CRITICAL</span></td>
+              <td><span class="pri P1">P1</span></td>
+              <td class="mono" style="color:var(--ok);font-weight:700">96%</td>
+              <td><span class="tag t-neu mono">FAST</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:88%;background:var(--danger)"></i></div><span class="sla-t" style="color:var(--danger)">6m</span></div></td>
+              <td>Network Team</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:700">IT-2026-004518</td>
+              <td><div class="stack"><span style="font-weight:600">Outlook keeps asking for password after update</span>
+                <span class="sub">Karthik S. · Sales · 51 min ago</span></div></td>
+              <td><div class="stack"><span class="tag t-br">EMAIL</span><span class="sub">Mailbox</span></div></td>
+              <td><span class="tag t-warn">MEDIUM</span></td>
+              <td><span class="pri P3">P3</span></td>
+              <td class="mono" style="color:var(--warn);font-weight:700">68%</td>
+              <td><span class="tag t-info mono">LLM</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:35%;background:var(--ok)"></i></div><span class="sla-t">2h 40m</span></div></td>
+              <td class="muted">Unassigned</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+            <tr>
+              <td class="mono" style="font-weight:700">IT-2026-004517</td>
+              <td><div class="stack"><span style="font-weight:600">Need help with the thing on my screen</span>
+                <span class="sub">Suresh M. · Admin · 1 hour ago</span></div></td>
+              <td><div class="stack"><span class="tag t-neu">UNCLASSIFIED</span><span class="sub">→ general queue</span></div></td>
+              <td><span class="tag t-neu">—</span></td>
+              <td><span class="pri P3">P3</span></td>
+              <td class="mono" style="color:var(--danger);font-weight:700">31%</td>
+              <td><span class="tag t-info mono">LLM</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:50%;background:var(--warn)"></i></div><span class="sla-t">1h 55m</span></div></td>
+              <td class="muted">Unassigned</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="card-b" style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line)">
+          <span class="muted" style="font-size:11.5px">Showing 1–5 of 127</span>
+          <div style="display:flex;gap:6px"><button class="btn btn-g btn-sm">← Prev</button><button class="btn btn-g btn-sm">Next →</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 4 — <span>/tickets/:id · Ticket detail with the classification panel and override</span></div>
+<div class="screen">
+<div class="app">
+  <div class="side">
+    <div class="side-logo"><div class="m">SP</div><div><div class="n">SupportPilot</div><div class="s">TICKET RESOLUTION</div></div></div>
+    <div class="nav">
+      <div class="nav-h">Work</div>
+      <a href="#"><span class="ic">▦</span> Dashboard</a>
+      <a href="#" class="on"><span class="ic">▤</span> All tickets <span class="cnt">127</span></a>
+      <a href="#"><span class="ic">◉</span> My queue <span class="cnt">14</span></a>
+      <div class="nav-h">Configuration</div>
+      <a href="#"><span class="ic">☰</span> Taxonomy</a>
+      <a href="#"><span class="ic">⏱</span> SLA policies</a>
+    </div>
+    <div class="side-foot"><div class="side-user"><div class="av">AK</div><div><div class="un">Arun K.</div><div class="ur">Support Agent</div></div></div></div>
+  </div>
+
+  <div class="main">
+    <div class="top">
+      <div><div class="crumb">Tickets / IT-2026-004521</div>
+        <h1>VPN connection failing on corporate network</h1></div>
+      <div class="top-r">
+        <span class="pri P2">P2</span>
+        <button class="btn btn-g btn-sm">Assign to me</button>
+        <button class="btn btn-p btn-sm">Change status ▾</button>
+      </div>
+    </div>
+    <div class="content">
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start">
+        <div>
+          <div class="card" style="margin-bottom:13px">
+            <div class="card-h"><h3>Ticket</h3>
+              <div style="display:flex;gap:6px"><span class="tag t-info">AI processing</span><span class="tag t-neu">Portal</span></div></div>
+            <div class="card-b">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-bottom:14px;border-bottom:1px solid #eef2f0;margin-bottom:14px">
+                <div><div class="sub">Requester</div><div style="font-weight:650;margin-top:2px">Priya Sharma</div></div>
+                <div><div class="sub">Department</div><div style="font-weight:650;margin-top:2px">Finance</div></div>
+                <div><div class="sub">Site</div><div style="font-weight:650;margin-top:2px">Chennai</div></div>
+                <div><div class="sub">Asset</div><div style="font-weight:650;margin-top:2px" class="mono">LT-04821</div></div>
+              </div>
+              <div style="font-size:12.5px;line-height:1.65;color:var(--ink-2)">
+                Unable to connect to VPN since this morning. Error message: <span class="mono" style="background:#f1f5f9;padding:1px 5px;border-radius:3px">"Connection timed out. Please check your network settings and try again."</span> Tried restarting the client but issue persists.
+              </div>
+              <div style="display:flex;gap:14px;margin-top:14px;padding-top:12px;border-top:1px solid #eef2f0">
+                <div><div class="sub">Affected</div><div style="font-weight:650;font-size:12px">My team</div></div>
+                <div><div class="sub">Work blocked</div><div style="font-weight:650;font-size:12px;color:var(--danger)">Yes, completely</div></div>
+                <div><div class="sub">Workaround</div><div style="font-weight:650;font-size:12px">None</div></div>
+                <div><div class="sub">Started</div><div style="font-weight:650;font-size:12px">Today</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><h3>Activity</h3></div>
+            <div class="card-b">
+              <div class="tl">
+                <div class="tl-i sys">
+                  <div class="tl-t">SLA timer started</div>
+                  <div class="tl-m">System · 12 min ago</div>
+                  <div class="tl-b">P2 → first response due 14:48, resolution due 21:48. Business-hours calendar: Chennai.</div>
+                </div>
+                <div class="tl-i sys">
+                  <div class="tl-t">Classified automatically</div>
+                  <div class="tl-m">SupportPilot AI · 12 min ago · 47 ms · FAST path</div>
+                  <div class="tl-b">VPN / Connection failure · Severity HIGH · Confidence 92%. Severity floored at HIGH by rule: work_blocked = yes and affected_scope = team.</div>
+                </div>
+                <div class="tl-i sys">
+                  <div class="tl-t">Ticket created</div>
+                  <div class="tl-m">Priya Sharma · 12 min ago · via Portal</div>
+                </div>
+              </div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid #eef2f0">
+                <textarea rows="2" placeholder="Add a comment…" style="width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:var(--r);font-size:12.5px;font-family:inherit"></textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:9px">
+                  <label class="chk"><input type="checkbox"> Internal note (not visible to requester)</label>
+                  <button class="btn btn-p btn-sm">Post comment</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-h"><h3>AI classification</h3><span class="tag t-neu mono">FAST</span></div>
+            <div class="card-b">
+              <div class="cls-row"><span class="k">Category</span><span class="v">VPN</span></div>
+              <div class="cls-row"><span class="k">Sub-category</span><span class="v">Connection failure</span></div>
+              <div class="cls-row"><span class="k">Severity</span><span class="v" style="color:var(--danger)">HIGH</span></div>
+              <div class="cls-row"><span class="k">Priority</span><span class="v"><span class="pri P2">P2</span></span></div>
+              <div style="padding:11px 0 4px">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px">
+                  <span class="muted">Confidence</span><span style="font-weight:800;color:var(--ok)">92%</span></div>
+                <div class="meter"><i style="width:92%"></i></div>
+              </div>
+              <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #eef2f0">
+                <div class="sub" style="margin-bottom:3px">Model</div>
+                <div class="mono" style="font-size:11px">clf-v1.2-lgbm · 47 ms</div>
+              </div>
+              <button class="btn btn-g btn-sm" style="width:100%;justify-content:center;margin-top:12px">✎ Override classification</button>
+              <div class="sub" style="margin-top:7px;line-height:1.5">Corrections are saved as training labels and improve the model.</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-h"><h3>Priority reasoning</h3></div>
+            <div class="card-b">
+              <div class="cls-row"><span class="k">Severity</span><span class="v" style="font-size:11.5px">HIGH</span></div>
+              <div class="cls-row"><span class="k">Impact scope</span><span class="v" style="font-size:11.5px">Team (2–20)</span></div>
+              <div class="cls-row"><span class="k">Matrix result</span><span class="v"><span class="pri P2">P2</span></span></div>
+              <div class="note" style="margin:11px 0 0">
+                <b>Rule applied</b>
+                Severity raised from MEDIUM to HIGH — work fully blocked for a team with no workaround. Rules can raise severity but never lower it.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h"><h3>SLA</h3><span class="tag t-ok">On track</span></div>
+            <div class="card-b">
+              <div class="cls-row"><span class="k">First response due</span><span class="v" style="font-size:11.5px">14:48 · in 48m</span></div>
+              <div class="cls-row"><span class="k">Resolution due</span><span class="v" style="font-size:11.5px">21:48 · in 7h 48m</span></div>
+              <div class="cls-row"><span class="k">Calendar</span><span class="v" style="font-size:11.5px">Chennai business hrs</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 5 — <span>/tickets/queue · Work queue ordered by SLA risk, not creation date</span></div>
+<div class="screen">
+<div class="app">
+  <div class="side">
+    <div class="side-logo"><div class="m">SP</div><div><div class="n">SupportPilot</div><div class="s">TICKET RESOLUTION</div></div></div>
+    <div class="nav">
+      <div class="nav-h">Work</div>
+      <a href="#"><span class="ic">▦</span> Dashboard</a>
+      <a href="#"><span class="ic">▤</span> All tickets <span class="cnt">127</span></a>
+      <a href="#" class="on"><span class="ic">◉</span> My queue <span class="cnt">14</span></a>
+      <div class="nav-h">Configuration</div>
+      <a href="#"><span class="ic">☰</span> Taxonomy</a>
+      <a href="#"><span class="ic">⏱</span> SLA policies</a>
+    </div>
+    <div class="side-foot"><div class="side-user"><div class="av">AK</div><div><div class="un">Arun K.</div><div class="ur">Support Agent</div></div></div></div>
+  </div>
+
+  <div class="main">
+    <div class="top">
+      <div><div class="crumb">Tickets / Queue</div><h1>My queue</h1></div>
+      <div class="top-r">
+        <select style="padding:7px 10px;border:1.5px solid var(--line);border-radius:7px;font-size:11.5px">
+          <option>Sort: SLA risk (default)</option><option>Sort: Priority</option><option>Sort: Newest</option></select>
+      </div>
+    </div>
+    <div class="content">
+      <div class="note" style="margin-top:0;margin-bottom:16px">
+        <b>Ordered by time-to-breach, not by creation date</b>
+        A P1 raised five minutes ago outranks a P4 raised yesterday. This is the single ordering rule that keeps SLA performance honest.
+      </div>
+
+      <div class="card">
+        <table>
+          <thead><tr><th style="width:34px"></th><th>Ticket</th><th>Category</th><th>Pri</th><th>Time to breach</th><th>Requester</th><th></th></tr></thead>
+          <tbody>
+            <tr style="background:#fef2f2">
+              <td style="text-align:center;font-weight:800;color:var(--danger)">1</td>
+              <td><div class="stack"><span style="font-weight:650">Entire 4th floor has no network connectivity</span>
+                <span class="sub mono">IT-2026-004519 · 34 min ago</span></div></td>
+              <td><span class="tag t-br">NETWORK</span></td>
+              <td><span class="pri P1">P1</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:92%;background:var(--danger)"></i></div>
+                <span class="sla-t" style="color:var(--danger)">6m</span></div></td>
+              <td>Deepa R.</td>
+              <td><button class="btn btn-p btn-sm">Claim</button></td>
+            </tr>
+            <tr style="background:#fffbeb">
+              <td style="text-align:center;font-weight:800;color:var(--warn)">2</td>
+              <td><div class="stack"><span style="font-weight:650">ERP login failing for accounts team</span>
+                <span class="sub mono">IT-2026-004510 · 1 hour ago</span></div></td>
+              <td><span class="tag t-br">APPLICATION</span></td>
+              <td><span class="pri P2">P2</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:74%;background:var(--warn)"></i></div>
+                <span class="sla-t" style="color:var(--warn)">22m</span></div></td>
+              <td>Vinod P.</td>
+              <td><button class="btn btn-p btn-sm">Claim</button></td>
+            </tr>
+            <tr>
+              <td style="text-align:center;font-weight:800;color:var(--ink-3)">3</td>
+              <td><div class="stack"><span style="font-weight:650">VPN connection failing on corporate network</span>
+                <span class="sub mono">IT-2026-004521 · 12 min ago</span></div></td>
+              <td><span class="tag t-br">VPN</span></td>
+              <td><span class="pri P2">P2</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:20%;background:var(--ok)"></i></div>
+                <span class="sla-t">48m</span></div></td>
+              <td>Priya Sharma</td>
+              <td><button class="btn btn-p btn-sm">Claim</button></td>
+            </tr>
+            <tr>
+              <td style="text-align:center;font-weight:800;color:var(--ink-3)">4</td>
+              <td><div class="stack"><span style="font-weight:650">Cannot access shared finance drive</span>
+                <span class="sub mono">IT-2026-004520 · 28 min ago</span></div></td>
+              <td><span class="tag t-br">ACCESS</span></td>
+              <td><span class="pri P3">P3</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:42%;background:var(--ok)"></i></div>
+                <span class="sla-t">2h 10m</span></div></td>
+              <td>Ramesh N.</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+            <tr>
+              <td style="text-align:center;font-weight:800;color:var(--ink-3)">5</td>
+              <td><div class="stack"><span style="font-weight:650">Need help with the thing on my screen</span>
+                <span class="sub mono">IT-2026-004517 · 1 hour ago</span></div></td>
+              <td><span class="tag t-neu">UNCLASSIFIED</span></td>
+              <td><span class="pri P3">P3</span></td>
+              <td><div class="sla"><div class="sla-bar"><i style="width:50%;background:var(--warn)"></i></div>
+                <span class="sla-t">1h 55m</span></div></td>
+              <td>Suresh M.</td>
+              <td><button class="btn btn-g btn-sm">Open</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="slabel">Screen 6 — <span>/dashboard · Shell with counter tiles only (full analytics is Milestone 4)</span></div>
+<div class="screen">
+<div class="app">
+  <div class="side">
+    <div class="side-logo"><div class="m">SP</div><div><div class="n">SupportPilot</div><div class="s">TICKET RESOLUTION</div></div></div>
+    <div class="nav">
+      <div class="nav-h">Work</div>
+      <a href="#" class="on"><span class="ic">▦</span> Dashboard</a>
+      <a href="#"><span class="ic">▤</span> All tickets <span class="cnt">127</span></a>
+      <a href="#"><span class="ic">◉</span> My queue <span class="cnt">14</span></a>
+      <div class="nav-h">Configuration</div>
+      <a href="#"><span class="ic">☰</span> Taxonomy</a>
+      <a href="#"><span class="ic">⏱</span> SLA policies</a>
+      <a href="#"><span class="ic">☷</span> Audit log</a>
+    </div>
+    <div class="side-foot"><div class="side-user"><div class="av">AK</div><div><div class="un">Arun K.</div><div class="ur">Support Agent</div></div></div></div>
+  </div>
+
+  <div class="main">
+    <div class="top"><div><div class="crumb">Overview</div><h1>Dashboard</h1></div>
+      <div class="top-r"><span class="tag t-neu">Milestone 1 scope</span></div></div>
+    <div class="content">
+      <div class="kpis">
+        <div class="kpi"><div class="k">Tickets received today</div><div class="v">127</div><div class="d up">↑ 12% vs yesterday</div></div>
+        <div class="kpi"><div class="k">Classified automatically</div><div class="v">124</div><div class="d up">97.6% coverage</div></div>
+        <div class="kpi"><div class="k">Open tickets</div><div class="v">43</div><div class="d">14 in your queue</div></div>
+        <div class="kpi"><div class="k">SLA at risk</div><div class="v">6</div><div class="d dn">2 breaching within 1h</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card">
+          <div class="card-h"><h3>Classification health</h3><span class="tag t-ok">Meeting target</span></div>
+          <div class="card-b">
+            <div class="cls-row"><span class="k">Category accuracy (hold-out)</span><span class="v" style="color:var(--ok)">94%</span></div>
+            <div class="cls-row"><span class="k">Severity accuracy (hold-out)</span><span class="v" style="color:var(--ok)">87%</span></div>
+            <div class="cls-row"><span class="k">Avg confidence</span><span class="v">0.88</span></div>
+            <div class="cls-row"><span class="k">Routed to LLM path</span><span class="v">18%</span></div>
+            <div class="cls-row"><span class="k">Agent overrides today</span><span class="v">7</span></div>
+            <div class="cls-row"><span class="k">Unclassified</span><span class="v">3</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h3>Volume by category — today</h3></div>
+          <div class="card-b">
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>ACCESS</span><span class="mono" style="font-weight:700">38</span></div><div class="meter"><i style="width:100%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>VPN</span><span class="mono" style="font-weight:700">27</span></div><div class="meter"><i style="width:71%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>SOFTWARE</span><span class="mono" style="font-weight:700">21</span></div><div class="meter"><i style="width:55%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>NETWORK</span><span class="mono" style="font-weight:700">16</span></div><div class="meter"><i style="width:42%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>PRINTER</span><span class="mono" style="font-weight:700">12</span></div><div class="meter"><i style="width:32%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>EMAIL</span><span class="mono" style="font-weight:700">10</span></div><div class="meter"><i style="width:26%"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span>UNCLASSIFIED</span><span class="mono" style="font-weight:700">3</span></div><div class="meter"><i style="width:8%;background:var(--ink-3)"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Deliberately minimal</b>
+        Milestone 1 ships counter tiles and classification health only. Trend charts, agent leaderboards, CSAT and exports are Milestone 4 — building them now costs days that the classification model needs.
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
