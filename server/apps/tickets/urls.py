@@ -20,10 +20,32 @@ from .views import (
     reject_resolution_view,
     resolution_feedback_view,
     send_manual_resolution_view,
+    manager_overview_view,
+    assign_ticket_view,
+    manager_ai_performance_view,
+    manager_workload_view,
 )
 
 
 urlpatterns = [
+    path(
+        "manager/overview/",
+        manager_overview_view,
+        name="manager-overview",
+    ),
+
+    path(
+        "manager/ai-performance/",
+        manager_ai_performance_view,
+        name="manager-ai-performance",
+    ),
+
+    path(
+        "manager/workload/",
+        manager_workload_view,
+        name="manager-workload",
+    ),
+
     path(
         "taxonomy/",
         ticket_taxonomy_view,
@@ -126,6 +148,12 @@ urlpatterns = [
     ),
 
     path(
+        "<str:ticket_id>/assign/",
+        assign_ticket_view,
+        name="assign-ticket",
+    ),
+
+    path(
         "<str:ticket_id>/timeline/",
         ticket_timeline_view,
         name="ticket-timeline",
@@ -138,3 +166,4 @@ urlpatterns = [
     ),
     
 ]
+

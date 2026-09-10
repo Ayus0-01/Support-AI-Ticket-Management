@@ -109,8 +109,8 @@ class AdminUserManagementViewTests(SimpleTestCase):
                         "post",
                         "/api/auth/admin/users/",
                         {
-                            "username": f"created-{role.lower()}",
-                            "email": f"created-{role.lower()}@example.com",
+                            "username": f"created-{role.lower().replace(' ', '-')}",
+                            "email": f"created-{role.lower().replace(' ', '-')}@example.com",
                             "password": password,
                             "role": role,
                         },

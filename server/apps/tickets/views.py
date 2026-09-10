@@ -39,7 +39,13 @@ from .services import (
     transition_ticket_status,
     add_ticket_comment,
     get_ticket_timeline,
+    assign_ticket,
+    auto_assign_ticket,
+    get_agents_workload,
+    get_manager_overview_data,
+    get_ai_performance_metrics,
 )
+
 from .classification.category_classifier import (
     predict_category_fast,
 )
@@ -548,6 +554,8 @@ def agent_queue_view(request):
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -1289,6 +1297,8 @@ def generate_resolution_view(
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -1578,6 +1588,8 @@ def _require_agent_or_admin(user):
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -2055,3 +2067,67 @@ def send_manual_resolution_view(
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_overview_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_manager_overview_data()
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def assign_ticket_view(request, ticket_id):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    
+    auto_assign = request.data.get("auto_assign", False)
+    assignee = request.data.get("assignee")
+    
+    if auto_assign or not assignee:
+        ticket = auto_assign_ticket(ticket_id, user.get("username"))
+    else:
+        ticket = assign_ticket(ticket_id, assignee, user.get("username"))
+        
+    if not ticket:
+        return Response({"message": "Ticket not found or assignment failed."}, status=status.HTTP_404_NOT_FOUND)
+        
+    return Response({"message": "Ticket assigned successfully.", "ticket": ticket}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_ai_performance_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_ai_performance_metrics()
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_workload_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_agents_workload()
+    return Response({"workload": data}, status=status.HTTP_200_OK)
+

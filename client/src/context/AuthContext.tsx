@@ -6,7 +6,7 @@ interface User {
   email: string;
   username: string;
   mobile?: string;
-  role: "User" | "Agent" | "Admin";
+  role: "User" | "Agent" | "Support Manager" | "Manager" | "Admin";
   avatar: string;
 }
 
@@ -24,6 +24,7 @@ export type Capability =
   | "CHANGE_TICKET_STATUS"
   | "RESOLVE_TICKET"
   | "VIEW_ALL_TICKETS"
+  | "ASSIGN_TICKETS"
   | "MANAGE_USERS"
   | "VIEW_REPORTS"
   | "ADMIN_SETTINGS";
@@ -51,6 +52,34 @@ const ROLE_CAPABILITIES: Record<
     "RESOLVE_TICKET",
   ],
 
+  "Support Manager": [
+    "VIEW_DASHBOARD",
+    "VIEW_AGENT_QUEUE",
+    "VIEW_AGENT_TICKET",
+    "VIEW_CLASSIFICATION",
+    "OVERRIDE_CLASSIFICATION",
+    "ADD_INTERNAL_COMMENT",
+    "CHANGE_TICKET_STATUS",
+    "RESOLVE_TICKET",
+    "VIEW_ALL_TICKETS",
+    "ASSIGN_TICKETS",
+    "VIEW_REPORTS",
+  ],
+
+  Manager: [
+    "VIEW_DASHBOARD",
+    "VIEW_AGENT_QUEUE",
+    "VIEW_AGENT_TICKET",
+    "VIEW_CLASSIFICATION",
+    "OVERRIDE_CLASSIFICATION",
+    "ADD_INTERNAL_COMMENT",
+    "CHANGE_TICKET_STATUS",
+    "RESOLVE_TICKET",
+    "VIEW_ALL_TICKETS",
+    "ASSIGN_TICKETS",
+    "VIEW_REPORTS",
+  ],
+
   Admin: [
     "VIEW_DASHBOARD",
     "VIEW_AGENT_QUEUE",
@@ -61,6 +90,7 @@ const ROLE_CAPABILITIES: Record<
     "CHANGE_TICKET_STATUS",
     "RESOLVE_TICKET",
     "VIEW_ALL_TICKETS",
+    "ASSIGN_TICKETS",
     "MANAGE_USERS",
     "VIEW_REPORTS",
     "ADMIN_SETTINGS",
@@ -71,6 +101,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   authLoading: boolean;
+  can: (capability: Capability) => boolean;
   signIn: (username: string, password: string) => Promise<{ success: boolean; message?: string }>;
   signOut: () => void;
   register: (
@@ -79,13 +110,13 @@ interface AuthContextType {
     password: string,
     mobile: string
   ) => Promise<{ success: boolean; message?: string }>;
-  can: (capability: Capability) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   authLoading: true,
+  can: () => false,
 
   signIn: async (
     _username: string,
@@ -104,54 +135,47 @@ const AuthContext = createContext<AuthContextType>({
 ): Promise<{ success: boolean; message?: string }> => {
   return { success: false };
 },
-  can: () => false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  
-  const can = (
-    capability: Capability
-): boolean => {
-  if (!user) {
-    return false;
-  }
 
-  return ROLE_CAPABILITIES[user.role].includes(
-    capability
-  );
-};
-
-  useEffect(() => {
-  const checkAuth = async () => {
-    const token = localStorage.getItem("access");
-
-    try {
-      if (token && !user) {
-        const meResponse = await api.get("/api/auth/me/");
-        const meData = meResponse.data;
-
-        setUser({
-          name: meData.username,
-          username: meData.username,
-          email: meData.email,
-          mobile: meData.mobile,
-          role: meData.role,
-          avatar: meData.username.charAt(0).toUpperCase(),
-        });
-      }
-    } catch (err) {
-      console.error("Auto auth check failed:", err);
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-    } finally {
-      setAuthLoading(false);
+  const can = (capability: Capability): boolean => {
+    if (!user) {
+      return false;
     }
+    return ROLE_CAPABILITIES[user.role]?.includes(capability) ?? false;
   };
 
-  checkAuth();
-}, []);
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("access");
+      if (token && !user) {
+        try {
+          const meResponse = await api.get("/api/auth/me/");
+          const meData = meResponse.data;
+          setUser({
+            name: meData.username,
+            username: meData.username,
+            email: meData.email,
+            mobile: meData.mobile,
+            role: meData.role,
+            avatar: meData.username.charAt(0).toUpperCase(),
+          });
+        } catch (err) {
+          console.error("Auto auth check failed:", err);
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+        } finally {
+          setAuthLoading(false);
+        }
+      } else {
+        setAuthLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const signIn = async (
     username: string,
