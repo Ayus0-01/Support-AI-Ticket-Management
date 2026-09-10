@@ -1,2 +1,3 @@
-USER_ROLES = ("User", "Agent", "Admin")
+USER_ROLES = ("User", "Agent", "Support Manager", "Manager", "Admin")
+
 

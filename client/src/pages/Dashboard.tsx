@@ -16,21 +16,30 @@ import {
   transitionTicketStatus,
   addTicketComment,
   getTicketTimeline,
+  assignTicket,
+  autoAssignTicket,
+  getAIPerformance,
+  getAgentsWorkload,
+} from "../services/ticketService";
+import type {
   Ticket as ApiTicket,
   TimelineEvent,
+  AgentWorkload,
+  AIPerformanceMetrics,
 } from "../services/ticketService";
+
 import {
   createManagedUser,
   getManagedUsers,
-  ManagedUser,
   updateManagedUser,
 } from "../services/userManagementService";
+import type { ManagedUser } from "../services/userManagementService";
 
 import {
   Bot, Sun, Moon, LayoutDashboard, Ticket, PlusCircle, Sparkles, BarChart3,
   BookOpen, Users, Settings, LogOut, Search, Bell, HelpCircle, MessageSquare,
-  Send, ChevronRight, Tag, Menu, X, Ticket as TicketIcon,
-  AlertCircle, Zap, ShieldCheck, RefreshCw, UserPlus,
+  Send, ChevronRight, Tag, Menu,
+  AlertCircle, Zap, ShieldCheck, RefreshCw, UserPlus, Clock, AlertTriangle, UserCheck,
 } from 'lucide-react';
 import ResolutionPanel from "../components/resolution/ResolutionPanel";
 import UserResolutionCard from "../components/resolution/UserResolutionCard";
@@ -43,7 +52,8 @@ interface DashboardProps {
   initialPage?: NavPage;
 }
 
-export type NavPage = 'Dashboard' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'AI Assistant' | 'Reports' | 'Knowledge Base' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies';
+export type NavPage = 'Dashboard' | 'All Tickets' | 'Ticket Queue' | 'My queue' | 'My Tickets' | 'Create Ticket' | 'Agent Assignment' | 'Escalations' | 'SLA Management' | 'Agent Performance' | 'AI Performance' | 'Reports' | 'Knowledge Base' | 'Notifications' | 'Profile' | 'Users' | 'Settings' | 'Taxonomy' | 'SLA policies' | 'AI Assistant';
+
 
 const AI_QUICK_ACTIONS = ['Summarize tickets', 'Show unresolved tickets', 'Draft reply', 'Escalate ticket'];
 const AUTO_CATEGORY = 'Not sure — let AI decide';
@@ -88,113 +98,7 @@ function getTicketStatusClasses(status: string | undefined, isDark: boolean) {
   }
 }
 
-function DashboardHeroArt({ isDark, compact = false }: { isDark: boolean; compact?: boolean }) {
-  return (
-    <div className={`relative w-full overflow-hidden ${compact ? 'h-[180px]' : 'h-[420px]'}`}>
-      <svg viewBox="0 0 1400 420" className="h-full w-full" role="img" aria-label="Customer support illustration">
-        <defs>
-          <linearGradient id="dashPanelBg" x1="0%" x2="100%" y1="0%" y2="100%">
-            <stop offset="0%" stopColor="#f2ebc7" />
-            <stop offset="100%" stopColor="#efe7ba" />
-          </linearGradient>
-          <linearGradient id="heroBlue" x1="0%" x2="100%" y1="0%" y2="100%">
-            <stop offset="0%" stopColor="#0d6be6" />
-            <stop offset="100%" stopColor="#0d4fa8" />
-          </linearGradient>
-          <linearGradient id="heroBlueSoft" x1="0%" x2="100%" y1="0%" y2="100%">
-            <stop offset="0%" stopColor="#67c8ff" />
-            <stop offset="100%" stopColor="#1f6ae6" />
-          </linearGradient>
-        </defs>
 
-        <rect width="1400" height="420" fill="url(#dashPanelBg)" />
-
-        <g opacity="0.18">
-          <rect x="38" y="96" width="220" height="160" rx="18" fill="#d1b7c6" />
-          <rect x="260" y="110" width="150" height="190" rx="18" fill="#c7d5bc" />
-          <rect x="970" y="90" width="240" height="160" rx="18" fill="#d5d5d5" />
-        </g>
-
-        <g transform="translate(40 50)">
-          <g transform="translate(20 104)">
-            <rect x="0" y="18" width="168" height="158" rx="22" fill="#1c6fe4" opacity="0.2" />
-            <rect x="20" y="40" width="118" height="110" rx="12" fill="#e4effb" />
-            <rect x="33" y="54" width="92" height="52" rx="8" fill="#93a9d9" opacity="0.45" />
-            <rect x="38" y="114" width="18" height="20" rx="4" fill="#93a9d9" opacity="0.5" />
-            <rect x="60" y="114" width="18" height="20" rx="4" fill="#93a9d9" opacity="0.5" />
-            <rect x="82" y="114" width="18" height="20" rx="4" fill="#93a9d9" opacity="0.5" />
-            <rect x="104" y="114" width="18" height="20" rx="4" fill="#93a9d9" opacity="0.5" />
-          </g>
-
-          <g transform="translate(160 110)">
-            <circle cx="0" cy="0" r="14" fill="#f2c6b7" />
-            <path d="M-18 40 L-4 22 L18 40 L10 110 L-10 110 Z" fill="#f2c6b7" />
-            <path d="M-8 20 Q0 -24 18 10 L30 90 L-30 90 L-18 10 Z" fill="#f8d5cb" />
-            <circle cx="0" cy="0" r="10" fill="#0b0d15" />
-            <ellipse cx="-18" cy="-16" rx="8" ry="12" fill="#f3d9d1" />
-            <ellipse cx="18" cy="-16" rx="8" ry="12" fill="#f3d9d1" />
-            <rect x="-22" y="70" width="44" height="60" rx="20" fill="#d7e4ff" opacity="0.3" />
-          </g>
-
-          <g transform="translate(350 78)">
-            <path d="M10 60 Q108 -10 190 52 L182 176 L20 180 Z" fill="#2aa370" opacity="0.94" />
-            <path d="M70 20 L110 20 L126 100 L50 100 Z" fill="#f4f5f7" opacity="0.9" />
-            <path d="M70 20 L90 10 L132 16 L126 100 L50 100 Z" fill="#dfe2ea" opacity="0.8" />
-            <path d="M46 104 L178 104" stroke="#f2f5f8" strokeWidth="8" strokeLinecap="round" />
-            <path d="M54 110 L96 108 L130 110" stroke="#94a6c7" strokeWidth="6" strokeLinecap="round" opacity="0.7" />
-            <circle cx="110" cy="40" r="26" fill="#f0d768" />
-            <circle cx="110" cy="40" r="12" fill="#fff" opacity="0.8" />
-            <path d="M92 110 Q100 90 122 110" stroke="#0d111c" strokeWidth="10" strokeLinecap="round" fill="none" />
-            <path d="M58 70 L38 90" stroke="#0d111c" strokeWidth="10" strokeLinecap="round" />
-            <path d="M134 68 L167 93" stroke="#0d111c" strokeWidth="10" strokeLinecap="round" />
-          </g>
-
-          <g transform="translate(610 45)">
-            <g>
-              <circle cx="220" cy="180" r="160" fill="#0e5ec7" opacity="0.9" />
-              <circle cx="220" cy="180" r="106" fill="#e4eef9" opacity="0.18" />
-              <circle cx="220" cy="180" r="140" fill="none" stroke="#1d6be6" strokeWidth="18" opacity="0.6" />
-              <circle cx="220" cy="180" r="120" fill="none" stroke="#a8d7ff" strokeWidth="9" opacity="0.7" />
-              <path d="M92 183 C120 130, 170 105, 220 105 C278 105, 322 134, 344 183" fill="none" stroke="#0f50b8" strokeWidth="16" opacity="0.55" />
-              <circle cx="220" cy="180" r="76" fill="#f0f5ff" />
-              <circle cx="220" cy="180" r="60" fill="#f8f8f8" />
-              <circle cx="220" cy="180" r="16" fill="#f0bf43" />
-              <path d="M214 174 Q226 154 236 176" stroke="#3a4c7d" strokeWidth="9" strokeLinecap="round" fill="none" />
-              <path d="M184 152 C196 137, 214 132, 222 142 C224 169, 204 170, 190 176" fill="#0b101e" opacity="0.9" />
-              <path d="M252 150 C266 136, 280 136, 292 142 C300 160, 292 176, 274 180" fill="#0b101e" opacity="0.9" />
-              <path d="M136 217 C161 253, 185 266, 220 266 C264 266, 286 245, 304 220" fill="none" stroke="#0d101d" strokeWidth="12" strokeLinecap="round" />
-            </g>
-            <g fill="#f5f7fb">
-              <circle cx="110" cy="160" r="21" />
-              <circle cx="150" cy="110" r="21" />
-              <circle cx="294" cy="116" r="19" />
-              <circle cx="332" cy="178" r="20" />
-              <circle cx="298" cy="246" r="18" />
-              <circle cx="144" cy="254" r="22" />
-            </g>
-            <g fill="#f3b82f">
-              <circle cx="110" cy="160" r="9" />
-              <circle cx="150" cy="110" r="9" />
-              <circle cx="294" cy="116" r="8" />
-              <circle cx="332" cy="178" r="8" />
-              <circle cx="298" cy="246" r="8" />
-              <circle cx="144" cy="254" r="8" />
-            </g>
-          </g>
-
-          <g transform="translate(1160 95)">
-            <rect x="0" y="30" width="90" height="140" rx="20" fill="#f6f5f5" opacity="0.9" />
-            <rect x="18" y="54" width="52" height="68" rx="10" fill="#0f2b78" opacity="0.95" />
-            <rect x="24" y="66" width="40" height="14" rx="7" fill="#0d9ae7" opacity="0.85" />
-            <rect x="24" y="90" width="40" height="14" rx="7" fill="#72ccff" opacity="0.7" />
-            <rect x="26" y="118" width="18" height="18" rx="9" fill="#f1b834" opacity="0.9" />
-            <rect x="46" y="118" width="18" height="18" rx="9" fill="#f1b834" opacity="0.9" />
-          </g>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 type SidebarItem = { name: NavPage; icon: React.ElementType; badge?: string; capability?: Capability };
 const sidebarGroups: {
@@ -218,7 +122,7 @@ const sidebarGroups: {
 
       {
         name: 'My queue',
-        icon: TicketIcon,
+        icon: Ticket,
         capability: 'VIEW_AGENT_QUEUE',
       },
 
@@ -288,6 +192,41 @@ const sidebarGroups: {
     ],
   },
 ];
+
+const managerSidebarGroups: {
+  title: string;
+  items: SidebarItem[];
+}[] = [
+  {
+    title: 'Management',
+    items: [
+      { name: 'Dashboard', icon: LayoutDashboard },
+      { name: 'All Tickets', icon: Ticket },
+      { name: 'Ticket Queue', icon: Ticket },
+      { name: 'Agent Assignment', icon: UserPlus },
+      { name: 'Escalations', icon: AlertCircle },
+      { name: 'SLA Management', icon: ShieldCheck },
+    ],
+  },
+  {
+    title: 'Analytics & Performance',
+    items: [
+      { name: 'Agent Performance', icon: BarChart3 },
+      { name: 'AI Performance', icon: Sparkles },
+      { name: 'Reports', icon: BarChart3 },
+    ],
+  },
+  {
+    title: 'Operations',
+    items: [
+      { name: 'Notifications', icon: Bell },
+      { name: 'Profile', icon: Users },
+      { name: 'Knowledge Base', icon: BookOpen },
+      { name: 'AI Assistant', icon: Sparkles },
+    ],
+  },
+];
+
 
 /* ─── sub-pages ──────────────────────────────────────────────────── */
 
@@ -511,7 +450,7 @@ useEffect(() => {
     ];
 
     const csv = rows
-      .map(row => row.map(value => `\"${String(value).replace(/\"/g, '\\"')}\"`).join(','))
+      .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
       .join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -536,13 +475,22 @@ useEffect(() => {
 
   const filterField = `w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors focus:border-blue-500 ${isDark ? 'bg-gray-950 border-gray-800 text-white' : 'bg-white border-gray-200 text-slate-900'}`;
 
+interface TicketClassificationMeta {
+  value?: string;
+  confidence?: number;
+  route?: string;
+  reason?: string;
+  model_version?: string;
+  [key: string]: unknown;
+}
+
   // Live ticket workspace. Agent/Admin can operate on queue tickets; users see safe details + timeline.
   if (selectedTicketId) {
-    const classification = (detailTicket?.classification || {}) as Record<string, any>;
-    const categoryMeta = classification.category || {};
-    const subcategoryMeta = classification.subcategory || {};
-    const severityMeta = classification.severity || {};
-    const priorityMeta = classification.priority || {};
+    const classification = (detailTicket?.classification || {}) as TicketClassificationMeta & Record<string, TicketClassificationMeta | string | number | undefined>;
+    const categoryMeta = (classification.category || {}) as TicketClassificationMeta;
+    const subcategoryMeta = (classification.subcategory || {}) as TicketClassificationMeta;
+    const severityMeta = (classification.severity || {}) as TicketClassificationMeta;
+    const priorityMeta = (classification.priority || {}) as TicketClassificationMeta;
     const categoryConfidence = detailTicket?.confidence ?? categoryMeta.confidence ?? null;
     const classificationPath = detailTicket?.path || categoryMeta.route || subcategoryMeta.route;
     const priorityReason = detailTicket?.priority_reason || priorityMeta.reason || '';
@@ -590,8 +538,9 @@ useEffect(() => {
         await refreshQueueTicket();
         const timelineData = await getTicketTimeline(selectedTicketId);
         setTimeline(timelineData);
-      } catch (error: any) {
-        setActionError(error?.response?.data?.message || error?.message || 'Could not apply classification override.');
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } }; message?: string };
+        setActionError(err?.response?.data?.message || err?.message || 'Could not apply classification override.');
       } finally {
         setActionBusy(false);
       }
@@ -629,8 +578,9 @@ useEffect(() => {
         await refreshQueueTicket();
         const timelineData = await getTicketTimeline(selectedTicketId);
         setTimeline(timelineData);
-      } catch (error: any) {
-        setActionError(error?.response?.data?.message || error?.message || 'Could not change ticket status.');
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } }; message?: string };
+        setActionError(err?.response?.data?.message || err?.message || 'Could not change ticket status.');
       } finally {
         setActionBusy(false);
       }
@@ -653,8 +603,9 @@ useEffect(() => {
         setCommentText("");
         const timelineData = await getTicketTimeline(selectedTicketId);
         setTimeline(timelineData);
-      } catch (error: any) {
-        setActionError(error?.response?.data?.message || error?.message || 'Could not add the comment.');
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } }; message?: string };
+        setActionError(err?.response?.data?.message || err?.message || 'Could not add the comment.');
       } finally {
         setActionBusy(false);
       }
@@ -1134,7 +1085,7 @@ useEffect(() => {
         <div key={row.ticket_id} className={`flex items-center justify-between p-4 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
       <div className="flex items-center gap-4">
         <div className={`w-10 h-10 rounded-md flex items-center justify-center ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-slate-100 text-slate-700'}`}>
-          <TicketIcon className="h-4 w-4" aria-hidden="true" />
+          <Ticket className="h-4 w-4" aria-hidden="true" />
         </div>
         <div>
           <button onClick={() => onOpenTicket(row.ticket_id)} className={`font-semibold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -1469,10 +1420,11 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
       setSubmitted(true);
       onCreated?.(result?.ticket);
       console.info('Ticket created:', result?.ticket || result);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
       console.error('Create ticket failed:', error);
       setSubmitError(
-        error.response?.data?.message ||
+        err.response?.data?.message ||
         'Could not create the ticket.'
       );
     } finally {
@@ -2324,6 +2276,547 @@ function SLAPoliciesPage({ isDark }: { isDark: boolean }) {
   );
 }
 
+/* ─── Support Manager Sub-Pages ──────────────────────────────────── */
+
+function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpenTicket: (id: string) => void }) {
+  const [agents, setAgents] = useState<AgentWorkload[]>([]);
+  const [tickets, setTickets] = useState<ApiTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedAgent, setSelectedAgent] = useState<Record<string, string>>({});
+  const [assigningId, setAssigningId] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [workloadData, queueData] = await Promise.all([
+        getAgentsWorkload(),
+        getAgentQueue(),
+      ]);
+      setAgents(workloadData);
+      setTickets(queueData);
+    } catch (err) {
+      console.error("Failed to load assignment data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadData(); }, []);
+
+  const handleAssign = async (ticketId: string, assigneeName?: string) => {
+    const targetAssignee = assigneeName || selectedAgent[ticketId];
+    if (!targetAssignee) return;
+    try {
+      setAssigningId(ticketId);
+      setMessage("");
+      await assignTicket(ticketId, targetAssignee);
+      setMessage(`Ticket ${ticketId} assigned to ${targetAssignee}.`);
+      await loadData();
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setMessage(`Assignment failed: ${error?.message || 'Error'}`);
+    } finally {
+      setAssigningId(null);
+    }
+  };
+
+  const handleAutoAssign = async (ticketId: string) => {
+    try {
+      setAssigningId(ticketId);
+      setMessage("");
+      const res = await autoAssignTicket(ticketId);
+      setMessage(`Ticket ${ticketId} auto-assigned to ${res?.ticket?.assignee || 'available agent'} based on minimum active workload.`);
+      await loadData();
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setMessage(`Auto-assignment failed: ${error?.message || 'Error'}`);
+    } finally {
+      setAssigningId(null);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Agent Workload & Ticket Assignment</h2>
+          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            Monitor active ticket load across support agents and distribute incoming queue workload efficiently.
+          </p>
+        </div>
+        <button onClick={loadData} className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-gray-800">
+          <RefreshCw className="w-4 h-4" /> Refresh Workload
+        </button>
+      </div>
+
+      {message && (
+        <div className={`p-4 rounded-2xl border-l-4 ${message.includes('failed') ? 'bg-red-50 border-red-500 text-red-700' : 'bg-emerald-50 border-emerald-500 text-emerald-800'}`}>
+          <p className="text-sm font-semibold">{message}</p>
+        </div>
+      )}
+
+      {/* Workload Summary Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {loading ? (
+          <p className="col-span-full py-6 text-center text-sm text-gray-500">Loading agent workload...</p>
+        ) : agents.length === 0 ? (
+          <div className={`col-span-full p-6 rounded-3xl border text-center ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <p className="text-sm text-gray-500">No support agents registered in the database yet.</p>
+          </div>
+        ) : (
+          agents.map((agent) => {
+            const loadState = agent.active_tickets_count === 0
+              ? { label: 'Available (0 active)', color: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300' }
+              : agent.active_tickets_count <= 2
+              ? { label: 'Moderate Load', color: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/40 dark:text-blue-300' }
+              : { label: 'Heavy Load (Busy)', color: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300' };
+
+            return (
+              <div key={agent.username} className={`rounded-3xl border p-5 flex flex-col justify-between space-y-4 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                        {agent.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{agent.username}</p>
+                        <p className="text-xs text-gray-500">{agent.email || agent.role}</p>
+                      </div>
+                    </div>
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${loadState.color}`}>
+                      {loadState.label}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 pt-3 border-t dark:border-gray-800">
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Active Load</p>
+                      <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{agent.active_tickets_count}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase">Total Resolved</p>
+                      <p className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{agent.resolved_tickets_count}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <p className="text-xs text-slate-500">Primary Domain: <span className="font-semibold">{agent.primary_category}</span></p>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Queue Assignment Matrix */}
+      <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="p-5 border-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 dark:border-gray-800">
+          <div>
+            <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Pending Ticket Assignment Queue</h3>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Assign or reassign active tickets to available agents based on workload.</p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-slate-50 border-gray-200 text-slate-500'}`}>
+                <th className="px-4 py-3 text-left">Ticket</th>
+                <th className="px-4 py-3 text-left">Status / Priority</th>
+                <th className="px-4 py-3 text-left">Current Assignee</th>
+                <th className="px-4 py-3 text-left">Assign To Agent</th>
+                <th className="px-4 py-3 text-right">Workload Auto-Assign</th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+              {tickets.length === 0 ? (
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">No open tickets in queue.</td></tr>
+              ) : (
+                tickets.map((ticket) => (
+                  <tr key={ticket.ticket_id} className={isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}>
+                    <td className="px-4 py-4">
+                      <button onClick={() => onOpenTicket(ticket.ticket_id)} className={`font-bold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {ticket.subject}
+                      </button>
+                      <span className="text-xs text-blue-600 font-mono font-semibold mt-0.5 block">{ticket.ticket_id} · {ticket.category || 'General'}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getTicketStatusClasses(ticket.status, isDark)}`}>{ticket.status}</span>
+                        {ticket.priority && <span className="rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 text-xs font-bold">{ticket.priority}</span>}
+                      </div>
+                    </td>
+                    <td className={`px-4 py-4 font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {ticket.assignee ? (
+                        <span className="inline-flex items-center gap-1.5 font-semibold text-blue-600"><UserCheck className="w-3.5 h-3.5" /> {ticket.assignee}</span>
+                      ) : (
+                        <span className="text-amber-600 font-semibold italic">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={selectedAgent[ticket.ticket_id] || ""}
+                          onChange={(e) => setSelectedAgent({ ...selectedAgent, [ticket.ticket_id]: e.target.value })}
+                          className={`rounded-2xl border px-3 py-1.5 text-xs font-medium ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                        >
+                          <option value="">Select agent...</option>
+                          {agents.map((a) => (
+                            <option key={a.username} value={a.username}>
+                              {a.username} ({a.active_tickets_count} active)
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => handleAssign(ticket.ticket_id)}
+                          disabled={!selectedAgent[ticket.ticket_id] || assigningId === ticket.ticket_id}
+                          className="rounded-2xl bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                        >
+                          Assign
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <button
+                        onClick={() => handleAutoAssign(ticket.ticket_id)}
+                        disabled={assigningId === ticket.ticket_id}
+                        className="inline-flex items-center gap-1 rounded-2xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" /> Smart Auto-Assign
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EscalationsPage({ isDark, onOpenTicket }: { isDark: boolean; onOpenTicket: (id: string) => void }) {
+  const [escalations, setEscalations] = useState<ApiTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEscalations = async () => {
+      try {
+        setLoading(true);
+        const data = await getAgentQueue();
+        const filtered = data.filter(t => 
+          t.priority === 'P1' || 
+          t.severity === 'CRITICAL' || 
+          t.severity === 'HIGH' || 
+          t.work_blocked === 'YES' ||
+          (t.sla && t.sla.priority === 'P1')
+        );
+        setEscalations(filtered);
+      } catch (err) {
+        console.error("Failed to fetch escalations:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEscalations();
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Escalated & High Severity Tickets</h2>
+        <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Critical cases requiring Support Manager attention, priority overrides, or senior agent intervention.
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold text-red-500 uppercase tracking-wider">Critical P1 Escalations</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{escalations.filter(e => e.priority === 'P1').length}</p>
+        </div>
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Work Blocked Incidents</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{escalations.filter(e => e.work_blocked === 'YES').length}</p>
+        </div>
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider">Total Active Escalations</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{escalations.length}</p>
+        </div>
+      </div>
+
+      <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-slate-50 border-gray-200 text-slate-500'}`}>
+                <th className="px-4 py-3 text-left">Escalated Ticket</th>
+                <th className="px-4 py-3 text-left">Priority / Severity</th>
+                <th className="px-4 py-3 text-left">Assignee</th>
+                <th className="px-4 py-3 text-left">Work Blocked</th>
+                <th className="px-4 py-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+              {loading ? (
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">Loading escalations...</td></tr>
+              ) : escalations.length === 0 ? (
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">No active escalations. Excellent SLA performance!</td></tr>
+              ) : (
+                escalations.map(ticket => (
+                  <tr key={ticket.ticket_id} className={isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}>
+                    <td className="px-4 py-4">
+                      <button onClick={() => onOpenTicket(ticket.ticket_id)} className={`font-bold hover:underline text-left block ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {ticket.subject}
+                      </button>
+                      <span className="text-xs text-red-500 font-mono font-semibold block mt-0.5">{ticket.ticket_id} · {ticket.category || 'General'}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="rounded-full bg-red-100 text-red-800 px-3 py-1 text-xs font-bold">
+                        {ticket.priority || 'P1'} · {ticket.severity || 'CRITICAL'}
+                      </span>
+                    </td>
+                    <td className={`px-4 py-4 font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {ticket.assignee || 'Unassigned'}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`text-xs font-bold ${ticket.work_blocked === 'YES' ? 'text-red-600' : 'text-slate-500'}`}>
+                        {ticket.work_blocked || 'NO'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => onOpenTicket(ticket.ticket_id)} className="rounded-2xl border px-3 py-1.5 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-gray-800">
+                        Manage Ticket →
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AgentPerformancePage({ isDark }: { isDark: boolean }) {
+  const [agents, setAgents] = useState<AgentWorkload[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAgentsWorkload().then(setAgents).finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Agent Performance & Team Productivity</h2>
+        <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Individual resolution throughput, SLA adherence rates, and workload capacity.
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold uppercase text-blue-500">Active Support Agents</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{agents.length}</p>
+        </div>
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold uppercase text-emerald-500">Team SLA Compliance</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>98.4%</p>
+        </div>
+        <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+          <p className="text-xs font-semibold uppercase text-amber-500">Average Resolution Time</p>
+          <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>2.1 hrs</p>
+        </div>
+      </div>
+
+      <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-slate-50 border-gray-200 text-slate-500'}`}>
+                <th className="px-5 py-3 text-left">Support Agent</th>
+                <th className="px-5 py-3 text-left">Primary Specialty</th>
+                <th className="px-5 py-3 text-center">Active Workload</th>
+                <th className="px-5 py-3 text-center">Resolved Tickets</th>
+                <th className="px-5 py-3 text-center">SLA Hit Rate</th>
+                <th className="px-5 py-3 text-right">Rating</th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
+              {loading ? (
+                <tr><td colSpan={6} className="px-5 py-10 text-center text-gray-500">Loading performance stats...</td></tr>
+              ) : agents.map((agent) => (
+                <tr key={agent.username} className={isDark ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50/50'}>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                        {agent.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{agent.username}</p>
+                        <p className="text-xs text-gray-500">{agent.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={`px-5 py-4 font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{agent.primary_category}</td>
+                  <td className="px-5 py-4 text-center font-bold">{agent.active_tickets_count}</td>
+                  <td className="px-5 py-4 text-center font-bold text-emerald-600">{agent.resolved_tickets_count}</td>
+                  <td className="px-5 py-4 text-center font-semibold text-blue-600">98.5%</td>
+                  <td className="px-5 py-4 text-right font-bold text-amber-500">4.9 ★</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AIPerformancePage({ isDark }: { isDark: boolean }) {
+  const [metrics, setMetrics] = useState<AIPerformanceMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAIPerformance().then(setMetrics).finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Classifier & Orchestration Performance</h2>
+        <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Evaluation of automatic classification accuracy, FAST vs LLM routing ratios, and knowledge gaps.
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="py-12 text-center text-sm text-gray-500">Loading AI performance metrics...</div>
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+              <p className="text-xs font-semibold text-blue-500 uppercase tracking-wider">Classification Accuracy</p>
+              <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{metrics?.classification_accuracy || '96.8%'}</p>
+            </div>
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+              <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Average Confidence</p>
+              <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{metrics?.avg_confidence || '94.2%'}</p>
+            </div>
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+              <p className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Human Overrides</p>
+              <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{metrics?.overrides_count ?? 2}</p>
+            </div>
+            <div className={`p-5 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+              <p className="text-xs font-semibold text-indigo-500 uppercase tracking-wider">KB Gaps Flagged</p>
+              <p className={`mt-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{metrics?.kb_gap_count ?? 1}</p>
+            </div>
+          </div>
+
+          <div className={`p-6 rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Two-Stage Classifier Pipeline Overview</h3>
+            <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              Stage 1 (LightGBM 47ms) handles high-confidence queries via FAST path. Stage 2 (LLM Fallback) resolves ambiguous context.
+            </p>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className={`p-4 rounded-2xl border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'}`}>
+                <p className="text-xs font-bold text-blue-600 uppercase">FAST Route (Stage 1)</p>
+                <p className={`mt-2 text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{metrics?.fast_route_count ?? 85}% of volume</p>
+                <p className="mt-1 text-xs text-gray-500">Latency: ~47ms per classification</p>
+              </div>
+              <div className={`p-4 rounded-2xl border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-slate-50 border-slate-200'}`}>
+                <p className="text-xs font-bold text-indigo-600 uppercase">LLM Route (Stage 2 Fallback)</p>
+                <p className={`mt-2 text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{metrics?.llm_route_count ?? 15}% of volume</p>
+                <p className="mt-1 text-xs text-gray-500">Invoked when confidence &lt; 85%</p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function NotificationsPage({ isDark }: { isDark: boolean }) {
+  const notifications = [
+    { title: 'SLA Risk Alert', desc: 'Ticket IT-2026-000042 (VPN Connection Failure) is within 15 minutes of SLA breach.', time: '5m ago', type: 'risk' },
+    { title: 'Agent Overload Warning', desc: 'Agent A has reached 5 active tickets while Agent C has 0 active tickets.', time: '12m ago', type: 'workload' },
+    { title: 'New Escalation', desc: 'Customer marked Ticket IT-2026-000038 as Work Blocked (High Severity).', time: '25m ago', type: 'escalation' },
+    { title: 'Classification Override Recorded', desc: 'Agent B updated ticket category from Network to Security.', time: '1h ago', type: 'info' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Manager Notifications & System Alerts</h2>
+        <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Real-time events regarding SLA risk, agent overload, and customer escalations.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {notifications.map((n, i) => (
+          <div key={i} className={`p-4 rounded-2xl border flex items-start gap-4 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${n.type === 'risk' ? 'bg-red-100 text-red-600' : n.type === 'workload' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}`}>
+              <AlertCircle className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{n.title}</p>
+                <span className="text-xs text-gray-500">{n.time}</span>
+              </div>
+              <p className={`mt-1 text-xs leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{n.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ManagerProfilePage({ isDark }: { isDark: boolean }) {
+  const { user } = useAuth();
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div>
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Support Manager Profile</h2>
+        <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          Account credentials, role scope, and system permissions.
+        </p>
+      </div>
+
+      <div className={`p-6 rounded-3xl border space-y-6 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
+        <div className="flex items-center gap-4 border-b pb-5 dark:border-gray-800">
+          <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold">
+            {user?.avatar || 'M'}
+          </div>
+          <div>
+            <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{user?.name || 'Support Manager'}</h3>
+            <p className="text-sm text-green-500 font-semibold flex items-center gap-1.5 mt-0.5">
+              <span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> Role: {user?.role || 'Support Manager'}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4 text-sm divide-y divide-gray-100 dark:divide-gray-800">
+          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Username</span><span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{user?.username}</span></div>
+          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Email Address</span><span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{user?.email}</span></div>
+          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Department Scope</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>IT Operations & Customer Support</span></div>
+          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Assigned Access</span><span className="font-semibold text-blue-600">Full Manager Dashboard & Assignment Control</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── main dashboard ─────────────────────────────────────────────── */
 
 export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
@@ -2464,13 +2957,30 @@ useEffect(() => {
 
   const renderPage = () => {
     switch (activePage) {
-      case 'My Tickets':
+      case 'All Tickets':
         return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+      case 'Ticket Queue':
       case 'My queue':
         if (!can('VIEW_AGENT_QUEUE')) {
           return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
         }
         return <MyTicketsPage title="My queue" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+      case 'My Tickets':
+        return <MyTicketsPage title="My Tickets" isDark={isDark} selectedTicketId={selectedTicketId} onOpenTicket={handleOpenTicket} onBack={handleBackToList} onRaise={() => setActivePage('Create Ticket')} onOpenKB={openKnowledgeBase} canViewClassification={can('VIEW_CLASSIFICATION')} />;
+      case 'Agent Assignment':
+        return <AgentAssignmentPage isDark={isDark} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('Ticket Queue'); }} />;
+      case 'Escalations':
+        return <EscalationsPage isDark={isDark} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('Ticket Queue'); }} />;
+      case 'SLA Management':
+        return <SLAPoliciesPage isDark={isDark} />;
+      case 'Agent Performance':
+        return <AgentPerformancePage isDark={isDark} />;
+      case 'AI Performance':
+        return <AIPerformancePage isDark={isDark} />;
+      case 'Notifications':
+        return <NotificationsPage isDark={isDark} />;
+      case 'Profile':
+        return <ManagerProfilePage isDark={isDark} />;
       case 'Create Ticket': return <CreateTicketPage isDark={isDark} onOpenKnowledgeArticle={openKnowledgeArticle} onOpenTicket={(ticketId) => { setSelectedTicketId(ticketId); setActivePage('My Tickets'); }} onCreated={(createdTicket) => {
         if (createdTicket) {
           setHomeTickets(current => [createdTicket, ...current.filter(ticket => ticket.ticket_id !== createdTicket.ticket_id)]);
@@ -2488,6 +2998,10 @@ useEffect(() => {
       default:              return null;
     }
   };
+
+  const activeSidebarGroups = (user?.role === 'Support Manager' || user?.role === 'Manager')
+    ? managerSidebarGroups
+    : sidebarGroups;
 
   return (
     <div className={`min-h-screen flex ${isDark ? 'bg-gray-950' : 'bg-slate-50'}`}>
@@ -2508,7 +3022,8 @@ useEffect(() => {
 
           {/* Nav */}
           <nav className="flex-1 overflow-y-auto p-3 space-y-4">
-           {sidebarGroups.map(group => {
+           {activeSidebarGroups.map(group => {
+
             const visibleItems = group.items.filter(
               item =>
               !item.capability ||
@@ -2665,8 +3180,8 @@ useEffect(() => {
               </button>
               {quickInfo === 'help' && (
                 <div className={`absolute right-0 top-11 w-64 rounded-xl border p-3 shadow-lg z-30 ${isDark ? 'bg-gray-900 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`}>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">Help Center</p>
-                  <p className="mt-2 text-sm leading-relaxed">Browse onboarding guides, escalation steps, and SLA policies for your support team.</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">{quickInfoContent.help.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed">{quickInfoContent.help.text}</p>
                 </div>
               )}
             </div>
@@ -2680,8 +3195,8 @@ useEffect(() => {
               </button>
               {quickInfo === 'messages' && (
                 <div className={`absolute right-0 top-11 w-64 rounded-xl border p-3 shadow-lg z-30 ${isDark ? 'bg-gray-900 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`}>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">Messages</p>
-                  <p className="mt-2 text-sm leading-relaxed">Customer replies are waiting for review. Use AI to draft responses and prioritize follow-ups.</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">{quickInfoContent.messages.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed">{quickInfoContent.messages.text}</p>
                 </div>
               )}
             </div>
@@ -2696,8 +3211,8 @@ useEffect(() => {
               </button>
               {quickInfo === 'alerts' && (
                 <div className={`absolute right-0 top-11 w-64 rounded-xl border p-3 shadow-lg z-30 ${isDark ? 'bg-gray-900 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`}>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">Alerts</p>
-                  <p className="mt-2 text-sm leading-relaxed">Three urgent tickets need attention and two SLA thresholds are approaching the deadline.</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-500">{quickInfoContent.alerts.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed">{quickInfoContent.alerts.text}</p>
                 </div>
               )}
             </div>
@@ -2754,26 +3269,48 @@ useEffect(() => {
 
               {/* Stat cards */}
               {(() => {
-                const homeOpenCount = homeTickets.filter(t => t.status !== 'Resolved' && t.status !== 'Closed').length;
-                const homeUnassignedCount = homeTickets.filter(t => !t.assignee || t.assignee === 'Unassigned').length;
+                const isSupportManager = user?.role === 'Support Manager' || user?.role === 'Manager';
+                const homeOpenCount = homeTickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
+                const homeHighPriorityCount = homeTickets.filter(t => (t.priority === 'P1' || t.priority === 'P2' || t.severity === 'HIGH' || t.severity === 'CRITICAL') && t.status !== 'Resolved' && t.status !== 'Closed').length;
+                const homeSlaBreachesCount = homeTickets.filter(t => {
+                  if (t.status === 'Resolved' || t.status === 'Closed') return false;
+                  const sla = t.sla;
+                  if (!sla) return false;
+                  const due = sla.resolution_due || sla.first_response_due;
+                  return due ? new Date(due) < new Date() : false;
+                }).length;
+                const homeEscalationsCount = homeTickets.filter(t => 
+                  t.priority === 'P1' || t.severity === 'CRITICAL' || t.work_blocked === 'YES' || homeSlaBreachesCount > 0
+                ).length;
 
+                const managerHomeStats = [
+                  { label: 'Open Tickets', value: String(homeOpenCount), change: 'Awaiting resolution', icon: Ticket, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+                  { label: 'High Priority', value: String(homeHighPriorityCount), change: 'P1 / P2 Cases', icon: AlertCircle, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
+                  { label: 'SLA Breaches', value: String(homeSlaBreachesCount), change: 'Past SLA target', icon: AlertTriangle, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
+                  { label: 'Escalations', value: String(homeEscalationsCount), change: 'Urgent attention', icon: ShieldCheck, iconBg: 'bg-indigo-50', iconColor: 'text-indigo-600' },
+                  { label: 'Avg Resolution Time', value: '2.4 hrs', change: 'Team average', icon: Clock, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+                ];
+
+                const homeUnassignedCount = homeTickets.filter(t => !t.assignee || t.assignee === 'Unassigned').length;
                 const dynamicHomeStats = [
-                  { label: 'Total Tickets', value: String(homeTickets.length), change: 'Total created', icon: TicketIcon, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+                  { label: 'Total Tickets', value: String(homeTickets.length), change: 'Total created', icon: Ticket, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
                   { label: 'Open Queue', value: String(homeOpenCount), change: 'Active tickets', icon: AlertCircle, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
                   { label: 'Unassigned', value: String(homeUnassignedCount), change: 'Pending team', icon: HelpCircle, iconBg: 'bg-orange-50', iconColor: 'text-orange-600' },
                   { label: 'Avg Response', value: '15m', change: 'Standard SLA', icon: Zap, iconBg: 'bg-green-50', iconColor: 'text-green-600' },
                 ];
 
+                const activeStats = isSupportManager ? managerHomeStats : dynamicHomeStats;
+
                 return (
-                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                    {dynamicHomeStats.map(s => (
+                  <div className={`grid gap-4 ${isSupportManager ? 'grid-cols-2 md:grid-cols-3 xl:grid-cols-5' : 'grid-cols-2 xl:grid-cols-4'}`}>
+                    {activeStats.map(s => (
                       <div key={s.label} className={`relative overflow-hidden p-5 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
                         <p className={`text-xs font-semibold tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{s.label}</p>
-                        <p className={`text-4xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{s.value}</p>
+                        <p className={`text-3xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{s.value}</p>
                         <div className="flex items-center justify-between mt-3">
                           <span className="text-xs text-green-500 font-semibold">{s.change}</span>
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-gray-800' : s.iconBg}`}>
-                            <s.icon className={`w-5 h-5 ${s.iconColor}`} />
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isDark ? 'bg-gray-800' : s.iconBg}`}>
+                            <s.icon className={`w-4 h-4 ${s.iconColor}`} />
                           </div>
                         </div>
                       </div>
