@@ -1,20 +1,17 @@
+"""
+URL routing configuration for M3 Multi-Agent Engine API.
+"""
 from django.urls import path
 from .views import (
-    workflow_start_view,
-    workflow_status_view,
-    workflow_agents_view,
-    agent_diagnosis_view,
-    agent_retrieve_view,
-    agent_resolve_view,
-    agent_escalate_view,
+    execute_m3_workflow_view,
+    get_m3_workflow_status_view,
+    get_m3_activity_logs_view,
 )
 
 urlpatterns = [
-    path("workflow/start", workflow_start_view, name="workflow-start"),
-    path("workflow/<str:ticket_id>/", workflow_status_view, name="workflow-status"),
-    path("workflow/<str:ticket_id>/agents/", workflow_agents_view, name="workflow-agents"),
-    path("diagnosis", agent_diagnosis_view, name="agent-diagnosis"),
-    path("retrieve", agent_retrieve_view, name="agent-retrieve"),
-    path("resolve", agent_resolve_view, name="agent-resolve"),
-    path("escalate", agent_escalate_view, name="agent-escalate"),
+    path("tickets/<str:ticket_id>/execute/", execute_m3_workflow_view, name="m3-workflow-execute-path"),
+    path("workflows/execute/", execute_m3_workflow_view, name="m3-workflow-execute-body"),
+    path("tickets/<str:ticket_id>/workflow/", get_m3_workflow_status_view, name="m3-workflow-status"),
+    path("tickets/<str:ticket_id>/activity-logs/", get_m3_activity_logs_view, name="m3-ticket-activity-logs"),
+    path("workflows/<str:workflow_id>/activity-logs/", get_m3_activity_logs_view, name="m3-workflow-activity-logs"),
 ]

@@ -1,84 +1,154 @@
+from bson import ObjectId
+from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
-
 from rest_framework_simplejwt.tokens import AccessToken
-from bson import ObjectId
-from django.contrib.auth.hashers import make_password
 
-from .serializers import (
-    RegisterSerializer,
-    LoginSerializer,
-    AdminUserResponseSerializer,
-    AdminCreateUserSerializer,
-    AdminUpdateUserSerializer,
-)
-from .services import register_service, login_service
 from AIticket.db import users_collection
+from .constants import USER_ROLES
+from .serializers import (
+    LoginSerializer,
+    ManagedUserCreateSerializer,
+    ManagedUserSerializer,
+    ManagedUserUpdateSerializer,
+    RegisterSerializer,
+)
+from .services import (
+    create_managed_user,
+    login_service,
+    register_service,
+    update_managed_user,
+)
+
+
+SAFE_USER_PROJECTION = {
+    "username": 1,
+    "email": 1,
+    "role": 1,
+    "is_active": 1,
+    "created_at": 1,
+    "last_login_at": 1,
+}
+
+
+def _normalise_managed_user(user):
+    """Apply compatibility defaults without exposing the raw user document."""
+
+    return {
+        "_id": user["_id"],
+        "username": user.get("username", ""),
+        "email": user.get("email", ""),
+        "role": user.get("role") or "User",
+        "is_active": user.get("is_active", True),
+        "created_at": user.get("created_at"),
+        "last_login_at": user.get("last_login_at"),
+    }
+
+
+def _get_authenticated_user(request):
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header:
+        return None, Response(
+            {"message": "Authorization header missing."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        parts = auth_header.split(" ")
+        if len(parts) != 2 or parts[0] != "Bearer":
+            raise ValueError("Invalid Authorization header")
+
+        user_id = AccessToken(parts[1])["user_id"]
+        user = users_collection.find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        return None, Response(
+            {"message": "Invalid or expired token."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    if not user:
+        return None, Response(
+            {"message": "User not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if not user.get("is_active", True):
+        return None, Response(
+            {"message": "This account is inactive. Contact an administrator."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    return user, None
+
+
+def _get_admin_user(request):
+    user, error_response = _get_authenticated_user(request)
+
+    if error_response:
+        return None, error_response
+
+    if user.get("role") != "Admin":
+        return None, Response(
+            {"message": "Administrator access is required."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    return user, None
 
 
 @api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def register(request):
-
     serializer = RegisterSerializer(data=request.data)
 
-    if serializer.is_valid():
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        result = register_service(serializer.validated_data)
+    result = register_service(serializer.validated_data)
 
-        if result["success"]:
-            return Response(
-                {
-                    "message": result["message"],
-                    "access": result["access"],
-                    "refresh": result["refresh"]
-                },
-                status=status.HTTP_201_CREATED
-            )
-
+    if result["success"]:
         return Response(
             {
-                "message": result["message"]
+                "message": result["message"],
+                "access": result["access"],
+                "refresh": result["refresh"],
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_201_CREATED,
         )
 
     return Response(
-        serializer.errors,
-        status=status.HTTP_400_BAD_REQUEST
+        {"message": result["message"]},
+        status=status.HTTP_400_BAD_REQUEST,
     )
 
 
 @api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def login(request):
-
     serializer = LoginSerializer(data=request.data)
 
-    if serializer.is_valid():
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        result = login_service(serializer.validated_data)
+    result = login_service(serializer.validated_data)
 
-        if result["success"]:
-            return Response(
-                {
-                    "message": result["message"],
-                    "access": result["access"],
-                    "refresh": result["refresh"]
-                },
-                status=status.HTTP_200_OK
-            )
-
+    if result["success"]:
         return Response(
             {
-                "message": result["message"]
+                "message": result["message"],
+                "access": result["access"],
+                "refresh": result["refresh"],
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK,
         )
 
     return Response(
-        serializer.errors,
-        status=status.HTTP_400_BAD_REQUEST
+        {"message": result["message"]},
+        status=status.HTTP_400_BAD_REQUEST,
     )
 
 
@@ -86,234 +156,100 @@ def login(request):
 @authentication_classes([])
 @permission_classes([AllowAny])
 def me(request):
+    user, error_response = _get_authenticated_user(request)
 
-    auth_header = request.headers.get("Authorization")
+    if error_response:
+        return error_response
 
-    if not auth_header:
-        return Response(
-            {
-                "message": "Authorization header missing."
-            },
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    try:
-
-        token = auth_header.split(" ")[1]
-
-        access_token = AccessToken(token)
-
-        user_id = access_token["user_id"]
-
-        user = users_collection.find_one(
-            {
-                "_id": ObjectId(user_id)
-            }
-        )
-
-        if not user:
-            return Response(
-                {
-                    "message": "User not found."
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        if user.get("status") == "Inactive":
-            return Response(
-                {
-                    "message": "User account is deactivated."
-                },
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-
-        return Response(
-            {
-                "username": user["username"],
-                "email": user["email"],
-                "mobile": user.get("mobile", ""),
-                "role": user.get("role", "User")
-            },
-            status=status.HTTP_200_OK
-        )
-
-    except Exception as e:
-
-        print("JWT error:", e)
-
-        return Response(
-            {
-                "message": "Invalid or expired token."
-            },
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-
-def check_admin_auth(request):
-    """
-    Checks if the user is authenticated and is an Admin.
-    Returns (user_doc, None) on success, or (None, Response) on failure.
-    """
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return None, Response(
-            {"message": "Authorization header missing."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    try:
-        parts = auth_header.split(" ")
-        if len(parts) != 2 or parts[0] != "Bearer":
-            return None, Response(
-                {"message": "Invalid Authorization header."},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-
-        token = parts[1]
-        access_token = AccessToken(token)
-        user_id = access_token["user_id"]
-    except Exception as e:
-        print("TEST DEBUG check_admin_auth Exception:", e)
-        return None, Response(
-            {"message": "Invalid or expired token."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    try:
-        user = users_collection.find_one({"_id": ObjectId(user_id)})
-    except Exception:
-        return None, Response(
-            {"message": "Invalid user ID."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    if not user:
-        return None, Response(
-            {"message": "User not found."},
-            status=status.HTTP_404_NOT_FOUND
-        )
-
-    if user.get("status") == "Inactive":
-        return None, Response(
-            {"message": "User account is deactivated."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    if user.get("role", "User") != "Admin":
-        return None, Response(
-            {"message": "Admin access required."},
-            status=status.HTTP_403_FORBIDDEN
-        )
-
-    return user, None
+    return Response(
+        {
+            "username": user["username"],
+            "email": user["email"],
+            "mobile": user.get("mobile", ""),
+            "role": user.get("role") or "User",
+        },
+        status=status.HTTP_200_OK,
+    )
 
 
 @api_view(["GET", "POST"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def admin_users_view(request):
-    admin_user, err_response = check_admin_auth(request)
-    if err_response:
-        return err_response
+def admin_users(request):
+    admin_user, error_response = _get_admin_user(request)
+
+    if error_response:
+        return error_response
 
     if request.method == "GET":
-        try:
-            users = list(users_collection.find())
-            serializer = AdminUserResponseSerializer(users, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print("Error listing users:", e)
-            return Response({"message": f"Failed to retrieve users: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        users = [
+            _normalise_managed_user(user)
+            for user in users_collection.find({}, SAFE_USER_PROJECTION).sort("username", 1)
+        ]
+        return Response(
+            {
+                "users": ManagedUserSerializer(users, many=True).data,
+                "roles": USER_ROLES,
+            },
+            status=status.HTTP_200_OK,
+        )
 
+    serializer = ManagedUserCreateSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == "POST":
-        serializer = AdminCreateUserSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    result = create_managed_user(serializer.validated_data)
+    if not result["success"]:
+        return Response(
+            {"message": result["message"]},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-        data = serializer.validated_data
-
-        existing_email = users_collection.find_one({"email": data["email"]})
-        if existing_email:
-            return Response(
-                {"message": "Email already exists."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        existing_username = users_collection.find_one({"username": data["username"]})
-        if existing_username:
-            return Response(
-                {"message": "Username already exists."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        new_user = {
-            "username": data["username"],
-            "email": data["email"],
-            "mobile": data.get("mobile", ""),
-            "role": data.get("role", "User"),
-            "status": data.get("status", "Active"),
-            "password": make_password(data["password"])
-        }
-
-        result = users_collection.insert_one(new_user)
-        new_user["_id"] = result.inserted_id
-
-        response_serializer = AdminUserResponseSerializer(new_user)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    safe_user = _normalise_managed_user(result["user"])
+    return Response(
+        {"user": ManagedUserSerializer(safe_user).data},
+        status=status.HTTP_201_CREATED,
+    )
 
 
 @api_view(["PATCH"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def admin_user_detail_view(request, user_id):
-    admin_user, err_response = check_admin_auth(request)
-    if err_response:
-        return err_response
+def admin_user_detail(request, user_id):
+    admin_user, error_response = _get_admin_user(request)
+
+    if error_response:
+        return error_response
 
     try:
-        target_oid = ObjectId(user_id)
+        target_user = users_collection.find_one({"_id": ObjectId(user_id)})
     except Exception:
-        return Response(
-            {"message": "Invalid user ID format."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        target_user = None
 
-    target_user = users_collection.find_one({"_id": target_oid})
     if not target_user:
         return Response(
-            {"message": "User not found."},
-            status=status.HTTP_404_NOT_FOUND
+            {"message": "Account not found."},
+            status=status.HTTP_404_NOT_FOUND,
         )
 
-    serializer = AdminUpdateUserSerializer(data=request.data)
+    serializer = ManagedUserUpdateSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    update_data = {}
-    new_role = serializer.validated_data.get("role")
-    new_status = serializer.validated_data.get("status")
+    result = update_managed_user(
+        actor_id=admin_user["_id"],
+        target_user=target_user,
+        updates=serializer.validated_data,
+    )
 
-    if (new_role is not None and new_role != "Admin" and target_user.get("role") == "Admin") or \
-       (new_status is not None and new_status == "Inactive" and target_user.get("role") == "Admin"):
-        
-        active_admins_count = users_collection.count_documents(
-            {"role": "Admin", "status": {"$ne": "Inactive"}}
+    if not result["success"]:
+        return Response(
+            {"message": result["message"]},
+            status=result["status_code"],
         )
-        if active_admins_count <= 1:
-            return Response(
-                {"message": "Cannot deactivate or demote the only remaining Admin account."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
-    if new_role is not None:
-        update_data["role"] = new_role
-    if new_status is not None:
-        update_data["status"] = new_status
-
-    if update_data:
-        users_collection.update_one({"_id": target_oid}, {"$set": update_data})
-        target_user = users_collection.find_one({"_id": target_oid})
-
-    response_serializer = AdminUserResponseSerializer(target_user)
-    return Response(response_serializer.data, status=status.HTTP_200_OK)
+    safe_user = _normalise_managed_user(result["user"])
+    return Response(
+        {"user": ManagedUserSerializer(safe_user).data},
+        status=status.HTTP_200_OK,
+    )

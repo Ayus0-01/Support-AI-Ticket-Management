@@ -5,6 +5,7 @@ import {
   generateResolution,
   getTicketResponses,
   rejectResolution,
+  sendManualResolution,
   submitResolutionFeedback,
   type ResolutionResponse,
 } from "../../services/resolutionService";
@@ -71,6 +72,9 @@ export default function ResolutionPanel({
   const [rejectReason, setRejectReason] = useState("");
   const [feedbackComment, setFeedbackComment] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [manualSummary, setManualSummary] = useState("");
+  const [manualBusy, setManualBusy] = useState(false);
+  const [manualSuccessMessage, setManualSuccessMessage] = useState("");
 
   const replaceResponse = (updated: ResolutionResponse) => {
     setResponses((current) => [
@@ -214,7 +218,6 @@ export default function ResolutionPanel({
       await submitResolutionFeedback(currentResponse.id, {
         was_helpful: wasHelpful,
         comment: feedbackComment.trim() || undefined,
-        resolved_ticket: currentResponse.status === "SENT" || currentResponse.status === "EDITED_SENT",
       });
       setFeedbackComment("");
       setFeedbackMessage("Feedback recorded.");
@@ -222,6 +225,28 @@ export default function ResolutionPanel({
       setError(getErrorMessage(feedbackError, "Could not submit feedback."));
     } finally {
       setActionBusy(false);
+    }
+  };
+
+  const handleSendManualResolution = async () => {
+    const trimmed = manualSummary.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    try {
+      setManualBusy(true);
+      setError("");
+      setManualSuccessMessage("");
+      const sentResponse = await sendManualResolution(ticketId, trimmed);
+      replaceResponse(sentResponse);
+      setManualSummary("");
+      setManualSuccessMessage("Manual resolution sent successfully.");
+      await notifyResponseChanged();
+    } catch (manualErr) {
+      setError(getErrorMessage(manualErr, "Could not send manual resolution."));
+    } finally {
+      setManualBusy(false);
     }
   };
 
@@ -325,6 +350,43 @@ export default function ResolutionPanel({
           </div>
         </div>
       )}
+
+      <div className="mt-6 border-t border-indigo-100 pt-5 dark:border-indigo-900/60">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+          Manual Resolution
+        </h3>
+        <p className="mt-1 text-xs text-slate-600 dark:text-gray-400">
+          Provide a manual troubleshooting response to send directly to the ticket requester.
+        </p>
+
+        <textarea
+          value={manualSummary}
+          onChange={(event) => {
+            setManualSummary(event.target.value);
+            if (manualSuccessMessage) setManualSuccessMessage("");
+          }}
+          rows={3}
+          disabled={manualBusy || actionBusy}
+          placeholder="Type user-facing manual resolution instructions here..."
+          className="mt-3 w-full rounded-2xl border border-slate-300 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-indigo-500 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+        />
+
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => void handleSendManualResolution()}
+            disabled={manualBusy || actionBusy || !manualSummary.trim()}
+            className="rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {manualBusy ? "Sending..." : "Send Manual Resolution"}
+          </button>
+          {manualSuccessMessage && (
+            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+              {manualSuccessMessage}
+            </span>
+          )}
+        </div>
+      </div>
 
       {showEditDialog && currentResponse?.status === "DRAFT" && (
         <EditAndSendDialog response={currentResponse} busy={actionBusy} onCancel={() => setShowEditDialog(false)} onSubmit={handleEditAndSend} />

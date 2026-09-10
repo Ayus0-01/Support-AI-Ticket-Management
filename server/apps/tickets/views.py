@@ -39,7 +39,13 @@ from .services import (
     transition_ticket_status,
     add_ticket_comment,
     get_ticket_timeline,
+    assign_ticket,
+    auto_assign_ticket,
+    get_agents_workload,
+    get_manager_overview_data,
+    get_ai_performance_metrics,
 )
+
 from .classification.category_classifier import (
     predict_category_fast,
 )
@@ -58,6 +64,7 @@ from apps.knowledge_base.review_service import (
     edit_and_send_response,
     reject_response,
     submit_feedback,
+    send_manual_resolution,
 )
 
 
@@ -547,6 +554,8 @@ def agent_queue_view(request):
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -1288,6 +1297,8 @@ def generate_resolution_view(
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -1577,6 +1588,8 @@ def _require_agent_or_admin(user):
 
     if role not in {
         "Agent",
+        "Support Manager",
+        "Manager",
         "Admin",
     }:
         return Response(
@@ -1652,11 +1665,6 @@ def get_resolution_response_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(user)
-
-    if role_error:
-        return role_error
-
     try:
         response_document = get_response_for_review(
             response_id=response_id
@@ -1668,6 +1676,22 @@ def get_resolution_response_view(
         return Response(
             {"message": "Resolution response not found."},
             status=status.HTTP_404_NOT_FOUND,
+        )
+
+    user_role = user.get("role", "User")
+    is_staff = user_role in {"Agent", "Admin"}
+
+    ticket = tickets_collection.find_one({"_id": response_document["ticket_id"]})
+    is_requester = (
+        ticket
+        and str((ticket.get("requester") or {}).get("user_id")) == str(user["_id"])
+    )
+    is_sent = response_document.get("status") in {"SENT", "EDITED_SENT"}
+
+    if not is_staff and not (is_requester and is_sent):
+        return Response(
+            {"message": "Only Agent or Admin users can perform this action."},
+            status=status.HTTP_403_FORBIDDEN,
         )
 
     return Response(
@@ -1910,7 +1934,7 @@ def resolution_feedback_view(
         )
 
     try:
-        feedback = submit_feedback(
+        feedback_result = submit_feedback(
             response_id=response_id,
             user_id=user["_id"],
             was_helpful=was_helpful,
@@ -1918,26 +1942,192 @@ def resolution_feedback_view(
                 "comment",
                 "",
             ),
-            resolved_ticket=request.data.get(
-                "resolved_ticket",
-                False,
-            ),
+            user_role=user.get("role", "User"),
         )
 
     except ValueError as exc:
+        msg = str(exc)
+        status_code = status.HTTP_400_BAD_REQUEST
+        if "already been submitted" in msg:
+            status_code = status.HTTP_409_CONFLICT
+        elif "only submit feedback for your own" in msg:
+            status_code = status.HTTP_403_FORBIDDEN
+
         return Response(
             {
-                "message": str(exc)
+                "message": msg
+            },
+            status=status_code,
+        )
+
+    feedback_doc = feedback_result
+    ticket_doc = None
+    if isinstance(feedback_result, dict):
+        if "feedback" in feedback_result:
+            feedback_doc = feedback_result["feedback"]
+            ticket_doc = feedback_result.get("ticket")
+
+    feedback_id = (
+        str(feedback_doc["_id"])
+        if isinstance(feedback_doc, dict) and "_id" in feedback_doc
+        else str(feedback_doc)
+    )
+
+    response_payload = {
+        "message": "Feedback recorded successfully.",
+        "feedback_id": feedback_id,
+    }
+
+    if ticket_doc and isinstance(ticket_doc, dict):
+        response_payload.update({
+            "ticket_id": ticket_doc.get("ticket_id"),
+            "ticket_status": ticket_doc.get("status"),
+            "resolution_status": ticket_doc.get("resolution_status"),
+            "confirmed": bool(
+                feedback_doc.get("resolved_ticket", False)
+            ) if isinstance(feedback_doc, dict) else False,
+        })
+
+    return Response(
+        response_payload,
+        status=status.HTTP_201_CREATED,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def send_manual_resolution_view(
+    request,
+    ticket_id,
+):
+    user, error = _get_authenticated_user(
+        request
+    )
+
+    if error:
+        return error
+
+    role_error = _require_agent_or_admin(
+        user
+    )
+
+    if role_error:
+        return role_error
+
+    summary = request.data.get(
+        "summary",
+        "",
+    )
+
+    if isinstance(summary, str):
+        summary = summary.strip()
+
+    if not summary:
+        return Response(
+            {
+                "message": "Manual resolution cannot be empty."
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    try:
+        response_document = send_manual_resolution(
+            ticket_id=ticket_id,
+            reviewer_id=user["_id"],
+            summary=summary,
+        )
+
+    except ValueError as exc:
+        msg = str(exc)
+        status_code = status.HTTP_400_BAD_REQUEST
+        if "Ticket not found" in msg:
+            status_code = status.HTTP_404_NOT_FOUND
+
+        return Response(
+            {
+                "message": msg
+            },
+            status=status_code,
+        )
+
     return Response(
         {
-            "message": "Feedback recorded.",
-            "feedback_id": str(
-                feedback["_id"]
-            ),
+            "message": "Manual resolution sent.",
+            "response_id": str(response_document["_id"]),
+            "ticket_id": response_document.get("ticket_number") or ticket_id,
+            "status": response_document.get("status"),
+            "resolution_status": "SENT",
+            "response": {
+                "id": str(response_document["_id"]),
+                "status": response_document.get("status"),
+                "ticket_id": response_document.get("ticket_number"),
+                "summary": response_document.get("summary"),
+            },
         },
-        status=status.HTTP_201_CREATED,
+        status=status.HTTP_200_OK,
     )
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_overview_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_manager_overview_data()
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def assign_ticket_view(request, ticket_id):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    
+    auto_assign = request.data.get("auto_assign", False)
+    assignee = request.data.get("assignee")
+    
+    if auto_assign or not assignee:
+        ticket = auto_assign_ticket(ticket_id, user.get("username"))
+    else:
+        ticket = assign_ticket(ticket_id, assignee, user.get("username"))
+        
+    if not ticket:
+        return Response({"message": "Ticket not found or assignment failed."}, status=status.HTTP_404_NOT_FOUND)
+        
+    return Response({"message": "Ticket assigned successfully.", "ticket": ticket}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_ai_performance_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_ai_performance_metrics()
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def manager_workload_view(request):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    data = get_agents_workload()
+    return Response({"workload": data}, status=status.HTTP_200_OK)
+

@@ -180,3 +180,19 @@ class EmbeddingTests(SimpleTestCase):
                 for value in embedding
             )
         )
+
+
+class SupportManagerTests(SimpleTestCase):
+
+    def test_workload_balancing_calculation(self):
+        """Test that agents are properly sorted by active workload count."""
+        workload_sample = [
+            {"username": "agent_a", "active_tickets_count": 5},
+            {"username": "agent_b", "active_tickets_count": 2},
+            {"username": "agent_c", "active_tickets_count": 0},
+        ]
+        sorted_agents = sorted(workload_sample, key=lambda a: a["active_tickets_count"])
+        self.assertEqual(sorted_agents[0]["username"], "agent_c")
+        self.assertEqual(sorted_agents[0]["active_tickets_count"], 0)
+        self.assertEqual(sorted_agents[1]["username"], "agent_b")
+        self.assertEqual(sorted_agents[2]["username"], "agent_a")

@@ -13,7 +13,6 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [role, setRole] = useState<'User'|'Agent'|'Admin'>('User');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -35,8 +34,7 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
     name,
     email,
     password,
-    mobile,
-    role
+    mobile
   );
   setLoading(false);
   if (res.success) {
@@ -122,29 +120,6 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
             className="w-full rounded-xl border px-3 py-2"
             placeholder="Enter your mobile number"
           />
-        </div>
-
-        {/* Role */}
-        <div>
-          <label
-            className={`block text-sm font-medium mb-1.5 ${
-              isDark ? 'text-gray-300' : 'text-gray-700'
-            }`}
-          >
-            Account type
-          </label>
-
-          <select
-            value={role}
-            onChange={e =>
-              setRole(e.target.value as 'User' | 'Agent' | 'Admin')
-            }
-            className="w-full rounded-xl border px-3 py-2"
-          >
-            <option value="User">User</option>
-            <option value="Agent">Agent</option>
-            <option value="Admin">Admin</option>
-          </select>
         </div>
 
         {/* Password */}

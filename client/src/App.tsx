@@ -8,6 +8,7 @@ import SignUpPage from '@/pages/SignUpPage';
 import UserDashboard from '@/pages/UserDashboard';
 import AgentDashboard from '@/pages/AgentDashboard';
 import AdminDashboard from '@/pages/AdminDashboard';
+import SupportManagerDashboard from '@/pages/SupportManagerDashboard';
 import type { NavPage } from '@/pages/Dashboard';
 
 type Page = 'home' | 'signin' | 'signup' | 'dashboard';
@@ -24,6 +25,13 @@ const NAV_PAGES: NavPage[] = [
   'Settings',
   'Taxonomy',
   'SLA policies',
+  'Agent Assignment',
+  'Escalations',
+  'SLA Management',
+  'Agent Performance',
+  'AI Performance',
+  'Notifications',
+  'Profile',
 ];
 
 function isNavPage(page: string | null): page is NavPage {
@@ -62,9 +70,6 @@ function AppContent() {
   }, [page, dashboardActive]);
 
   const navigate = (p: string) => {
-    // Allow navigation like:
-    // dashboard:My Tickets
-    // dashboard:Create Ticket
     if (p.startsWith('dashboard:')) {
       const [, sub] = p.split(':');
 
@@ -83,7 +88,6 @@ function AppContent() {
   return;
 }
 
-    // Normal dashboard navigation
     if (p === 'dashboard') {
       if (!isAuthenticated) {
         setPage('signin');
@@ -96,7 +100,6 @@ function AppContent() {
       return;
     }
 
-    // Navigation to other pages
     setDashboardActive(undefined);
     setPage(p as Page);
 
@@ -140,6 +143,15 @@ function AppContent() {
   if (page === 'dashboard') {
     if (!user) {
       return null;
+    }
+
+    if (user.role === 'Support Manager' || user.role === 'Manager') {
+      return (
+        <SupportManagerDashboard
+          onNavigate={navigate}
+          initialPage={dashboardActive}
+        />
+      );
     }
 
     if (user.role === 'Agent') {

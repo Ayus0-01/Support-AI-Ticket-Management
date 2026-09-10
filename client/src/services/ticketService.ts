@@ -56,6 +56,8 @@ export type Ticket = {
   queue?: string | null;
   classification?: Record<string, any> | null;
   resolution?: { summary?: string; resolved_at?: string } | null;
+  resolution_status?: string;
+  latest_response_id?: string;
   affected_scope?: string;
   work_blocked?: string;
   urgent_feeling?: string;
@@ -302,3 +304,74 @@ export const getTicketTimeline = async (
     ? response.data.timeline
     : [];
 };
+
+export type AgentWorkload = {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  active_tickets_count: number;
+  resolved_tickets_count: number;
+  primary_category: string;
+  active_tickets: Array<{
+    ticket_id: string;
+    subject: string;
+    status: string;
+    priority?: string;
+    category?: string;
+  }>;
+};
+
+export type ManagerOverviewData = {
+  metrics: {
+    open_tickets: number;
+    high_priority: number;
+    sla_breaches: number;
+    escalations: number;
+    avg_resolution_time: string;
+  };
+  agents_workload: AgentWorkload[];
+  queue: Ticket[];
+  all_tickets: Ticket[];
+};
+
+export type AIPerformanceMetrics = {
+  total_classified: number;
+  fast_route_count: number;
+  llm_route_count: number;
+  avg_confidence: string;
+  classification_accuracy: string;
+  overrides_count: number;
+  kb_gap_count: number;
+};
+
+export const getManagerOverview = async (): Promise<ManagerOverviewData> => {
+  const response = await api.get("/api/tickets/manager/overview/");
+  return {
+    ...response.data,
+    queue: normalizeTickets(response.data?.queue || []),
+    all_tickets: normalizeTickets(response.data?.all_tickets || []),
+  };
+};
+
+export const assignTicket = async (ticketId: string, assignee: string) => {
+  const response = await api.post(`/api/tickets/${ticketId}/assign/`, { assignee });
+  return response.data;
+};
+
+export const autoAssignTicket = async (ticketId: string) => {
+  const response = await api.post(`/api/tickets/${ticketId}/assign/`, { auto_assign: true });
+  return response.data;
+};
+
+export const getAIPerformance = async (): Promise<AIPerformanceMetrics> => {
+  const response = await api.get("/api/tickets/manager/ai-performance/");
+  return response.data;
+};
+
+export const getAgentsWorkload = async (): Promise<AgentWorkload[]> => {
+  const response = await api.get("/api/tickets/manager/workload/");
+  return response.data?.workload || [];
+};
+

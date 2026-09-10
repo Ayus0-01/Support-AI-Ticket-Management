@@ -1,4 +1,7 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
+from .constants import USER_ROLES
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -13,6 +16,10 @@ class RegisterSerializer(serializers.Serializer):
         write_only=True
     )
 
+    def validate_password(self, value):
+        validate_password(value)
+        return value
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -21,55 +28,43 @@ class LoginSerializer(serializers.Serializer):
     )
 
 
-class AdminUserResponseSerializer(serializers.Serializer):
+class ManagedUserSerializer(serializers.Serializer):
+    """Whitelist the account fields that are safe for administration."""
+
     id = serializers.SerializerMethodField()
-    username = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
-    mobile = serializers.SerializerMethodField()
-    role = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    role = serializers.ChoiceField(choices=USER_ROLES)
+    is_active = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(allow_null=True, required=False)
+    last_login_at = serializers.DateTimeField(allow_null=True, required=False)
 
     def get_id(self, obj):
-        if isinstance(obj, dict):
-            return str(obj.get("_id", ""))
-        return str(getattr(obj, "_id", getattr(obj, "id", "")))
+        return str(obj["_id"])
 
-    def get_username(self, obj):
-        if isinstance(obj, dict):
-            return obj.get("username") or ""
-        return getattr(obj, "username", "") or ""
-
-    def get_email(self, obj):
-        if isinstance(obj, dict):
-            return obj.get("email") or ""
-        return getattr(obj, "email", "") or ""
-
-    def get_mobile(self, obj):
-        if isinstance(obj, dict):
-            return obj.get("mobile") or ""
-        return getattr(obj, "mobile", "") or ""
-
-    def get_role(self, obj):
-        if isinstance(obj, dict):
-            return obj.get("role") or "User"
-        return getattr(obj, "role", "User") or "User"
-
-    def get_status(self, obj):
-        if isinstance(obj, dict):
-            return obj.get("status") or "Active"
-        return getattr(obj, "status", "Active") or "Active"
+    def get_is_active(self, obj):
+        return obj.get("is_active", True)
 
 
-
-class AdminCreateUserSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=100)
+class ManagedUserCreateSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=100, trim_whitespace=True)
     email = serializers.EmailField()
-    mobile = serializers.CharField(required=False, allow_blank=True, default="")
+    mobile = serializers.CharField(required=False, allow_blank=True, max_length=30)
     password = serializers.CharField(min_length=8, write_only=True)
-    role = serializers.ChoiceField(choices=["User", "Agent", "Admin"], default="User")
-    status = serializers.ChoiceField(choices=["Active", "Inactive"], default="Active")
+    role = serializers.ChoiceField(choices=USER_ROLES)
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
 
-class AdminUpdateUserSerializer(serializers.Serializer):
-    role = serializers.ChoiceField(choices=["User", "Agent", "Admin"], required=False)
-    status = serializers.ChoiceField(choices=["Active", "Inactive"], required=False)
+class ManagedUserUpdateSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(choices=USER_ROLES, required=False)
+    is_active = serializers.BooleanField(required=False)
+
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError(
+                "Provide a role or account status to update."
+            )
+        return attrs
