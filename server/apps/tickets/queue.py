@@ -70,13 +70,16 @@ def get_sla_seconds(ticket):
 
 def sort_ticket_queue(tickets):
     """
-    Sort tickets by time remaining
-    until the active SLA deadline.
-
-    Earliest SLA breach appears first.
+    Sort tickets by creation date/time in descending order (newest first).
     """
+    def get_creation_timestamp(ticket):
+        created_at = ticket.get("created_at") if isinstance(ticket, dict) else getattr(ticket, "created_at", None)
+        if not created_at:
+            return ""
+        return str(created_at)
 
     return sorted(
         tickets,
-        key=get_sla_seconds
+        key=get_creation_timestamp,
+        reverse=True
     )
