@@ -98,6 +98,59 @@ function getTicketStatusClasses(status: string | undefined, isDark: boolean) {
   }
 }
 
+function getPriorityBadgeClasses(priority: string | null | undefined, isDark: boolean) {
+  const p = (priority || '').toUpperCase();
+  switch (p) {
+    case 'P1':
+      return isDark
+        ? 'border-red-500/30 bg-red-500/15 text-red-300'
+        : 'border-red-200 bg-red-100 text-red-800';
+    case 'P2':
+      return isDark
+        ? 'border-amber-500/30 bg-amber-500/15 text-amber-300'
+        : 'border-amber-200 bg-amber-100 text-amber-800';
+    case 'P3':
+      return isDark
+        ? 'border-blue-500/30 bg-blue-500/15 text-blue-300'
+        : 'border-blue-200 bg-blue-100 text-blue-800';
+    case 'P4':
+      return isDark
+        ? 'border-gray-700 bg-gray-800 text-gray-300'
+        : 'border-slate-200 bg-slate-100 text-slate-700';
+    default:
+      return isDark
+        ? 'border-gray-700 bg-gray-800/60 text-gray-400'
+        : 'border-slate-200 bg-slate-50 text-slate-600';
+  }
+}
+
+function getSeverityBadgeClasses(severity: string | null | undefined, isDark: boolean) {
+  const s = (severity || '').toUpperCase();
+  switch (s) {
+    case 'CRITICAL':
+    case 'P1':
+      return isDark
+        ? 'border-red-500/30 bg-red-500/15 text-red-300'
+        : 'border-red-200 bg-red-100 text-red-800';
+    case 'HIGH':
+      return isDark
+        ? 'border-amber-500/30 bg-amber-500/15 text-amber-300'
+        : 'border-amber-200 bg-amber-100 text-amber-800';
+    case 'MEDIUM':
+      return isDark
+        ? 'border-blue-500/30 bg-blue-500/15 text-blue-300'
+        : 'border-blue-200 bg-blue-100 text-blue-800';
+    case 'LOW':
+      return isDark
+        ? 'border-gray-700 bg-gray-800 text-gray-300'
+        : 'border-slate-200 bg-slate-100 text-slate-700';
+    default:
+      return isDark
+        ? 'border-gray-700 bg-gray-800/60 text-gray-400'
+        : 'border-slate-200 bg-slate-50 text-slate-600';
+  }
+}
+
 
 
 type SidebarItem = { name: NavPage; icon: React.ElementType; badge?: string; capability?: Capability };
@@ -269,8 +322,8 @@ useEffect(() => {
         setQueueError("");
 
         const data = await getAgentQueue();
-
-        setQueueTickets(data);
+        const sortedQueue = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setQueueTickets(sortedQueue);
         return;
       }
 
@@ -278,8 +331,8 @@ useEffect(() => {
       setError("");
 
       const data = await getMyTickets();
-
-      setTickets(data);
+      const sortedTickets = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setTickets(sortedTickets);
     } catch (err) {
       console.error("Failed to load ticket data:", err);
 
@@ -402,7 +455,7 @@ useEffect(() => {
       matchesStatus &&
       matchesAssignee
     );
-  });
+  }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
@@ -868,7 +921,7 @@ interface TicketClassificationMeta {
 
   // If My Queue page layout
   if (title === 'My queue') {
-    const queueRows = queueTickets;
+    const queueRows = [...queueTickets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const getRowNumberColor = (index: number) => {
       switch (index) {
@@ -899,9 +952,11 @@ interface TicketClassificationMeta {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className={`border-b text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'bg-gray-900/50 border-gray-800 text-gray-400' : 'bg-slate-50 border-gray-150 text-slate-500'}`}>
-                  <th className="w-12 px-4 py-3"></th>
+                  <th className="w-12 px-4 py-3">#</th>
                   <th className="text-left px-4 py-3 font-semibold">Ticket</th>
                   <th className="text-left px-4 py-3 font-semibold">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold">Priority</th>
+                  <th className="text-left px-4 py-3 font-semibold">Severity</th>
                   <th className="text-left px-4 py-3 font-semibold">Requester</th>
                   <th className="px-4 py-3"></th>
                 </tr>
@@ -909,15 +964,15 @@ interface TicketClassificationMeta {
               <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
                 {queueLoading ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">Loading agent queue...</td>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">Loading agent queue...</td>
                   </tr>
                 ) : queueError ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-red-500">{queueError}</td>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-red-500">{queueError}</td>
                   </tr>
                 ) : queueRows.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">No active tickets in the queue.</td>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">No active tickets in the queue.</td>
                   </tr>
                 ) : queueRows.map((row, index) => {
                   const actionText = 'Open';
@@ -937,6 +992,16 @@ interface TicketClassificationMeta {
                       <td className="px-4 py-4">
                         <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTicketStatusClasses(row.status, isDark)}`}>
                           {row.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${getPriorityBadgeClasses(row.priority, isDark)}`}>
+                          {row.priority || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${getSeverityBadgeClasses(row.severity, isDark)}`}>
+                          {row.severity || 'N/A'}
                         </span>
                       </td>
                       <td className={`px-4 py-4 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
@@ -1096,9 +1161,17 @@ interface TicketClassificationMeta {
           </div>
         </div>
       </div>
-      <div className="text-right flex flex-col items-end gap-1">
-        <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTicketStatusClasses(row.status, isDark)}`}>
-          {row.status}
+      <div className="text-right flex flex-col items-end gap-1.5">
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getTicketStatusClasses(row.status, isDark)}`}>
+            {row.status}
+          </span>
+          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getPriorityBadgeClasses(row.priority, isDark)}`}>
+            Priority: {row.priority || 'N/A'}
+          </span>
+          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getSeverityBadgeClasses(row.severity, isDark)}`}>
+            Severity: {row.severity || 'N/A'}
+          </span>
         </div>
         <div className="text-xs text-slate-500">
           Assignee: {row.assignee || 'Unassigned'}
@@ -2865,7 +2938,8 @@ useEffect(() => {
         ? await getAgentQueue()
         : await getMyTickets();
 
-      setHomeTickets(data);
+      const sortedHome = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setHomeTickets(sortedHome);
     } catch (err) {
       console.error(
         "Failed to load dashboard tickets:",
@@ -3373,7 +3447,8 @@ useEffect(() => {
 
                   {/* Table header */}
                   <div className={`grid grid-cols-12 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    <span className="col-span-9">Subject</span>
+                    <span className="col-span-5">Subject</span>
+                    <span className="col-span-4">Priority / Severity</span>
                     <span className="col-span-3">Status</span>
                   </div>
 
@@ -3388,7 +3463,11 @@ useEffect(() => {
                     ) : (
                       homeTickets.slice(0, 5).map(t => (
                         <div key={t.ticket_id} onClick={() => { setSelectedTicketId(t.ticket_id); setActivePage('My Tickets'); }} className={`grid grid-cols-12 items-center px-5 py-3.5 cursor-pointer transition-colors ${isDark ? 'hover:bg-gray-800/60' : 'hover:bg-gray-50'}`}>
-                          <span className={`col-span-9 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
+                          <span className={`col-span-5 text-sm font-medium truncate pr-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.ticket_id}: {t.subject}</span>
+                          <span className="col-span-4 flex items-center gap-1.5 flex-wrap">
+                            <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${getPriorityBadgeClasses(t.priority, isDark)}`}>{t.priority || 'N/A'}</span>
+                            <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${getSeverityBadgeClasses(t.severity, isDark)}`}>{t.severity || 'N/A'}</span>
+                          </span>
                           <span className="col-span-3">
                             <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getTicketStatusClasses(t.status, isDark)}`}>{t.status}</span>
                           </span>
