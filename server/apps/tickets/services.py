@@ -458,13 +458,12 @@ def check_duplicate_tickets(
 
 def get_agent_queue():
     """
-    Get tickets that are currently active and
-    order them by time remaining to SLA breach.
+    Get all tickets for agent queue and ticket history.
+    Active tickets are ordered by SLA breach urgency, followed by resolved/closed tickets.
     """
-
     from .queue import sort_ticket_queue
 
-    tickets = list(
+    active_tickets = list(
         tickets_collection.find(
             {
                 "status": {
@@ -477,16 +476,32 @@ def get_agent_queue():
         )
     )
 
-    sorted_tickets = sort_ticket_queue(
-        tickets
+    resolved_tickets = list(
+        tickets_collection.find(
+            {
+                "status": {
+                    "$in": [
+                        "Resolved",
+                        "Closed",
+                    ]
+                }
+            }
+        )
     )
 
-    for ticket in sorted_tickets:
-        ticket["_id"] = str(
-            ticket["_id"]
-        )
+    sorted_active = sort_ticket_queue(active_tickets)
+    sorted_resolved = sorted(
+        resolved_tickets,
+        key=lambda t: str(t.get("created_at") or ""),
+        reverse=True,
+    )
 
-    return sorted_tickets
+    all_queue_tickets = sorted_active + sorted_resolved
+
+    for ticket in all_queue_tickets:
+        ticket["_id"] = str(ticket["_id"])
+
+    return all_queue_tickets
 
 def save_classification_override(
     ticket_id,
