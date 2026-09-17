@@ -125,6 +125,13 @@ def create_ticket(data, requester):
 
     ticket["_id"] = str(result.inserted_id)
 
+    try:
+        assigned_result = auto_assign_ticket(ticket_id, actor_username="System Auto-Assign")
+        if assigned_result and assigned_result.get("assignee"):
+            ticket["assignee"] = assigned_result["assignee"]
+    except Exception as assign_err:
+        print(f"Automatic assignment warning for ticket {ticket_id}: {assign_err}")
+
     return ticket
 
 def classify_and_update_ticket(ticket_id):
@@ -451,13 +458,12 @@ def check_duplicate_tickets(
 
 def get_agent_queue():
     """
-    Get tickets that are currently active and
-    order them by time remaining to SLA breach.
+    Get all tickets for agent queue and ticket history.
+    Active tickets are ordered by SLA breach urgency, followed by resolved/closed tickets.
     """
-
     from .queue import sort_ticket_queue
 
-    tickets = list(
+    active_tickets = list(
         tickets_collection.find(
             {
                 "status": {
@@ -470,16 +476,32 @@ def get_agent_queue():
         )
     )
 
-    sorted_tickets = sort_ticket_queue(
-        tickets
+    resolved_tickets = list(
+        tickets_collection.find(
+            {
+                "status": {
+                    "$in": [
+                        "Resolved",
+                        "Closed",
+                    ]
+                }
+            }
+        )
     )
 
-    for ticket in sorted_tickets:
-        ticket["_id"] = str(
-            ticket["_id"]
-        )
+    sorted_active = sort_ticket_queue(active_tickets)
+    sorted_resolved = sorted(
+        resolved_tickets,
+        key=lambda t: str(t.get("created_at") or ""),
+        reverse=True,
+    )
 
-    return sorted_tickets
+    all_queue_tickets = sorted_active + sorted_resolved
+
+    for ticket in all_queue_tickets:
+        ticket["_id"] = str(ticket["_id"])
+
+    return all_queue_tickets
 
 def save_classification_override(
     ticket_id,
@@ -992,10 +1014,11 @@ def get_agents_workload():
     Calculate real-time workload for all Support Agents and Managers.
     Includes active assigned ticket count, total resolved count, and assigned tickets list.
     """
-    agents = list(users_collection.find(
-        {"role": {"$in": ["Agent", "Support Manager", "Manager"]}},
+    raw_agents = users_collection.find(
+        {"role": {"$in": ["Agent", "Support Agent", "Support Manager", "Manager"]}},
         {"username": 1, "email": 1, "role": 1, "is_active": 1}
-    ).sort("username", 1))
+    )
+    agents = sorted(list(raw_agents), key=lambda u: u.get("username", ""))
 
     all_tickets = list(tickets_collection.find({}))
     
@@ -1039,16 +1062,33 @@ def get_agents_workload():
 
 def auto_assign_ticket(ticket_id, actor_username=None):
     """
-    Intelligently auto-assign a ticket to the available agent with the lowest current workload.
+    Intelligently auto-assign a ticket to the available active agent with the lowest current workload.
     """
     workload = get_agents_workload()
     active_agents = [a for a in workload if a.get("is_active", True)]
     if not active_agents:
         return None
-    
-    sorted_agents = sorted(active_agents, key=lambda a: a["active_tickets_count"])
+
+    all_tickets = list(tickets_collection.find({}))
+
+    def get_last_assigned_time(agent_username):
+        assigned_times = [
+            t.get("created_at") or datetime.min.replace(tzinfo=timezone.utc)
+            for t in all_tickets
+            if t.get("assignee") == agent_username
+        ]
+        return max(assigned_times) if assigned_times else datetime.min.replace(tzinfo=timezone.utc)
+
+    sorted_agents = sorted(
+        active_agents,
+        key=lambda a: (
+            a["active_tickets_count"],
+            get_last_assigned_time(a["username"]),
+            a["username"],
+        ),
+    )
     target_agent = sorted_agents[0]
-    
+
     return assign_ticket(ticket_id, target_agent["username"], actor_username)
 
 

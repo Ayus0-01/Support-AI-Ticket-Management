@@ -1,9 +1,20 @@
 from pathlib import Path
 from datetime import datetime, timezone
 
-from bs4 import BeautifulSoup
-from docx import Document
-from pypdf import PdfReader
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
+
+try:
+    from docx import Document
+except ImportError:
+    Document = None
+
+try:
+    from pypdf import PdfReader
+except ImportError:
+    PdfReader = None
 
 
 SUPPORTED_EXTENSIONS = {
