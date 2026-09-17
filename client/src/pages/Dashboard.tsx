@@ -403,6 +403,11 @@ useEffect(() => {
             setDetailTicket(queueTicket);
             setOverrideCategory(queueTicket.category || "");
             setOverrideSeverity(queueTicket.severity?.toUpperCase() ?? "");
+          } else {
+            const data = await getTicketDetails(selectedTicketId);
+            setDetailTicket(data);
+            setOverrideCategory(data.category || "");
+            setOverrideSeverity(data.severity?.toUpperCase() ?? "");
           }
         } else {
           const data = await getTicketDetails(selectedTicketId);
