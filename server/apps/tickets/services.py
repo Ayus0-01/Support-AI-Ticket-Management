@@ -125,6 +125,13 @@ def create_ticket(data, requester):
 
     ticket["_id"] = str(result.inserted_id)
 
+    try:
+        assigned_result = auto_assign_ticket(ticket_id, actor_username="System Auto-Assign")
+        if assigned_result and assigned_result.get("assignee"):
+            ticket["assignee"] = assigned_result["assignee"]
+    except Exception as assign_err:
+        print(f"Automatic assignment warning for ticket {ticket_id}: {assign_err}")
+
     return ticket
 
 def classify_and_update_ticket(ticket_id):
@@ -992,10 +999,11 @@ def get_agents_workload():
     Calculate real-time workload for all Support Agents and Managers.
     Includes active assigned ticket count, total resolved count, and assigned tickets list.
     """
-    agents = list(users_collection.find(
-        {"role": {"$in": ["Agent", "Support Manager", "Manager"]}},
+    raw_agents = users_collection.find(
+        {"role": {"$in": ["Agent", "Support Agent", "Support Manager", "Manager"]}},
         {"username": 1, "email": 1, "role": 1, "is_active": 1}
-    ).sort("username", 1))
+    )
+    agents = sorted(list(raw_agents), key=lambda u: u.get("username", ""))
 
     all_tickets = list(tickets_collection.find({}))
     
@@ -1039,16 +1047,33 @@ def get_agents_workload():
 
 def auto_assign_ticket(ticket_id, actor_username=None):
     """
-    Intelligently auto-assign a ticket to the available agent with the lowest current workload.
+    Intelligently auto-assign a ticket to the available active agent with the lowest current workload.
     """
     workload = get_agents_workload()
     active_agents = [a for a in workload if a.get("is_active", True)]
     if not active_agents:
         return None
-    
-    sorted_agents = sorted(active_agents, key=lambda a: a["active_tickets_count"])
+
+    all_tickets = list(tickets_collection.find({}))
+
+    def get_last_assigned_time(agent_username):
+        assigned_times = [
+            t.get("created_at") or datetime.min.replace(tzinfo=timezone.utc)
+            for t in all_tickets
+            if t.get("assignee") == agent_username
+        ]
+        return max(assigned_times) if assigned_times else datetime.min.replace(tzinfo=timezone.utc)
+
+    sorted_agents = sorted(
+        active_agents,
+        key=lambda a: (
+            a["active_tickets_count"],
+            get_last_assigned_time(a["username"]),
+            a["username"],
+        ),
+    )
     target_agent = sorted_agents[0]
-    
+
     return assign_ticket(ticket_id, target_agent["username"], actor_username)
 
 
