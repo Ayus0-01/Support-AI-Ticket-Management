@@ -404,9 +404,14 @@ class ResolutionViewTests(SimpleTestCase):
             "ticket_id": ticket_id,
             "ticket_number": "IT-2026-000001",
             "status": "SENT",
-            "summary": "Sample resolution",
-            "steps": [],
-            "sources": [],
+            "summary": "Sample resolution [SOURCE:KB-12#2]",
+            "steps": [{
+                "order": 1,
+                "instruction": "Restart VPN [SOURCE:KB-12#2]",
+                "sources": ["KB-12"],
+                "requires_approval": True,
+            }],
+            "sources": ["KB-12"],
             "confidence": 0.9,
         }
         ticket_doc = {
@@ -441,6 +446,11 @@ class ResolutionViewTests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["id"], str(response_id))
         self.assertEqual(response.data["status"], "SENT")
+        self.assertEqual(set(response.data), {"id", "status", "summary", "steps"})
+        self.assertEqual(response.data["summary"], "Sample resolution")
+        self.assertEqual(response.data["steps"], [{"order": 1, "instruction": "Restart VPN"}])
+        self.assertNotIn("sources", response.data)
+        self.assertNotIn("citations", response.data)
 
     def test_feedback_ownership_error_returns_forbidden(self):
         user_id = ObjectId()

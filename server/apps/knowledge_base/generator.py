@@ -1,5 +1,6 @@
 import json
 import urllib.request
+from decouple import config
 
 from .confidence import calculate_provisional_confidence
 from .guardrails.citations import enforce_citations
@@ -8,8 +9,8 @@ from .guardrails.destructive import (
 )
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "qwen3:4b"
+OLLAMA_URL = config("OLLAMA_URL", default="http://localhost:11434/api/generate")
+MODEL_NAME = config("OLLAMA_MODEL", default="qwen3:4b")
 
 REQUIRED_FIELDS = {
     "sufficient_context",

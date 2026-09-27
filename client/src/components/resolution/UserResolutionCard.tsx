@@ -6,7 +6,6 @@ import {
 } from "../../services/resolutionService";
 import { type Ticket } from "../../services/ticketService";
 import StepChecklist from "./StepChecklist";
-import SufficiencyBadge from "./SufficiencyBadge";
 
 type UserResolutionCardProps = {
   ticket: Ticket;
@@ -269,10 +268,6 @@ export default function UserResolutionCard({
         <div className={`mt-5 space-y-4 rounded-2xl border p-4 ${
           isDark ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"
         }`}>
-          <div className="flex flex-wrap items-center gap-3">
-            <SufficiencyBadge sufficient={response.sufficient_context} />
-          </div>
-
           {response.summary && (
             <div>
               <h4 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>

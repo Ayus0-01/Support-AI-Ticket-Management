@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+from time import perf_counter
 from zoneinfo import ZoneInfo
 from pymongo import ReturnDocument
 import threading
@@ -19,6 +20,7 @@ from AIticket.db import (
     status_history_collection,
     comments_collection,
     kb_gaps_collection,
+    ticket_jobs_collection,
 )
 
 from .classification.embeddings import generate_embedding
@@ -131,13 +133,6 @@ def create_ticket(data, requester):
 
     ticket["_id"] = str(result.inserted_id)
 
-    try:
-        assigned_result = auto_assign_ticket(ticket_id, actor_username="System Auto-Assign")
-        if assigned_result and assigned_result.get("assignee"):
-            ticket["assignee"] = assigned_result["assignee"]
-    except Exception as assign_err:
-        print(f"Automatic assignment warning for ticket {ticket_id}: {assign_err}")
-
     return ticket
 
 def classify_and_update_ticket(ticket_id):
@@ -157,6 +152,7 @@ def classify_and_update_ticket(ticket_id):
     if not ticket:
         return None
 
+    classification_started = perf_counter()
     result = classify_ticket(
         subject=ticket["subject"],
         description=ticket["description"],
@@ -184,6 +180,7 @@ def classify_and_update_ticket(ticket_id):
             "created_at"
         ),
     )
+    classification_duration_ms = round((perf_counter() - classification_started) * 1000)
 
     tickets_collection.update_one(
         {
@@ -204,27 +201,32 @@ def classify_and_update_ticket(ticket_id):
             }
         },
     )
-        # Send the ticket-created email only after M1 classification
-    # has populated category and priority.
+
+    # Send the customer confirmation only after M1 has persisted classification
+    # so category, severity, and priority in the email are final values.
+    ticket = tickets_collection.find_one({"ticket_id": ticket_id}) or {
+        **ticket,
+        "category": result["category"]["value"],
+        "subcategory": result["subcategory"]["value"],
+        "severity": result["severity"]["value"],
+        "priority": result["priority"],
+    }
     try:
-        classified_ticket = tickets_collection.find_one(
-            {
-                "ticket_id": ticket_id
-            }
-        )
-
-        if classified_ticket:
-            send_ticket_created_email(
-                ticket=classified_ticket
-            )
-
+        send_ticket_created_email(ticket=ticket)
     except Exception as email_error:
-        logger.warning(
-            "Ticket-created email failed for %s: %s",
-            ticket_id,
-            email_error,
-        )
-        # Run M3 Multi-Agent AI workflow after M1 classification.
+        logger.warning("Ticket-created email failed for %s: %s", ticket_id, email_error)
+
+    # Assign after classification so the existing category can select the
+    # correct specialist pool. Existing assignment/escalation services remain
+    # the sole authority for workload and assignment state.
+    try:
+        assigned_result = auto_assign_ticket(ticket_id, actor_username="System Auto-Assign")
+        if assigned_result and assigned_result.get("assignee"):
+            ticket = tickets_collection.find_one({"ticket_id": ticket_id}) or ticket
+    except Exception as assign_err:
+        logger.exception("Automatic assignment failed for %s: %s", ticket_id, assign_err)
+
+    # Run M3 Multi-Agent AI workflow after M1 classification and assignment.
     try:
         from apps.agents.orchestrator import execute_orchestration_pipeline
 
@@ -237,7 +239,10 @@ def classify_and_update_ticket(ticket_id):
         m3_result = execute_orchestration_pipeline(
             ticket_id=ticket_id,
             ticket_data=updated_ticket,
-            confidence_threshold=0.70,
+            initial_stage_timings_ms={"classification": classification_duration_ms},
+            # The score remains diagnostic; required grounding and content
+            # checks still decide whether the AI response may be delivered.
+            confidence_threshold=0.0,
         )
 
         result["m3"] = m3_result
@@ -258,18 +263,66 @@ def classify_and_update_ticket(ticket_id):
 
 
 def enqueue_classification(ticket_id):
-    """
-    Start classification after ticket creation without
-    blocking the HTTP response.
-    """
-
-    thread = threading.Thread(
-        target=classify_and_update_ticket,
-        args=(ticket_id,),
-        daemon=True,
+    """Persist a durable job for the separately running ticket worker."""
+    now = datetime.now(timezone.utc)
+    ticket_jobs_collection.update_one(
+        {"_id": f"ticket-processing:{ticket_id}"},
+        {"$setOnInsert": {
+            "ticket_id": ticket_id,
+            "job_type": "ticket_processing",
+            "status": "queued",
+            "attempts": 0,
+            "created_at": now,
+            "updated_at": now,
+        }},
+        upsert=True,
     )
 
-    thread.start()
+
+def claim_ticket_job(lease_seconds=900):
+    """Atomically claim a queued job or recover an expired worker lease."""
+    now = datetime.now(timezone.utc)
+    return ticket_jobs_collection.find_one_and_update(
+        {"job_type": "ticket_processing", "$or": [
+            {"status": "queued"},
+            {"status": "processing", "locked_until": {"$lte": now}},
+        ]},
+        {"$set": {"status": "processing", "locked_until": now + timedelta(seconds=lease_seconds), "updated_at": now}, "$inc": {"attempts": 1}},
+        sort=[("created_at", 1)],
+        return_document=ReturnDocument.AFTER,
+    )
+
+
+def run_ticket_job(job, max_attempts=3):
+    """Run one claimed ticket workflow and persist retry/completion state."""
+    job_id = job["_id"]
+    now = datetime.now(timezone.utc)
+    try:
+        result = classify_and_update_ticket(job["ticket_id"])
+        m3_result = result.get("m3") if isinstance(result, dict) else None
+        m3_failed = isinstance(m3_result, dict) and m3_result.get("status") == "FAILED"
+        completion_status = "completed_with_errors" if m3_failed else "completed"
+        update_fields = {
+            "status": completion_status,
+            "completed_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+        if m3_failed:
+            update_fields["last_error"] = str(m3_result.get("reason") or "M3 workflow failed")[:1000]
+        unset_fields = {"locked_until": ""}
+        if not m3_failed:
+            unset_fields["last_error"] = ""
+        ticket_jobs_collection.update_one(
+            {"_id": job_id, "status": "processing"},
+            {"$set": update_fields, "$unset": unset_fields},
+        )
+    except Exception as exc:
+        next_status = "failed" if job.get("attempts", 0) >= max_attempts else "queued"
+        ticket_jobs_collection.update_one(
+            {"_id": job_id, "status": "processing"},
+            {"$set": {"status": next_status, "last_error": str(exc)[:1000], "updated_at": now}, "$unset": {"locked_until": ""}},
+        )
+        logger.exception("Ticket worker failed for %s", job.get("ticket_id"))
 
 
 def get_user_tickets(user_id):
@@ -1056,6 +1109,7 @@ def assign_ticket(ticket_id, assignee_username, actor_username=None):
         },
         {
             "username": 1,
+            "email": 1,
             "role": 1,
             "is_active": 1,
         },
@@ -1146,7 +1200,7 @@ def get_agents_workload():
     """
     raw_agents = users_collection.find(
         {"role": "Agent"},
-        {"username": 1, "email": 1, "role": 1, "is_active": 1}
+        {"username": 1, "email": 1, "role": 1, "is_active": 1, "specialties": 1}
     )
     agents = sorted(list(raw_agents), key=lambda u: u.get("username", ""))
 
@@ -1173,6 +1227,7 @@ def get_agents_workload():
             "email": agent.get("email", ""),
             "role": agent.get("role", "Agent"),
             "is_active": agent.get("is_active", True),
+            "specialties": agent.get("specialties", []),
             "active_tickets_count": len(active_tickets),
             "resolved_tickets_count": len(resolved_tickets),
             "primary_category": primary_category,
@@ -1196,6 +1251,19 @@ def auto_assign_ticket(ticket_id, actor_username=None):
     """
     workload = get_agents_workload()
     active_agents = [a for a in workload if a.get("is_active") is not False]
+    if not active_agents:
+        return None
+
+    ticket = tickets_collection.find_one({"ticket_id": ticket_id}) or {}
+    category = str(ticket.get("category") or "").strip().upper()
+    # Route to a matching configured specialty for every classified category.
+    # Other categories use the existing M3 escalation path instead of receiving
+    # a misleading assignment to an unrelated person.
+    if category:
+        active_agents = [
+            agent for agent in active_agents
+            if category in {str(value).strip().upper() for value in (agent.get("specialties") or [])}
+        ]
     if not active_agents:
         return None
 

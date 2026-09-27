@@ -28,9 +28,12 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-    'support-ai-ticket-management-team-18k9.onrender.com',
-    "localhost",
-    "127.0.0.1",
+    host.strip()
+    for host in config(
+        "ALLOWED_HOSTS",
+        default="support-ai-ticket-management-team-18k9.onrender.com,localhost,127.0.0.1",
+    ).split(",")
+    if host.strip()
 ]
 
 
@@ -67,12 +70,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:5173",
-"http://127.0.0.1:5173",
-"https://support-ai-ticket-management-team-1-8h0x.onrender.com" # your Vite React dev server
+    origin.strip()
+    for origin in config(
+        "CORS_ALLOWED_ORIGINS",
+        default="http://localhost:5173,http://127.0.0.1:5173,https://support-ai-ticket-management-team-1-8h0x.onrender.com",
+    ).split(",")
+    if origin.strip()
 ]
-
-CORS_ALLOWED_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=False, cast=bool)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config("CSRF_TRUSTED_ORIGINS", default="").split(",")
+    if origin.strip()
+]
 
 REST_FRAMEWORK = {
 'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -145,6 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),

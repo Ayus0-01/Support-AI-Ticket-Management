@@ -3,7 +3,9 @@ Multi-Agent Orchestrator for M3 Workflow Coordination.
 Coordinates specialized agents across Diagnosis -> Knowledge Retrieval -> Resolution -> Validation -> Auto Resolution OR Escalation.
 """
 from typing import Dict, Any, List, Optional
-from AIticket.db import tickets_collection
+from time import perf_counter
+import logging
+from AIticket.db import tickets_collection, comments_collection, users_collection
 from .models import (
     agent_workflows_collection,
     agent_executions_collection,
@@ -39,6 +41,8 @@ from apps.knowledge_base.persistence import (
 )
 from apps.tickets.services import auto_assign_ticket, transition_ticket_status
 from apps.notifications.services import create_notification
+
+logger = logging.getLogger(__name__)
 
 
 def log_activity(
@@ -76,7 +80,8 @@ def log_activity(
 
 def start_workflow(
     ticket_id: str,
-    ticket_data: Optional[Dict[str, Any]] = None
+    ticket_data: Optional[Dict[str, Any]] = None,
+    initial_stage_timings_ms: Optional[Dict[str, int]] = None,
 ) -> Dict[str, Any]:
     """
     Initializes a new M3 Multi-Agent Workflow for an existing ticket.
@@ -103,6 +108,7 @@ def start_workflow(
         "retrieved_evidence": [],
         "resolution": None,
         "validation": None,
+        "stage_timings_ms": dict(initial_stage_timings_ms or {}),
     }
 
     agent_workflows_collection.insert_one(workflow_doc)
@@ -120,6 +126,28 @@ def start_workflow(
     )
 
     return workflow_doc
+
+
+def _run_timed_agent_stage(
+    agent: BaseAgent,
+    agent_input: Dict[str, Any],
+    stage_name: str,
+    workflow_id: str,
+    stage_timings_ms: Dict[str, int],
+) -> Dict[str, Any]:
+    """Run one existing agent step and persist its wall-clock duration."""
+    stage_started = perf_counter()
+    try:
+        return agent.run(agent_input)
+    finally:
+        stage_timings_ms[stage_name] = round((perf_counter() - stage_started) * 1000)
+        try:
+            agent_workflows_collection.update_one(
+                {"workflow_id": workflow_id},
+                {"$set": {"stage_timings_ms": dict(stage_timings_ms)}},
+            )
+        except Exception:
+            logger.warning("Could not persist timing for workflow %s stage %s", workflow_id, stage_name)
 
 
 def record_agent_execution(
@@ -216,7 +244,8 @@ def execute_orchestration_pipeline(
     ticket_id: str,
     ticket_data: Optional[Dict[str, Any]] = None,
     agent_overrides: Optional[Dict[str, BaseAgent]] = None,
-    confidence_threshold: float = 0.70,
+    confidence_threshold: float = 0.0,
+    initial_stage_timings_ms: Optional[Dict[str, int]] = None,
 ) -> Dict[str, Any]:
     """
     Executes the M3 Multi-Agent Orchestration Pipeline for an existing ticket.
@@ -231,9 +260,16 @@ def execute_orchestration_pipeline(
     if not ticket_data:
         raise ValueError(f"Cannot execute orchestration: Existing ticket '{ticket_id}' not found.")
 
-    # Initialize workflow state
-    workflow = start_workflow(ticket_id=ticket_id, ticket_data=ticket_data)
+    # Initialize workflow state and record elapsed time without changing
+    # orchestration order or agent inputs.
+    workflow_started = perf_counter()
+    workflow = start_workflow(
+        ticket_id=ticket_id,
+        ticket_data=ticket_data,
+        initial_stage_timings_ms=initial_stage_timings_ms,
+    )
     workflow_id = workflow["workflow_id"]
+    stage_timings_ms = dict(initial_stage_timings_ms or {})
 
     # Register stage agents (stubs by default, overridable by actual implementations)
     agents: Dict[str, BaseAgent] = {
@@ -277,7 +313,9 @@ def execute_orchestration_pipeline(
     # --- Stage 1: Diagnosis ---
     diag_agent = agents["DiagnosisAgent"]
     diag_input = {**m1_m2_context}
-    diag_output = diag_agent.run(diag_input)
+    diag_output = _run_timed_agent_stage(
+        diag_agent, diag_input, "diagnosis", workflow_id, stage_timings_ms
+    )
     record_agent_execution(
         workflow_id=workflow_id,
         agent_name=diag_agent.agent_name,
@@ -311,7 +349,9 @@ def execute_orchestration_pipeline(
         **m1_m2_context,
         "diagnosis": diag_output.get("diagnosis", {}),
     }
-    ret_output = ret_agent.run(ret_input)
+    ret_output = _run_timed_agent_stage(
+        ret_agent, ret_input, "retrieval", workflow_id, stage_timings_ms
+    )
     record_agent_execution(
         workflow_id=workflow_id,
         agent_name=ret_agent.agent_name,
@@ -347,7 +387,9 @@ def execute_orchestration_pipeline(
         "packed_context": ret_output.get("packed_context", ""),
         "sources": ret_output.get("sources", []),
     }
-    res_output = res_agent.run(res_input)
+    res_output = _run_timed_agent_stage(
+        res_agent, res_input, "resolution", workflow_id, stage_timings_ms
+    )
     record_agent_execution(
         workflow_id=workflow_id,
         agent_name=res_agent.agent_name,
@@ -381,9 +423,14 @@ def execute_orchestration_pipeline(
         "diagnosis": diag_output.get("diagnosis", {}),
         "retrieved_evidence": ret_output.get("retrieved_evidence", []),
         "resolution": res_output,
+        # Kept in the input contract for compatibility with existing callers;
+        # ValidationAgent retains confidence for reporting but does not gate
+        # customer delivery on a score.
         "confidence_threshold": confidence_threshold,
     }
-    val_output = val_agent.run(val_input)
+    val_output = _run_timed_agent_stage(
+        val_agent, val_input, "validation", workflow_id, stage_timings_ms
+    )
     val_details = val_output.get("validation", {})
     val_confidence = float(val_output.get("confidence", 0.0))
     is_valid = bool(val_details.get("is_valid", False))
@@ -418,8 +465,8 @@ def execute_orchestration_pipeline(
 
     # --- Stage 5 Decision: Auto Resolution OR Escalation ---
     now = get_utc_now()
-    if is_valid and val_confidence >= confidence_threshold:
-        # High-confidence M3 result becomes the customer-facing resolution.
+    if is_valid:
+        # A validated M3 result becomes the customer-facing resolution.
         # Keep the response in the same M2 persistence model so the existing
         # customer UI, citations and feedback flow can consume it safely.
         raw_resolution = res_output.get("resolution") or {}
@@ -544,6 +591,37 @@ def execute_orchestration_pipeline(
                 agent_name="ResolutionAgent",
                 status="FAILED",
             )
+
+        assigned_username = ticket_data.get("assignee")
+        if assigned_username:
+            try:
+                create_notification(
+                    recipient=assigned_username,
+                    title="AI Resolution Ready",
+                    message=f"An AI-generated resolution is ready for ticket {ticket_id}.",
+                    notification_type="info",
+                    ticket_id=ticket_id,
+                )
+                agent = users_collection.find_one(
+                    {"username": assigned_username, "role": "Agent"},
+                    {"email": 1},
+                )
+                if agent and agent.get("email"):
+                    send_resolution_email(
+                        ticket=ticket_data,
+                        response=response_doc,
+                        recipient_email=agent["email"],
+                    )
+            except Exception as agent_notification_error:
+                log_activity(
+                    ticket_id=ticket_id,
+                    action="AGENT_RESOLUTION_NOTIFICATION_FAILED",
+                    details=f"Agent resolution notification failed: {agent_notification_error}",
+                    actor="Multi-Agent Orchestrator",
+                    workflow_id=workflow_id,
+                    agent_name="ResolutionAgent",
+                    status="FAILED",
+                )
         # A customer-facing AI solution is now waiting for confirmation.
         # Move Open -> In Progress so accepting the solution can complete it.
         current_ticket = tickets_collection.find_one({"ticket_id": ticket_id})
@@ -568,7 +646,7 @@ def execute_orchestration_pipeline(
         log_activity(
             ticket_id=ticket_id,
             action="AUTO_RESOLUTION_SENT_TO_CUSTOMER",
-            details="High-confidence multi-agent resolution was sent to the customer for confirmation.",
+            details="Validated multi-agent resolution was sent to the customer for confirmation.",
             actor="Multi-Agent Orchestrator",
             workflow_id=workflow_id,
             agent_name="ValidationAgent",
@@ -580,6 +658,76 @@ def execute_orchestration_pipeline(
             },
         )
     else:
+        # Keep a successfully generated, grounded M3 result in the existing
+        # agent-review model when required content or grounding checks reject
+        # automatic delivery. This lets an agent review it without rerunning Qwen.
+        retrieval_results = ret_output.get("retrieved_evidence", [])
+        raw_resolution = res_output.get("resolution") or {}
+        current_resolution_state = tickets_collection.find_one(
+            {"_id": ticket_data.get("_id")},
+            {"resolution_status": 1},
+        ) if ticket_data.get("_id") else None
+        if (
+            ticket_data.get("_id")
+            and retrieval_results
+            and res_output.get("status") == "SUCCESS"
+            and (current_resolution_state or {}).get("resolution_status") not in {"DRAFT", "SENT", "EDITED_SENT"}
+        ):
+            raw_steps = raw_resolution.get("troubleshooting_steps") or []
+            draft_steps = []
+            for index, raw_step in enumerate(raw_steps, start=1):
+                if isinstance(raw_step, dict):
+                    instruction = str(raw_step.get("instruction") or raw_step.get("text") or "").strip()
+                    step_sources = raw_step.get("sources") or []
+                else:
+                    instruction = str(raw_step).strip()
+                    import re
+                    step_sources = re.findall(r"\[SOURCE:[^\]]+\]", instruction)
+                if instruction:
+                    draft_steps.append({
+                        "order": index,
+                        "instruction": instruction,
+                        "sources": step_sources,
+                        "requires_approval": False,
+                    })
+
+            retrieval_log = create_retrieval_log(
+                ticket_id=ticket_data.get("_id"),
+                queries_used=ret_output.get("queries_used", []),
+                chunks_retrieved=len(retrieval_results),
+                results=retrieval_results,
+            )
+            draft_payload = {
+                "sufficient_context": True,
+                "summary": str(raw_resolution.get("summary") or "AI resolution generated successfully.").strip(),
+                "steps": draft_steps,
+                "sources": ret_output.get("sources", []),
+                "escalation_recommended": True,
+                "escalation_reason": "; ".join(str(reason) for reason in val_details.get("reasons", [])) or "Human review required before sending.",
+                "confidence": val_confidence,
+                "confidence_parts": {
+                    "diagnosis": float(diag_output.get("confidence", 0.0) or 0.0),
+                    "resolution": float(res_output.get("confidence", 0.0) or 0.0),
+                    "groundedness": float(val_details.get("groundedness_ratio", 0.0) or 0.0),
+                },
+            }
+            draft_response = create_ticket_response(
+                ticket=ticket_data,
+                resolution=draft_payload,
+                retrieval_log=retrieval_log,
+                queries_used=ret_output.get("queries_used", []),
+                model="qwen3:4b",
+                prompt_version="m3-resolution.v1",
+            )
+            create_response_citations(
+                response=draft_response,
+                retrieval_results=retrieval_results,
+            )
+            mark_ticket_resolution_generated(
+                ticket_id=ticket_data.get("_id"),
+                response_id=draft_response["_id"],
+            )
+
         # Run real EscalationAgent when validation fails / requires escalation
         esc_agent = agents["EscalationAgent"]
         esc_input = {
@@ -588,9 +736,11 @@ def execute_orchestration_pipeline(
             "retrieved_evidence": ret_output.get("retrieved_evidence", []),
             "resolution": res_output.get("resolution", {}),
             "validation": val_details,
-            "escalation_reason": f"Validation rejected auto-resolution (confidence {val_confidence} below threshold {confidence_threshold})",
+            "escalation_reason": "Grounding or required content checks need human review.",
         }
-        esc_output = esc_agent.run(esc_input)
+        esc_output = _run_timed_agent_stage(
+            esc_agent, esc_input, "escalation_agent", workflow_id, stage_timings_ms
+        )
         esc_data = esc_output.get("escalation") or {}
 
         # Invoke Jira Integration Service layer for escalated tickets
@@ -632,6 +782,34 @@ def execute_orchestration_pipeline(
                 esc_data["assigned_agent"] = None
                 esc_data["assignment_status"] = "QUEUED"
 
+                # Keep specialist gaps visible in the ticket's existing
+                # internal timeline and ticket document for staff follow-up.
+                escalation_reason = (
+                    esc_data.get("reason")
+                    or "No active human specialist is configured for this category."
+                )
+                tickets_collection.update_one(
+                    {"ticket_id": ticket_id},
+                    {"$set": {
+                        "escalation": {
+                            "status": "ESCALATED",
+                            "reason": escalation_reason,
+                            "assigned_agent": None,
+                            "workflow_id": workflow_id,
+                            "updated_at": now,
+                        },
+                        "updated_at": now,
+                    }},
+                )
+                comments_collection.insert_one({
+                    "ticket_id": ticket_id,
+                    "author_user_id": "Multi-Agent Orchestrator",
+                    "comment": f"Ticket escalated for manager assignment: {escalation_reason}",
+                    "visibility": "INTERNAL",
+                    "source": "M3_SPECIALIST_ESCALATION",
+                    "created_at": now,
+                })
+
         record_agent_execution(
             workflow_id=workflow_id,
             agent_name=esc_agent.agent_name,
@@ -668,6 +846,16 @@ def execute_orchestration_pipeline(
                 "email_status": email_result.get("status"),
             },
         )
+
+    # This includes orchestration overhead such as persistence and escalation
+    # integrations; per-agent durations remain available separately.
+    try:
+        agent_workflows_collection.update_one(
+            {"workflow_id": workflow_id},
+            {"$set": {"workflow_duration_ms": round((perf_counter() - workflow_started) * 1000)}},
+        )
+    except Exception:
+        logger.warning("Could not persist total duration for workflow %s", workflow_id)
 
     # Return updated workflow doc
     final_workflow = agent_workflows_collection.find_one({"workflow_id": workflow_id})

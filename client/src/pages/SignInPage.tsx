@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import api from '@/api';
 import {
   Bot,
   Sun,
@@ -15,7 +16,7 @@ import {
 } from 'lucide-react';
 
 interface SignInPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, email?: string) => void;
 }
 
 const REMEMBER_KEY = 'aiticket_remember';
@@ -42,6 +43,7 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
   const [remember, setRemember] = useState<boolean>(!!saved);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
   const [shouldNavigateToDashboard, setShouldNavigateToDashboard] =
     useState(false);
 
@@ -98,6 +100,20 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     attemptSignIn(email, password);
+  };
+
+  const resendVerification = async () => {
+    if (!email.trim()) return;
+    setResendingVerification(true);
+    setError('');
+    try {
+      await api.post('/api/auth/resend-verification/', { email: email.trim() });
+      onNavigate('verify-pending', email.trim());
+    } catch (requestError: any) {
+      setError(requestError.response?.data?.message || 'Unable to request a verification email. Please try again.');
+    } finally {
+      setResendingVerification(false);
+    }
   };
 
   return (
@@ -442,7 +458,17 @@ export default function SignInPage({ onNavigate }: SignInPageProps) {
                       : 'bg-red-50 border-red-200 text-red-600'
                   }`}
                 >
-                  {error}
+                  <p>{error}</p>
+                  {error.toLowerCase().includes('verify your email') && (
+                    <button
+                      type="button"
+                      onClick={resendVerification}
+                      disabled={resendingVerification || !email.trim()}
+                      className="mt-2 font-semibold underline disabled:opacity-60"
+                    >
+                      {resendingVerification ? 'Sending verification link…' : 'Resend verification email'}
+                    </button>
+                  )}
                 </div>
               )}
 

@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from .constants import USER_ROLES
+from apps.tickets.classification.subcategory_classifier import AGENT_SPECIALTY_CATEGORIES
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -35,6 +36,7 @@ class ManagedUserSerializer(serializers.Serializer):
     username = serializers.CharField()
     email = serializers.EmailField()
     role = serializers.ChoiceField(choices=USER_ROLES)
+    specialties = serializers.ListField(child=serializers.ChoiceField(choices=AGENT_SPECIALTY_CATEGORIES), required=False)
     is_active = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(allow_null=True, required=False)
     last_login_at = serializers.DateTimeField(allow_null=True, required=False)
@@ -52,15 +54,22 @@ class ManagedUserCreateSerializer(serializers.Serializer):
     mobile = serializers.CharField(required=False, allow_blank=True, max_length=30)
     password = serializers.CharField(min_length=8, write_only=True)
     role = serializers.ChoiceField(choices=USER_ROLES)
+    specialties = serializers.ListField(child=serializers.ChoiceField(choices=AGENT_SPECIALTY_CATEGORIES), required=False, default=list)
 
     def validate_password(self, value):
         validate_password(value)
         return value
 
+    def validate(self, attrs):
+        if attrs.get("role") != "Agent" and attrs.get("specialties"):
+            raise serializers.ValidationError({"specialties": "Specialties can only be assigned to Agent accounts."})
+        return attrs
+
 
 class ManagedUserUpdateSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=USER_ROLES, required=False)
     is_active = serializers.BooleanField(required=False)
+    specialties = serializers.ListField(child=serializers.ChoiceField(choices=AGENT_SPECIALTY_CATEGORIES), required=False)
 
     def validate(self, attrs):
         if not attrs:

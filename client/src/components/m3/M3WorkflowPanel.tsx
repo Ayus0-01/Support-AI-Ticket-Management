@@ -33,6 +33,21 @@ interface M3WorkflowPanelProps {
   isDark?: boolean;
 }
 
+const formatDuration = (durationMs?: number) => {
+  if (typeof durationMs !== "number") return "Pending";
+  if (durationMs < 1000) return `${durationMs} ms`;
+  return `${(durationMs / 1000).toFixed(1)} s`;
+};
+
+const TIMED_STAGES = [
+  ["classification", "Ticket classification"],
+  ["diagnosis", "AI diagnosis"],
+  ["retrieval", "Knowledge retrieval"],
+  ["resolution", "Resolution generation"],
+  ["validation", "Resolution checks"],
+  ["escalation_agent", "Escalation analysis"],
+] as const;
+
 export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
   ticketId,
   isDark = false,
@@ -50,11 +65,12 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
     let isMounted = true;
     const fetchExistingStatus = async () => {
       try {
+        setWorkflow(null);
         setInitialLoading(true);
         setError(null);
         const res = await getM3WorkflowStatus(ticketId);
-        if (isMounted && res) {
-          setWorkflow(res.workflow);
+        if (isMounted) {
+          setWorkflow(res?.workflow ?? null);
         }
       } catch (err: unknown) {
         console.error("Failed to fetch M3 workflow status:", err);
@@ -70,6 +86,35 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
       isMounted = false;
     };
   }, [ticketId]);
+
+  // Ticket processing runs in the background. Refresh M3 silently while the
+  // workflow is queued or running so the stages update without a page reload.
+  useEffect(() => {
+    if (workflow && workflow.workflow_status !== "IN_PROGRESS") {
+      return;
+    }
+
+    let active = true;
+    const refreshWorkflow = async () => {
+      try {
+        const result = await getM3WorkflowStatus(ticketId);
+        if (active && result?.workflow) {
+          setWorkflow(result.workflow);
+          if (showLogs) {
+            setActivityLogs(await getM3ActivityLogs(ticketId));
+          }
+        }
+      } catch (refreshError) {
+        console.warn("Could not silently refresh M3 workflow status:", refreshError);
+      }
+    };
+
+    const refreshTimer = window.setInterval(() => void refreshWorkflow(), 5000);
+    return () => {
+      active = false;
+      window.clearInterval(refreshTimer);
+    };
+  }, [ticketId, workflow?.workflow_status, showLogs]);
 
   const handleRunWorkflow = async () => {
     try {
@@ -92,7 +137,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
         errorObj?.response?.data?.message ||
         errorObj?.response?.data?.detail ||
         errorObj?.message ||
-        "M3 Multi-Agent workflow execution failed.";
+        "AI workflow could not be completed.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -161,7 +206,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
       >
         <div className="flex items-center gap-3 text-sm text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-          <span>Checking M3 workflow state...</span>
+          <span>Checking AI workflow status...</span>
         </div>
       </div>
     );
@@ -181,11 +226,11 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-base">M3 Multi-Agent Engine</h3>
+              <h3 className="font-bold text-base">AI Support Workflow</h3>
               {workflow && getStatusBadge(workflow.workflow_status)}
             </div>
             <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-              Autonomous Multi-Agent Pipeline with Confidence & Validation Gating
+              Autonomous multi-agent pipeline with grounded response checks
             </p>
           </div>
         </div>
@@ -221,7 +266,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
       {loading && (
         <div className="mt-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-          <p className="mt-3 font-semibold text-sm">Executing Multi-Agent Pipeline</p>
+          <p className="mt-3 font-semibold text-sm">Running AI support workflow</p>
           <p className="mt-1 text-xs text-gray-500">
             DiagnosisAgent → KnowledgeRetrievalAgent → ResolutionAgent → ValidationAgent
           </p>
@@ -232,7 +277,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
       {workflow && !loading && (
         <div className="mt-6 rounded-2xl border p-5 bg-slate-50/50 dark:bg-gray-900/50 dark:border-gray-800">
           <p className="text-xs uppercase tracking-[0.2em] font-semibold text-slate-500 mb-4">
-            M3 Agent Workflow Pipeline Architecture
+            AI Workflow Stages
           </p>
           
           <div className="grid gap-3 md:grid-cols-5 items-stretch relative">
@@ -396,13 +441,11 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
                   {valDone
                     ? valPassed
                       ? "PASSED (Valid)"
-                      : "REJECTED (Low Conf)"
+                      : "REVIEW REQUIRED"
                     : "Pending"}
                 </p>
                 <p className="text-[10px] text-gray-400">
-                  {workflow.final_confidence !== undefined
-                    ? `Conf: ${Math.round((workflow.final_confidence || 0) * 100)}%`
-                    : "Threshold: 70%"}
+                  {valDone ? (valPassed ? "Required checks passed" : "Grounding or content check needs review") : "Required checks pending"}
                 </p>
               </div>
             </div>
@@ -457,7 +500,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
                 </p>
                 <p className="text-[10px] text-gray-400 truncate">
                   {isCompleted
-                    ? "High confidence auto-close"
+                    ? "Validated AI response sent"
                     : isEscalated
                     ? workflow.escalation?.jira_result?.jira_issue_key
                       ? `Jira: ${workflow.escalation.jira_result.jira_issue_key}`
@@ -480,19 +523,34 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
               <p className="mt-1 font-mono text-sm font-bold text-blue-600 dark:text-blue-400">{workflow.workflow_id}</p>
             </div>
             <div className={`rounded-2xl border p-4 ${isDark ? "border-gray-800 bg-gray-900" : "border-gray-100 bg-slate-50"}`}>
-              <p className="text-xs text-slate-500 uppercase font-semibold">Composite Confidence</p>
-              <p className="mt-1 text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                {workflow.final_confidence !== undefined
-                  ? `${Math.round((workflow.final_confidence || 0) * 100)}%`
-                  : "N/A"}
-              </p>
-            </div>
-            <div className={`rounded-2xl border p-4 ${isDark ? "border-gray-800 bg-gray-900" : "border-gray-100 bg-slate-50"}`}>
               <p className="text-xs text-slate-500 uppercase font-semibold">Evidence Chunks</p>
               <p className="mt-1 text-lg font-bold">
                 {workflow.retrieved_evidence ? workflow.retrieved_evidence.length : 0} articles
               </p>
             </div>
+            <div className={`rounded-2xl border p-4 ${isDark ? "border-gray-800 bg-gray-900" : "border-gray-100 bg-slate-50"}`}>
+              <p className="text-xs text-slate-500 uppercase font-semibold">Workflow time</p>
+              <p className="mt-1 text-lg font-bold">
+                {formatDuration(workflow.workflow_duration_ms)}
+              </p>
+            </div>
+          </div>
+
+          <div className={`rounded-2xl border p-4 ${isDark ? "border-gray-800 bg-gray-900" : "border-gray-100 bg-slate-50"}`}>
+            <p className="text-xs text-slate-500 uppercase font-semibold">Stage durations</p>
+            <div className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+              {TIMED_STAGES.map(([key, label]) => (
+                <div className="flex items-center justify-between gap-3" key={key}>
+                  <span className="text-slate-600 dark:text-slate-300">{label}</span>
+                  <span className="shrink-0 font-semibold tabular-nums">
+                    {formatDuration(workflow.stage_timings_ms?.[key])}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Times are recorded as each stage finishes. Older workflows may not have timing data.
+            </p>
           </div>
 
           {/* Diagnosis Section */}
@@ -686,7 +744,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
             >
               <span className="flex items-center gap-1.5">
                 <Activity className="h-4 w-4 text-blue-500" />
-                M3 Activity Logs ({activityLogs.length > 0 ? activityLogs.length : "Click to view"})
+                Workflow Activity ({activityLogs.length > 0 ? activityLogs.length : "Click to view"})
               </span>
               {showLogs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </button>

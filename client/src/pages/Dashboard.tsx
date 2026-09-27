@@ -315,11 +315,13 @@ const [queueError, setQueueError] = useState("");
 
 
 useEffect(() => {
-  const loadPageData = async () => {
+  const loadPageData = async (silent = false) => {
     try {
       if (title === "My queue") {
-        setQueueLoading(true);
-        setQueueError("");
+        if (!silent) {
+          setQueueLoading(true);
+          setQueueError("");
+        }
 
         const data = await getAgentQueue();
         const sortedQueue = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -327,8 +329,10 @@ useEffect(() => {
         return;
       }
 
-      setLoading(true);
-      setError("");
+      if (!silent) {
+        setLoading(true);
+        setError("");
+      }
 
       if (title === "All Tickets") {
         const data = await getManagerOverview();
@@ -351,6 +355,10 @@ useEffect(() => {
       setTickets(sortedTickets);
       
     } catch (err) {
+      if (silent) {
+        console.warn("Silent ticket refresh failed; the next refresh will retry:", err);
+        return;
+      }
       console.error("Failed to load ticket data:", err);
 
       if (title === "My queue") {
@@ -383,15 +391,19 @@ useEffect(() => {
         );
       }
     } finally {
-      if (title === "My queue") {
-        setQueueLoading(false);
-      } else {
-        setLoading(false);
+      if (!silent) {
+        if (title === "My queue") {
+          setQueueLoading(false);
+        } else {
+          setLoading(false);
+        }
       }
     }
   };
 
-  loadPageData();
+  void loadPageData();
+  const refreshTimer = window.setInterval(() => void loadPageData(true), 5000);
+  return () => window.clearInterval(refreshTimer);
 }, [title]);
 
   useEffect(() => {
@@ -404,57 +416,45 @@ useEffect(() => {
       return;
     }
 
-    const fetchDetail = async () => {
+    const fetchDetail = async (silent = false) => {
       try {
-        setLoadingDetail(true);
-        setDetailError("");
-        setActionError("");
+        if (!silent) {
+          setLoadingDetail(true);
+          setDetailError("");
+          setActionError("");
+        }
 
-        if (title === "My queue") {
-          // Agent/Admin tickets come from the queue endpoint. Do not fall back
-          // to the employee-owned ticket-detail endpoint when the ticket leaves
-          // the active queue (for example, immediately after resolving it).
-          const queueTicket = queueTickets.find(
-            ticket => ticket.ticket_id === selectedTicketId
-          );
-
-          if (queueTicket) {
-            setDetailTicket(queueTicket);
-            setOverrideCategory(queueTicket.category || "");
-            setOverrideSeverity(queueTicket.severity?.toUpperCase() ?? "");
-          } else {
-            const data = await getTicketDetails(selectedTicketId);
-            setDetailTicket(data);
-            setOverrideCategory(data.category || "");
-            setOverrideSeverity(data.severity?.toUpperCase() ?? "");
-          }
-        } else {
-          const data = await getTicketDetails(selectedTicketId);
-          setDetailTicket(data);
+        const data = await getTicketDetails(selectedTicketId);
+        setDetailTicket(data);
+        if (!silent) {
           setOverrideCategory(data.category || "");
           setOverrideSeverity(data.severity?.toUpperCase() ?? "");
         }
 
-        setTimelineLoading(true);
+        if (!silent) setTimelineLoading(true);
         try {
           const timelineData = await getTicketTimeline(selectedTicketId);
           setTimeline(timelineData);
         } catch (timelineError) {
           console.error("Failed to fetch ticket timeline:", timelineError);
-          setTimeline([]);
+          if (!silent) setTimeline([]);
         } finally {
-          setTimelineLoading(false);
+          if (!silent) setTimelineLoading(false);
         }
       } catch (err) {
-        console.error("Failed to fetch ticket detail:", err);
-        setDetailError("Could not fetch ticket details.");
+        if (!silent) {
+          console.error("Failed to fetch ticket detail:", err);
+          setDetailError("Could not fetch ticket details.");
+        }
       } finally {
-        setLoadingDetail(false);
+        if (!silent) setLoadingDetail(false);
       }
     };
 
-    fetchDetail();
-  }, [selectedTicketId, title, queueTickets]);
+    void fetchDetail();
+    const refreshTimer = window.setInterval(() => void fetchDetail(true), 5000);
+    return () => window.clearInterval(refreshTimer);
+  }, [selectedTicketId]);
 
   const filteredTickets = tickets.filter(ticket => {
     const term = searchTerm.trim().toLowerCase();
@@ -652,12 +652,47 @@ interface TicketClassificationMeta {
           setIsResolving(false);
           setResolutionSummary("");
         }
-        await refreshQueueTicket();
-        const timelineData = await getTicketTimeline(selectedTicketId);
-        setTimeline(timelineData);
+        // The status mutation is the primary action. A later queue/timeline
+        // refresh can fail independently; don't report that as if the action
+        // failed after the server has already changed the ticket.
+        try {
+          await refreshQueueTicket();
+          const [latestTicket, timelineData] = await Promise.all([
+            getTicketDetails(selectedTicketId),
+            getTicketTimeline(selectedTicketId),
+          ]);
+          setDetailTicket(latestTicket);
+          setTimeline(timelineData);
+        } catch (refreshError) {
+          console.error("Ticket status changed, but refreshing its details failed:", refreshError);
+        }
       } catch (error: unknown) {
         const err = error as { response?: { data?: { message?: string } }; message?: string };
-        setActionError(err?.response?.data?.message || err?.message || 'Could not change ticket status.');
+        const failureMessage = err?.response?.data?.message || err?.message || 'Could not change ticket status.';
+        // The backend updates the ticket before it writes status history. If
+        // that second write fails, the request can return 500 even though the
+        // status already changed. Re-read the ticket before inviting a retry.
+        try {
+          const latestTicket = await getTicketDetails(selectedTicketId);
+          setDetailTicket(latestTicket);
+          if (latestTicket.status === status) {
+            if (status === 'Resolved') {
+              setIsResolving(false);
+              setResolutionSummary("");
+            }
+            setActionError(`Ticket status is now ${status}, but the server reported an error while recording the action: ${failureMessage}`);
+            try {
+              await refreshQueueTicket();
+              setTimeline(await getTicketTimeline(selectedTicketId));
+            } catch (refreshError) {
+              console.error("Status changed after an API error, but ticket history could not be refreshed:", refreshError);
+            }
+          } else {
+            setActionError(failureMessage);
+          }
+        } catch {
+          setActionError(failureMessage);
+        }
       } finally {
         setActionBusy(false);
       }
@@ -797,7 +832,7 @@ interface TicketClassificationMeta {
                           {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map(value => <option key={value}>{value}</option>)}
                         </select>
                       </div>
-                      <button onClick={handleOverride} disabled={actionBusy} className="mt-3 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
+                      <button onClick={handleOverride} disabled={actionBusy} className="mt-3 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                         {actionBusy ? 'Saving...' : 'Apply override'}
                       </button>
                     </div>
@@ -809,8 +844,8 @@ interface TicketClassificationMeta {
                   <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
                     <div className="flex flex-wrap items-center gap-3">
                       <p className={`text-xs uppercase tracking-[0.2em] font-semibold mr-auto ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Agent Actions</p>
-                      {detailTicket.status === 'Open' && can('CHANGE_TICKET_STATUS') && <button onClick={() => handleStatusChange('In Progress')} disabled={actionBusy} className="rounded-2xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50">Start work</button>}
-                      {detailTicket.status === 'In Progress' && can('RESOLVE_TICKET') && !isResolving && <button onClick={() => { setActionError(""); setIsResolving(true); }} disabled={actionBusy} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">Resolve</button>}
+                      {detailTicket.status === 'Open' && can('CHANGE_TICKET_STATUS') && <button onClick={() => handleStatusChange('In Progress')} disabled={actionBusy} className="rounded-2xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-amber-600/20 transition-colors hover:bg-amber-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Start work</button>}
+                      {detailTicket.status === 'In Progress' && can('RESOLVE_TICKET') && !isResolving && <button onClick={() => { setActionError(""); setIsResolving(true); }} disabled={actionBusy} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/20 transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Resolve</button>}
                     </div>
                     {isResolving && (
                       <div className={`mt-4 rounded-2xl border p-4 ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-slate-50'}`}>
@@ -827,7 +862,7 @@ interface TicketClassificationMeta {
                         />
                         <div className="mt-3 flex flex-wrap justify-end gap-3">
                           <button onClick={() => { setActionError(""); setIsResolving(false); setResolutionSummary(""); }} disabled={actionBusy} className={`rounded-2xl border px-4 py-2 text-sm font-semibold disabled:opacity-50 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-slate-700 hover:bg-white'}`}>Cancel</button>
-                          <button onClick={() => handleStatusChange('Resolved')} disabled={actionBusy || !resolutionSummary.trim()} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{actionBusy ? 'Resolving...' : 'Confirm resolve'}</button>
+                          <button onClick={() => handleStatusChange('Resolved')} disabled={actionBusy || !resolutionSummary.trim()} className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/20 transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">{actionBusy ? 'Resolving...' : 'Confirm resolve'}</button>
                         </div>
                       </div>
                     )}
@@ -840,7 +875,7 @@ interface TicketClassificationMeta {
                     <div className="flex items-center gap-2 px-1">
                       <span className="inline-block h-2.5 w-2.5 rounded-full bg-blue-500"></span>
                       <h3 className={`text-xs font-bold uppercase tracking-[0.2em] ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
-                        M3 — Autonomous Multi-Agent AI Workflow
+                        AI Support Workflow
                       </h3>
                     </div>
                     <M3WorkflowPanel ticketId={selectedTicketId} isDark={isDark} />
@@ -852,7 +887,7 @@ interface TicketClassificationMeta {
                     <div className="flex flex-wrap items-center gap-2 px-1">
                       <span className="inline-block h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
                       <h3 className={`text-xs font-bold uppercase tracking-[0.2em] ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
-                        M2 — Agent Draft Resolution & Review
+                        Resolution Draft & Review
                       </h3>
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${isDark ? 'bg-indigo-950/60 text-indigo-300 border-indigo-800' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
                         Independent Agent Draft Capability
@@ -1837,40 +1872,130 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
 }
 
 function ReportsPage({ isDark }: { isDark: boolean }) {
-  const bars = [65, 40, 80, 55, 90, 45, 70];
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const [tickets, setTickets] = useState<ApiTicket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const loadReport = useCallback(async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const overview = await getManagerOverview();
+      setTickets(overview.all_tickets);
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, 'Unable to load ticket reports.'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  useEffect(() => { void loadReport(); }, [loadReport]);
+
+  const now = new Date();
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+  const weekTickets = tickets.filter((ticket) => {
+    const createdAt = new Date(ticket.created_at);
+    return !Number.isNaN(createdAt.getTime()) && createdAt >= weekStart && createdAt <= now;
+  });
+  const dailyCounts = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + index);
+    const count = weekTickets.filter((ticket) => {
+      const createdAt = new Date(ticket.created_at);
+      return createdAt.getFullYear() === date.getFullYear() && createdAt.getMonth() === date.getMonth() && createdAt.getDate() === date.getDate();
+    }).length;
+    return { label: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date), count };
+  });
+  const maxDailyCount = Math.max(1, ...dailyCounts.map(({ count }) => count));
+  const priorities = [
+    { label: 'P1 · Critical', color: 'bg-red-500', count: tickets.filter((ticket) => ticket.priority === 'P1').length },
+    { label: 'P2 · High', color: 'bg-amber-500', count: tickets.filter((ticket) => ticket.priority === 'P2').length },
+    { label: 'P3 · Medium', color: 'bg-blue-500', count: tickets.filter((ticket) => ticket.priority === 'P3').length },
+    { label: 'P4 · Low', color: 'bg-slate-500', count: tickets.filter((ticket) => ticket.priority === 'P4').length },
+    { label: 'Unclassified', color: 'bg-gray-400', count: tickets.filter((ticket) => !ticket.priority).length },
+  ];
+  const statuses = ['Open', 'In Progress', 'Resolved', 'Closed'].map((status) => ({
+    label: status,
+    count: tickets.filter((ticket) => ticket.status === status).length,
+  }));
+  const categoryCounts = tickets.reduce<Record<string, number>>((counts, ticket) => {
+    const category = ticket.category?.trim() || 'Unclassified';
+    counts[category] = (counts[category] ?? 0) + 1;
+    return counts;
+  }, {});
+  const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const cardClass = `rounded-2xl border p-5 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`;
+  const headingClass = `text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-700'}`;
+  const quietClass = isDark ? 'text-gray-400' : 'text-gray-500';
+
   return (
     <div className="space-y-6">
-      <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Reports</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className={`p-6 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Tickets This Week</h3>
-          <div className="flex items-end gap-3 h-36">
-            {bars.map((h, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full bg-blue-500 rounded-t-lg" style={{ height: `${h}%` }} />
-                <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{days[i]}</span>
-              </div>
-            ))}
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Reports</h2>
+          <p className={`mt-1 text-sm ${quietClass}`}>Live ticket summary from the support queue.</p>
         </div>
-        <div className={`p-6 rounded-2xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Tickets by Priority</h3>
-          <div className="space-y-3">
-            {[['High', 38, 'bg-red-500'], ['Medium', 44, 'bg-amber-500'], ['Low', 18, 'bg-green-500']].map(([label, pct, color]) => (
-              <div key={label as string}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{label}</span>
-                  <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>{pct}%</span>
-                </div>
-                <div className={`h-2 rounded-full ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <div className={`h-2 rounded-full ${color}`} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <button type="button" onClick={() => void loadReport()} disabled={isLoading} className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium disabled:opacity-60 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+        </button>
       </div>
+
+      {error ? (
+        <div role="alert" className={`rounded-2xl border p-5 text-sm ${isDark ? 'border-red-900 bg-red-950/40 text-red-300' : 'border-red-200 bg-red-50 text-red-700'}`}>
+          <p>{error}</p><button type="button" onClick={() => void loadReport()} className="mt-3 font-semibold underline">Try again</button>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            {[
+              { label: 'All tickets', value: tickets.length },
+              { label: 'Created in last 7 days', value: weekTickets.length },
+              { label: 'Open work', value: statuses[0].count + statuses[1].count },
+              { label: 'Resolved / closed', value: statuses[2].count + statuses[3].count },
+            ].map((metric) => (
+              <div key={metric.label} className={cardClass}>
+                <p className={`text-xs font-medium ${quietClass}`}>{metric.label}</p>
+                <p className={`mt-2 text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{isLoading ? '…' : metric.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+            <section className={cardClass}>
+              <h3 className={`${headingClass} mb-1`}>Tickets created · last 7 days</h3>
+              <p className={`mb-5 text-xs ${quietClass}`}>Daily totals based on ticket creation date.</p>
+              <div className="flex h-40 items-end gap-2 sm:gap-4" aria-label="Ticket counts for the last seven days">
+                {dailyCounts.map(({ label, count }, index) => (
+                  <div key={`${label}-${index}`} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
+                    <span className={`text-xs ${quietClass}`}>{isLoading ? '…' : count}</span>
+                    <div className="flex h-28 w-full items-end"><div className="w-full rounded-t-md bg-blue-500" style={{ height: `${count ? Math.max(8, count / maxDailyCount * 100) : 2}%` }} /></div>
+                    <span className={`text-xs ${quietClass}`}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <section className={cardClass}>
+              <h3 className={`${headingClass} mb-4`}>Tickets by priority</h3>
+              <div className="space-y-3">
+                {priorities.map(({ label, color, count }) => (
+                  <div key={label}>
+                    <div className="mb-1 flex justify-between gap-3 text-xs"><span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{label}</span><span className={quietClass}>{count}</span></div>
+                    <div className={`h-2 rounded-full ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}><div className={`h-2 rounded-full ${color}`} style={{ width: `${tickets.length ? count / tickets.length * 100 : 0}%` }} /></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <section className={cardClass}>
+              <h3 className={`${headingClass} mb-4`}>Tickets by status</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {statuses.map(({ label, count }) => <div key={label} className={`rounded-xl p-3 ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}><p className={`text-xs ${quietClass}`}>{label}</p><p className={`mt-1 text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{isLoading ? '…' : count}</p></div>)}
+              </div>
+            </section>
+            <section className={cardClass}>
+              <h3 className={`${headingClass} mb-4`}>Ticket categories</h3>
+              {topCategories.length ? <ul className="space-y-2">{topCategories.map(([category, count]) => <li key={category} className={`flex items-center justify-between gap-3 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}><span className="truncate">{formatCategoryLabel(category)}</span><span className={`shrink-0 ${quietClass}`}>{count}</span></li>)}</ul> : <p className={`text-sm ${quietClass}`}>{isLoading ? 'Loading ticket data…' : 'No ticket categories to report yet.'}</p>}
+            </section>
+          </div>
+          <p className={`text-xs ${quietClass}`}>Data comes from ticket records available to the manager and administrator overview API. Tickets without a priority or category are counted as unclassified.</p>
+        </>
+      )}
     </div>
   );
 }
@@ -1903,10 +2028,48 @@ function formatAccountDate(value: string | null) {
   }).format(date);
 }
 
+function SpecialtyPicker({
+  categories,
+  value,
+  onChange,
+  disabled = false,
+  isDark,
+  compact = false,
+}: {
+  categories: string[];
+  value: string[];
+  onChange: (specialties: string[]) => void;
+  disabled?: boolean;
+  isDark: boolean;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`mt-1 grid w-full min-w-0 grid-cols-2 gap-1.5 overflow-y-auto rounded-lg border p-2 ${compact ? 'max-h-28' : 'max-h-40'} ${isDark ? 'border-gray-700 bg-gray-800/70' : 'border-gray-200 bg-gray-50'}`}>
+      {categories.map((category) => {
+        const checked = value.includes(category);
+        return (
+          <label key={category} className={`flex min-w-0 cursor-pointer items-start gap-2 break-words rounded px-1.5 py-1 text-xs ${disabled ? 'cursor-wait opacity-50' : ''} ${isDark ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+            <input
+              type="checkbox"
+              checked={checked}
+              disabled={disabled}
+              onChange={() => onChange(checked ? value.filter((item) => item !== category) : [...value, category])}
+              aria-label={`${checked ? 'Remove' : 'Add'} ${category} specialty`}
+            />
+            {formatCategoryLabel(category)}
+          </label>
+        );
+      })}
+      {!categories.length && <span className="col-span-2 text-xs opacity-70">Loading ticket categories…</span>}
+    </div>
+  );
+}
+
 function UsersPage({ isDark }: { isDark: boolean }) {
   const { can, user: currentUser } = useAuth();
   const [users, setUsers] = useState<ManagedUser[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -1923,6 +2086,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
     password: '',
     confirmPassword: '',
     role: '',
+    specialties: [] as string[],
   });
 
   const loadUsers = useCallback(async () => {
@@ -1932,6 +2096,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
       const directory = await getManagedUsers();
       setUsers(directory.users);
       setRoles(directory.roles);
+      setCategories(directory.categories);
       setNewAccount((account) => (
         directory.roles.includes(account.role)
           ? account
@@ -1985,6 +2150,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
         mobile: newAccount.mobile,
         password: newAccount.password,
         role: newAccount.role,
+        specialties: newAccount.role === 'Agent' ? newAccount.specialties : [],
       });
       setNewAccount({
         username: '',
@@ -1993,6 +2159,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
         password: '',
         confirmPassword: '',
         role: roles[0] ?? '',
+        specialties: [],
       });
       setIsCreateOpen(false);
       await loadUsers();
@@ -2003,7 +2170,7 @@ function UsersPage({ isDark }: { isDark: boolean }) {
     }
   };
 
-  const updateAccount = async (account: ManagedUser, updates: { role?: string; is_active?: boolean }) => {
+  const updateAccount = async (account: ManagedUser, updates: { role?: string; is_active?: boolean; specialties?: string[] }) => {
     setActionId(account.id);
     setActionError('');
     try {
@@ -2057,6 +2224,18 @@ function UsersPage({ isDark }: { isDark: boolean }) {
                 {roles.map((role) => <option key={role} value={role}>{role}</option>)}
               </select>
             </label>
+            {newAccount.role === 'Agent' && (
+              <fieldset className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                <legend>Agent specialties</legend>
+                <SpecialtyPicker
+                  categories={categories}
+                  value={newAccount.specialties}
+                  isDark={isDark}
+                  onChange={(specialties) => setNewAccount({ ...newAccount, specialties })}
+                />
+                <span className="mt-1 block text-xs opacity-70">Select every category this agent handles. Categories without an active specialist use escalation.</span>
+              </fieldset>
+            )}
             <label className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Password
               <input required type="password" minLength={8} value={newAccount.password} onChange={(event) => setNewAccount({ ...newAccount, password: event.target.value })} className={`mt-1.5 ${fieldClassName}`} autoComplete="new-password" />
             </label>
@@ -2094,59 +2273,56 @@ function UsersPage({ isDark }: { isDark: boolean }) {
           <button type="button" onClick={() => void loadUsers()} className="mt-3 font-semibold underline">Try again</button>
         </div>
       ) : (
-        <div className={`overflow-hidden rounded-2xl border ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[940px] text-sm">
-              <thead className={isDark ? 'bg-gray-800/80 text-gray-400' : 'bg-gray-50 text-gray-500'}>
-                <tr>
-                  {['Account', 'Role', 'Status', 'Created', 'Last activity', 'Actions'].map((heading) => (
-                    <th key={heading} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide">{heading}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className={`divide-y ${isDark ? 'divide-gray-800' : 'divide-gray-100'}`}>
-                {isLoading ? (
-                  <tr><td colSpan={6} className={`px-4 py-10 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Loading accounts…</td></tr>
-                ) : filteredUsers.length === 0 ? (
-                  <tr><td colSpan={6} className={`px-4 py-10 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No accounts match the current filters.</td></tr>
-                ) : filteredUsers.map((account) => {
-                  const isCurrentAccount = account.email === currentUser?.email;
-                  const availableRoles = roles.includes(account.role) ? roles : [account.role, ...roles];
-                  const isUpdating = actionId === account.id;
-                  return (
-                    <tr key={account.id} className={isDark ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'}>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-sm font-bold text-white">{account.username.charAt(0).toUpperCase()}</div>
-                          <div>
-                            <p className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{account.username}</p>
-                            <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{account.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <select value={account.role} onChange={(event) => void updateAccount(account, { role: event.target.value })} disabled={isCurrentAccount || Boolean(actionId)} className={`rounded-lg border px-2 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 bg-gray-800 text-gray-200' : 'border-gray-200 bg-white text-gray-700'}`} aria-label={`Change role for ${account.username}`}>
-                          {availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${account.is_active ? (isDark ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600')}`}>{account.is_active ? 'Active' : 'Inactive'}</span>
-                      </td>
-                      <td className={`px-4 py-3 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{formatAccountDate(account.created_at)}</td>
-                      <td className={`px-4 py-3 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{formatAccountDate(account.last_login_at)}</td>
-                      <td className="px-4 py-3">
-                        <button type="button" onClick={() => void updateAccount(account, { is_active: !account.is_active })} disabled={isCurrentAccount || Boolean(actionId)} className={`rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
-                          {isUpdating ? 'Updating…' : account.is_active ? 'Deactivate' : 'Activate'}
-                        </button>
-                        {isCurrentAccount && <p className={`mt-1 text-[11px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Your administrator account is protected.</p>}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {actionError && !isCreateOpen && <p role="alert" className="border-t border-red-200 px-4 py-3 text-sm text-red-500">{actionError}</p>}
+        <div className="space-y-3">
+          {isLoading ? (
+            <div className={`rounded-2xl border p-10 text-center text-sm ${isDark ? 'border-gray-800 bg-gray-900 text-gray-400' : 'border-gray-200 bg-white text-gray-500'}`}>Loading accounts…</div>
+          ) : filteredUsers.length === 0 ? (
+            <div className={`rounded-2xl border p-10 text-center text-sm ${isDark ? 'border-gray-800 bg-gray-900 text-gray-400' : 'border-gray-200 bg-white text-gray-500'}`}>No accounts match the current filters.</div>
+          ) : filteredUsers.map((account) => {
+            const isCurrentAccount = account.email === currentUser?.email;
+            const availableRoles = roles.includes(account.role) ? roles : [account.role, ...roles];
+            const isUpdating = actionId === account.id;
+            return (
+              <article key={account.id} className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+                <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-sm font-bold text-white">{account.username.charAt(0).toUpperCase()}</div>
+                    <div className="min-w-0">
+                      <p className={`break-words font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{account.username}</p>
+                      <p className={`break-all text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>{account.email}</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => void updateAccount(account, { is_active: !account.is_active })} disabled={isCurrentAccount || Boolean(actionId)} className={`shrink-0 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
+                    {isUpdating ? 'Updating…' : account.is_active ? 'Deactivate' : 'Activate'}
+                  </button>
+                </div>
+                <div className="mt-4 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label className={`min-w-0 text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Role
+                    <select value={account.role} onChange={(event) => void updateAccount(account, { role: event.target.value })} disabled={isCurrentAccount || Boolean(actionId)} className={`mt-1 block w-full min-w-0 rounded-lg border px-2 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60 ${isDark ? 'border-gray-700 bg-gray-800 text-gray-200' : 'border-gray-200 bg-white text-gray-700'}`} aria-label={`Change role for ${account.username}`}>
+                      {availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}
+                    </select>
+                  </label>
+                  <div className="flex flex-wrap items-end gap-x-5 gap-y-2">
+                    <div>
+                      <p className={`mb-1 text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${account.is_active ? (isDark ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600')}`}>{account.is_active ? 'Active' : 'Inactive'}</span>
+                    </div>
+                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}><span className="font-medium">Created</span><br />{formatAccountDate(account.created_at)}</div>
+                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}><span className="font-medium">Last activity</span><br />{formatAccountDate(account.last_login_at)}</div>
+                  </div>
+                  {account.role === 'Agent' && (
+                    <div className="min-w-0 sm:col-span-2">
+                      <p className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Specialties</p>
+                      <SpecialtyPicker categories={categories} value={account.specialties ?? []} disabled={Boolean(actionId)} compact isDark={isDark} onChange={(specialties) => void updateAccount(account, { specialties })} />
+                    </div>
+                  )}
+                </div>
+                {isCurrentAccount && <p className={`mt-3 text-[11px] ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Your administrator account is protected.</p>}
+              </article>
+            );
+          })}
+          {actionError && !isCreateOpen && <p role="alert" className="rounded-xl border border-red-200 px-4 py-3 text-sm text-red-500">{actionError}</p>}
         </div>
       )}
     </div>
@@ -2429,9 +2605,9 @@ function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpen
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
-  const loadData = async () => {
+  const loadData = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const [workloadData, queueData] = await Promise.all([
         getAgentsWorkload(),
         getAgentQueue(),
@@ -2439,13 +2615,17 @@ function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpen
       setAgents(workloadData);
       setTickets(queueData);
     } catch (err) {
-      console.error("Failed to load assignment data:", err);
+      console.warn("Failed to refresh assignment data:", err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    void loadData();
+    const refreshTimer = window.setInterval(() => void loadData(true), 5000);
+    return () => window.clearInterval(refreshTimer);
+  }, []);
 
   const handleAssign = async (ticketId: string, assigneeName?: string) => {
     const targetAssignee = assigneeName || selectedAgent[ticketId];
@@ -2472,8 +2652,8 @@ function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpen
       setMessage(`Ticket ${ticketId} auto-assigned to ${res?.ticket?.assignee || 'available agent'} based on minimum active workload.`);
       await loadData();
     } catch (err: unknown) {
-      const error = err as { message?: string };
-      setMessage(`Auto-assignment failed: ${error?.message || 'Error'}`);
+      const error = err as { message?: string; response?: { data?: { message?: string } } };
+      setMessage(`Auto-assignment failed: ${error?.response?.data?.message || error?.message || 'Error'}`);
     } finally {
       setAssigningId(null);
     }
@@ -2488,7 +2668,7 @@ function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpen
             Monitor active ticket load across support agents and distribute incoming queue workload efficiently.
           </p>
         </div>
-        <button onClick={loadData} className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-gray-800">
+        <button onClick={() => void loadData()} className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-gray-800">
           <RefreshCw className="w-4 h-4" /> Refresh Workload
         </button>
       </div>
@@ -2546,7 +2726,8 @@ function AgentAssignmentPage({ isDark, onOpenTicket }: { isDark: boolean; onOpen
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-xs text-slate-500">Primary Domain: <span className="font-semibold">{agent.primary_category}</span></p>
+                  <p className="text-xs text-slate-500">Configured specialties: <span className="font-semibold">{agent.specialties?.length ? agent.specialties.join(', ') : 'None configured'}</span></p>
+                  <p className="mt-1 text-xs text-slate-500">Most handled category: <span className="font-semibold">{agent.primary_category}</span></p>
                 </div>
               </div>
             );
@@ -2647,9 +2828,9 @@ function EscalationsPage({ isDark, onOpenTicket }: { isDark: boolean; onOpenTick
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEscalations = async () => {
+    const fetchEscalations = async (silent = false) => {
       try {
-        setLoading(true);
+        if (!silent) setLoading(true);
         const data = await getAgentQueue();
         const filtered = data.filter(t => 
           t.priority === 'P1' || 
@@ -2660,12 +2841,14 @@ function EscalationsPage({ isDark, onOpenTicket }: { isDark: boolean; onOpenTick
         );
         setEscalations(filtered);
       } catch (err) {
-        console.error("Failed to fetch escalations:", err);
+        console.warn("Failed to refresh escalations:", err);
       } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
       }
     };
-    fetchEscalations();
+    void fetchEscalations();
+    const refreshTimer = window.setInterval(() => void fetchEscalations(true), 5000);
+    return () => window.clearInterval(refreshTimer);
   }, []);
 
   return (
@@ -3473,6 +3656,7 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   const { user, signOut, can } = useAuth();
   const [activePage, setActivePage] = useState<NavPage>(initialPage ?? 'Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   
   const [aiChat, setAiChat] = useState<{ role: 'user' | 'ai'; text: string }[]>([
@@ -3487,10 +3671,14 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   const [homeError, setHomeError] = useState("");
 
 useEffect(() => {
-  const loadHomeData = async () => {
+  if (activePage !== 'Dashboard') return;
+
+  const loadHomeData = async (silent = false) => {
     try {
-      setLoadingHome(true);
-      setHomeError("");
+      if (!silent) {
+        setLoadingHome(true);
+        setHomeError("");
+      }
 
       const data = can('VIEW_AGENT_QUEUE')
         ? await getAgentQueue()
@@ -3499,6 +3687,10 @@ useEffect(() => {
       const sortedHome = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       setHomeTickets(sortedHome);
     } catch (err) {
+      if (silent) {
+        console.warn("Silent dashboard ticket refresh failed; the next refresh will retry:", err);
+        return;
+      }
       console.error(
         "Failed to load dashboard tickets:",
         err
@@ -3510,12 +3702,14 @@ useEffect(() => {
           : "Could not load your tickets."
       );
     } finally {
-      setLoadingHome(false);
+      if (!silent) setLoadingHome(false);
     }
   };
 
-  loadHomeData();
-}, [can]);
+  void loadHomeData();
+  const refreshTimer = window.setInterval(() => void loadHomeData(true), 5000);
+  return () => window.clearInterval(refreshTimer);
+}, [activePage, can]);
 
   // Dashboard owns this state, so persist every sidebar/page change here.
   useEffect(() => {
@@ -3708,7 +3902,7 @@ const openTopSearchTicket = (ticketId: string) => {
       {/* ── Sidebar ───────────────────────────────────────────────── */}
       <>
         {sidebarOpen && <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
-        <aside className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky top-0 z-40 h-screen w-64 shrink-0 flex flex-col transition-transform duration-300 ${isDark ? 'bg-gray-900 border-r border-gray-800' : 'bg-white border-r border-gray-200'}`}>
+        <aside className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 ${sidebarCollapsed ? 'lg:hidden' : ''} fixed lg:sticky top-0 z-40 h-screen w-64 shrink-0 flex flex-col transition-transform duration-300 ${isDark ? 'bg-gray-900 border-r border-gray-800' : 'bg-white border-r border-gray-200'}`}>
 
           {/* Logo */}
           <div className={`flex items-center gap-3 px-5 h-16 border-b shrink-0 ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
@@ -3843,6 +4037,16 @@ const openTopSearchTicket = (ticketId: string) => {
         <header className={`sticky top-0 z-20 h-16 flex items-center gap-3 px-4 sm:px-6 border-b shrink-0 ${isDark ? 'bg-gray-950/90 border-gray-800 backdrop-blur' : 'bg-white/90 border-gray-200 backdrop-blur'}`}>
           <button onClick={() => setSidebarOpen(true)} className={`lg:hidden p-2 rounded-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
             <Menu className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+            aria-label={sidebarCollapsed ? 'Show side navigation' : 'Hide side navigation'}
+            title={sidebarCollapsed ? 'Show side navigation' : 'Hide side navigation'}
+            aria-expanded={!sidebarCollapsed}
+            className={`hidden rounded-lg p-2 lg:inline-flex ${isDark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            <Menu className="h-5 w-5" />
           </button>
 
           <div>

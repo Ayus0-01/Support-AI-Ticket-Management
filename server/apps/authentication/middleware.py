@@ -11,6 +11,7 @@ class ActiveAccountMiddleware:
     public_auth_paths = {
         "/api/auth/login/",
         "/api/auth/register/",
+        "/api/auth/resend-verification/",
         "/api/auth/refresh/",
     }
 
@@ -40,6 +41,12 @@ class ActiveAccountMiddleware:
         if user and not user.get("is_active", True):
             return JsonResponse(
                 {"message": "This account is inactive. Contact an administrator."},
+                status=403,
+            )
+
+        if user and not user.get("email_verified", user.get("role") != "User"):
+            return JsonResponse(
+                {"message": "Verify your email address before using the application."},
                 status=403,
             )
 

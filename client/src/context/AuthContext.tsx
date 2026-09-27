@@ -117,116 +117,9 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   authLoading: true,
   can: () => false,
-
-  signIn: async (
-    username: string,
-    password: string
-): Promise<{ success: boolean; message?: string }> => {
-  try {
-    const response = await api.post("/api/auth/login/", {
-      username,
-      password,
-    });
-
-    const data = response.data;
-
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
-
-    const meResponse = await api.get("/api/auth/me/");
-    const meData = meResponse.data;
-
-    setUser({
-      name: meData.username,
-      username: meData.username,
-      email: meData.email,
-      mobile: meData.mobile,
-      role: meData.role,
-      avatar: meData.username.charAt(0).toUpperCase(),
-    });
-
-    return { success: true };
-  } catch (error: any) {
-    console.error("Login error:", error);
-
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.detail ||
-      "Invalid email or password.";
-
-    return {
-      success: false,
-      message,
-    };
-  }
-},
-
+  signIn: async () => ({ success: false, message: "Authentication provider is unavailable." }),
   signOut: () => {},
-
-  register: async (
-  username: string,
-  email: string,
-  password: string,
-  mobile: string
-): Promise<{ success: boolean; message?: string }> => {
-  try {
-    const response = await api.post("/api/auth/register/", {
-      username,
-      email,
-      password,
-      mobile,
-    });
-
-    const data = response.data;
-
-    // Save JWT tokens returned by registration
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
-
-    // Get newly registered user's information
-    const meResponse = await api.get("/api/auth/me/");
-    const meData = meResponse.data;
-
-    setUser({
-      name: meData.username,
-      username: meData.username,
-      email: meData.email,
-      mobile: meData.mobile,
-      role: meData.role,
-      avatar: meData.username.charAt(0).toUpperCase(),
-    });
-
-    return {
-      success: true,
-    };
-  } catch (error: any) {
-    console.error("Registration error:", error);
-
-    const data = error?.response?.data;
-
-    let message = "Registration failed. Please try again.";
-
-    if (typeof data?.message === "string") {
-      message = data.message;
-    } else if (typeof data?.detail === "string") {
-      message = data.detail;
-    } else if (data && typeof data === "object") {
-      const firstError = Object.values(data)[0];
-
-      if (Array.isArray(firstError)) {
-        message = String(firstError[0]);
-      } else if (typeof firstError === "string") {
-        message = firstError;
-      }
-    }
-
-    return {
-      success: false,
-      message,
-    };
-  }
-},
-  
+  register: async () => ({ success: false, message: "Authentication provider is unavailable." }),
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -330,26 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mobile,
       });
 
-      const data = response.data;
-
-      // Save the JWT tokens returned by registration
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-
-      // Get the newly registered user's information
-      const meResponse = await api.get("/api/auth/me/");
-      const meData = meResponse.data;
-
-      setUser({
-        name: meData.username,
-        username: meData.username,
-        email: meData.email,
-        mobile: meData.mobile,
-        role: meData.role,
-        avatar: meData.username.charAt(0).toUpperCase(),
-      });
-
-      return { success: true };
+      return { success: true, message: response.data?.message };
     } catch (error: any) {
       console.error("REGISTER ERROR:", error);
       let message = "Registration failed.";

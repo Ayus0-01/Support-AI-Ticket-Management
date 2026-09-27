@@ -28,7 +28,7 @@ def _call_llm(prompt: str, timeout: int = REQUEST_TIMEOUT) -> Optional[str]:
         "keep_alive": "10m",
         "options": {
             "temperature": 0.1,
-            "num_predict": 384,
+            "num_predict": 320,
         },
     }).encode("utf-8")
 

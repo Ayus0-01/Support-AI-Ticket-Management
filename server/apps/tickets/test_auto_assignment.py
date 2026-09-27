@@ -7,6 +7,28 @@ from apps.tickets import services
 
 
 class AutoAssignmentWorkloadTests(SimpleTestCase):
+    def test_vpn_and_network_assign_only_to_matching_specialists(self):
+        agents = [
+            {"username": "vpn-agent", "is_active": True, "active_tickets_count": 1, "specialties": ["VPN"]},
+            {"username": "network-agent", "is_active": True, "active_tickets_count": 0, "specialties": ["NETWORK"]},
+        ]
+        with patch.object(services, "get_agents_workload", return_value=agents), patch.object(
+            services.tickets_collection, "find_one", return_value={"ticket_id": "T-VPN", "category": "VPN"}
+        ), patch.object(
+            services.tickets_collection, "find", return_value=[]
+        ), patch.object(
+            services, "assign_ticket", side_effect=lambda tid, uname, actor: {"ticket_id": tid, "assignee": uname}
+        ) as assign:
+            assigned = services.auto_assign_ticket("T-VPN")
+        self.assertEqual(assigned["assignee"], "vpn-agent")
+        assign.assert_called_once_with("T-VPN", "vpn-agent", None)
+
+        with patch.object(services, "get_agents_workload", return_value=agents), patch.object(
+            services.tickets_collection, "find_one", return_value={"ticket_id": "T-OTHER", "category": "PRINTER"}
+        ), patch.object(services, "assign_ticket") as assign:
+            self.assertIsNone(services.auto_assign_ticket("T-OTHER"))
+            assign.assert_not_called()
+
     def test_auto_assigns_to_agent_with_lowest_workload(self):
         """
         Verify that new customer tickets are assigned to the active agent with the lowest workload.
@@ -30,6 +52,8 @@ class AutoAssignmentWorkloadTests(SimpleTestCase):
 
         with patch.object(services.users_collection, "find", return_value=agents), patch.object(
             services.tickets_collection, "find", return_value=tickets
+        ), patch.object(
+            services.tickets_collection, "find_one", return_value={}
         ), patch.object(services, "assign_ticket", side_effect=lambda tid, uname, actor: {"ticket_id": tid, "assignee": uname}):
             workload = services.get_agents_workload()
             workload_dict = {w["username"]: w["active_tickets_count"] for w in workload}
@@ -62,6 +86,8 @@ class AutoAssignmentWorkloadTests(SimpleTestCase):
 
         with patch.object(services.users_collection, "find", return_value=agents), patch.object(
             services.tickets_collection, "find", return_value=tickets
+        ), patch.object(
+            services.tickets_collection, "find_one", return_value={}
         ), patch.object(services, "assign_ticket", side_effect=lambda tid, uname, actor: {"ticket_id": tid, "assignee": uname}):
             workload = services.get_agents_workload()
             workload_dict = {w["username"]: w["active_tickets_count"] for w in workload}
@@ -83,6 +109,8 @@ class AutoAssignmentWorkloadTests(SimpleTestCase):
 
         with patch.object(services.users_collection, "find", return_value=agents), patch.object(
             services.tickets_collection, "find", return_value=tickets
+        ), patch.object(
+            services.tickets_collection, "find_one", return_value={}
         ), patch.object(services, "assign_ticket", side_effect=lambda tid, uname, actor: {"ticket_id": tid, "assignee": uname}):
             assigned = services.auto_assign_ticket("TKT-NEW-003")
             self.assertEqual(assigned["assignee"], "active_agent")
@@ -116,6 +144,8 @@ class AutoAssignmentWorkloadTests(SimpleTestCase):
 
         with patch.object(services.users_collection, "find", return_value=agents), patch.object(
             services.tickets_collection, "find", return_value=tickets
+        ), patch.object(
+            services.tickets_collection, "find_one", return_value={}
         ), patch.object(services, "assign_ticket", side_effect=lambda tid, uname, actor: {"ticket_id": tid, "assignee": uname}):
             assigned = services.auto_assign_ticket("TKT-NEW-005")
             self.assertIsNotNone(assigned)

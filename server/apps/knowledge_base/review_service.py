@@ -7,6 +7,7 @@ from apps.agents.email_service import (
     send_not_solved_email,
     send_resolved_email,
 )
+from apps.agents.orchestrator import log_activity
 
 logger = logging.getLogger(__name__)
 

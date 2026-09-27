@@ -103,7 +103,7 @@ def update_jira_ticket_view(request, ticket_id):
 
     result = update_jira_issue(
         ticket_id=ticket_id,
-        update_data=data,
+        fields=data,
     )
 
     return Response(

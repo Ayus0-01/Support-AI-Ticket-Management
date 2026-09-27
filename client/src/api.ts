@@ -17,6 +17,7 @@ api.interceptors.request.use((config) => {
   const publicEndpoints = [
     "/api/auth/login/",
     "/api/auth/register/",
+    "/api/auth/resend-verification/",
   ];
   
 

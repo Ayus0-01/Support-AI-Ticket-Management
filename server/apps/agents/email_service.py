@@ -6,6 +6,7 @@ EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS, EMA
 Does NOT fabricate credentials or mock successful email delivery when email is unconfigured.
 """
 import logging
+import re
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 
@@ -331,7 +332,11 @@ def build_resolution_email_content(
     ticket_id = ticket.get("ticket_id") or ticket.get("ticket_number") or "N/A"
     subject_line = ticket.get("subject", "N/A")
 
-    summary = response.get("summary", "N/A") if isinstance(response, dict) else "N/A"
+    def customer_text(value: Any) -> str:
+        text = value if isinstance(value, str) else str(value or "")
+        return re.sub(r"\s*\[SOURCE:[^\]]+\]", "", text, flags=re.IGNORECASE).strip()
+
+    summary = customer_text(response.get("summary", "N/A")) if isinstance(response, dict) else "N/A"
     steps = response.get("steps", []) if isinstance(response, dict) and isinstance(response.get("steps"), list) else []
 
     email_subject = f"[Resolution Provided] Ticket #{ticket_id}: {subject_line}"
@@ -340,7 +345,7 @@ def build_resolution_email_content(
     steps_html_list = []
     for step in steps:
         order = step.get("order", "") if isinstance(step, dict) else ""
-        instruction = step.get("instruction", "") if isinstance(step, dict) else str(step)
+        instruction = customer_text(step.get("instruction", "")) if isinstance(step, dict) else customer_text(step)
         prefix = f"{order}. " if order else "- "
         steps_text_list.append(f"{prefix}{instruction}")
         steps_html_list.append(f"<li>{instruction}</li>")
@@ -806,6 +811,7 @@ def build_ticket_created_email_content(
 
     description = ticket.get("description", "N/A")
     category = ticket.get("category", "N/A")
+    severity = ticket.get("severity", "N/A")
     priority = ticket.get("priority", "N/A")
 
     if isinstance(priority, dict):
@@ -820,6 +826,7 @@ def build_ticket_created_email_content(
         f"Ticket ID: {ticket_id}\n"
         f"Subject: {subject_line}\n"
         f"Category: {category}\n"
+        f"Severity: {severity}\n"
         f"Priority: {priority}\n"
         f"Status: {status_value}\n\n"
         "DESCRIPTION:\n"
@@ -846,6 +853,11 @@ def build_ticket_created_email_content(
           <tr>
             <td style="padding: 6px; font-weight: bold;">Category:</td>
             <td style="padding: 6px;">{category}</td>
+          </tr>
+
+          <tr>
+            <td style="padding: 6px; font-weight: bold;">Severity:</td>
+            <td style="padding: 6px;">{severity}</td>
           </tr>
 
           <tr>

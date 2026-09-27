@@ -116,6 +116,9 @@ def execute_m3_workflow_view(request, ticket_id: Optional[str] = None):
         workflow_result = execute_orchestration_pipeline(
             ticket_id=target_ticket_id,
             ticket_data=ticket,
+            # Confidence is diagnostic only; the validation agent still checks
+            # that the resolution is grounded and has no blocking limitations.
+            confidence_threshold=0.0,
         )
         return Response(
             _sanitize_object_ids({

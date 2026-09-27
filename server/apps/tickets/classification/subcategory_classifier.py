@@ -27,6 +27,9 @@ CATEGORY_SUBCATEGORIES = {
     "VPN": {"Certificate", "Client install", "Connection failure", "Timeout"},
 }
 
+# Categories supported by the trained classifier, including its fallback label.
+AGENT_SPECIALTY_CATEGORIES = tuple(sorted({*CATEGORY_SUBCATEGORIES, "UNCLASSIFIED"}))
+
 _model = lgb.Booster(
     model_file=str(MODEL_PATH)
 )

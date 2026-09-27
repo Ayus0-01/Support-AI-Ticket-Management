@@ -28,6 +28,10 @@ def _call_llm(prompt: str, timeout: int = REQUEST_TIMEOUT) -> Optional[str]:
         "stream": False,
         "think": False,
         "format": "json",
+        "keep_alive": "10m",
+        "options": {
+            "num_predict": 192,
+        },
     }).encode("utf-8")
 
 

@@ -13,6 +13,7 @@ tickets = [
         "sla_due_at": (
             now + timedelta(hours=20)
         ).isoformat(),
+        "created_at": (now - timedelta(hours=3)).isoformat(),
     },
     {
         "ticket_number": "IT-001",
@@ -20,6 +21,7 @@ tickets = [
         "sla_due_at": (
             now + timedelta(minutes=10)
         ).isoformat(),
+        "created_at": now.isoformat(),
     },
     {
         "ticket_number": "IT-003",
@@ -27,6 +29,7 @@ tickets = [
         "sla_due_at": (
             now + timedelta(hours=4)
         ).isoformat(),
+        "created_at": (now - timedelta(hours=2)).isoformat(),
     },
     {
         "ticket_number": "IT-002",
@@ -34,6 +37,7 @@ tickets = [
         "sla_due_at": (
             now + timedelta(hours=1)
         ).isoformat(),
+        "created_at": (now - timedelta(hours=1)).isoformat(),
     },
 ]
 

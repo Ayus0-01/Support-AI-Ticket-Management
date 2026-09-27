@@ -75,7 +75,7 @@ class AdminUserManagementViewTests(SimpleTestCase):
         safe_user = response.data["users"][0]
         self.assertEqual(
             set(safe_user),
-            {"id", "username", "email", "role", "is_active", "created_at", "last_login_at"},
+            {"id", "username", "email", "role", "specialties", "is_active", "created_at", "last_login_at"},
         )
         self.assertNotIn("password", safe_user)
         self.assertNotIn("refresh", safe_user)
@@ -126,6 +126,31 @@ class AdminUserManagementViewTests(SimpleTestCase):
                     stored_user = collection.insert_one.call_args.args[0]
                     self.assertEqual(stored_user["role"], role)
                     self.assertTrue(stored_user["is_active"])
+
+    def test_admin_can_create_application_specialist(self):
+        collection = MagicMock()
+        collection.find_one.side_effect = [self.admin, None]
+        collection.insert_one.return_value = SimpleNamespace(inserted_id=ObjectId())
+        request = self._admin_request(
+            "post",
+            "/api/auth/admin/users/",
+            {
+                "username": "application-agent",
+                "email": "application-agent@example.com",
+                "password": test_password(),
+                "role": "Agent",
+                "specialties": ["APPLICATION"],
+            },
+        )
+
+        with self._authenticated_context(collection), patch.object(
+            services, "make_password", return_value="stored-hash"
+        ):
+            response = views.admin_users(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["user"]["specialties"], ["APPLICATION"])
+        self.assertEqual(collection.insert_one.call_args.args[0]["specialties"], ["APPLICATION"])
 
     def test_non_admin_cannot_create_an_elevated_account(self):
         collection = MagicMock()

@@ -52,6 +52,8 @@ export type M3WorkflowData = {
   workflow_status: "IN_PROGRESS" | "COMPLETED" | "ESCALATED" | string;
   current_agent?: string;
   final_confidence?: number;
+  stage_timings_ms?: Record<string, number>;
+  workflow_duration_ms?: number;
   diagnosis?: M3WorkflowDiagnosis | null;
   retrieved_evidence?: M3WorkflowEvidence[];
   resolution?: M3WorkflowResolution | null;

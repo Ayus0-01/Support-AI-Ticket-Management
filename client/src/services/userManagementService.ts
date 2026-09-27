@@ -5,6 +5,7 @@ export interface ManagedUser {
   username: string;
   email: string;
   role: string;
+  specialties?: string[];
   is_active: boolean;
   created_at: string | null;
   last_login_at: string | null;
@@ -13,6 +14,7 @@ export interface ManagedUser {
 export interface ManagedUserDirectory {
   users: ManagedUser[];
   roles: string[];
+  categories: string[];
 }
 
 export interface CreateManagedUserInput {
@@ -21,23 +23,26 @@ export interface CreateManagedUserInput {
   mobile?: string;
   password: string;
   role: string;
+  specialties?: string[];
 }
 
 export interface UpdateManagedUserInput {
   role?: string;
   is_active?: boolean;
+  specialties?: string[];
 }
 
 function validateDirectory(data: unknown): ManagedUserDirectory {
   const directory = data as Partial<ManagedUserDirectory>;
 
-  if (!Array.isArray(directory.users) || !Array.isArray(directory.roles)) {
+  if (!Array.isArray(directory.users) || !Array.isArray(directory.roles) || !Array.isArray(directory.categories)) {
     throw new Error('The user directory response was invalid.');
   }
 
   return {
     users: directory.users,
     roles: directory.roles,
+    categories: directory.categories,
   };
 }
 

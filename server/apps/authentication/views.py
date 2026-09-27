@@ -1,5 +1,7 @@
 from bson import ObjectId
-from rest_framework import status
+from decouple import config
+from django.core.mail import send_mail
+from rest_framework import serializers, status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -18,15 +20,19 @@ from .serializers import (
 from .services import (
     create_managed_user,
     login_service,
+    issue_email_verification,
     register_service,
     update_managed_user,
+    verify_email as verify_email_service,
 )
+from apps.tickets.classification.subcategory_classifier import AGENT_SPECIALTY_CATEGORIES
 
 
 SAFE_USER_PROJECTION = {
     "username": 1,
     "email": 1,
     "role": 1,
+    "specialties": 1,
     "is_active": 1,
     "created_at": 1,
     "last_login_at": 1,
@@ -41,6 +47,7 @@ def _normalise_managed_user(user):
         "username": user.get("username", ""),
         "email": user.get("email", ""),
         "role": user.get("role") or "User",
+        "specialties": user.get("specialties", []),
         "is_active": user.get("is_active", True),
         "created_at": user.get("created_at"),
         "last_login_at": user.get("last_login_at"),
@@ -111,11 +118,32 @@ def register(request):
     result = register_service(serializer.validated_data)
 
     if result["success"]:
+        verification_url = (
+            f"{config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')}/"
+            f"?verify_email={result['verification_token']}"
+        )
+        try:
+            send_mail(
+                subject="Verify your Support AI account",
+                message=(
+                    "Verify ownership of this email address to activate your account. "
+                    f"This link expires in 24 hours: {verification_url}"
+                ),
+                from_email=None,
+                recipient_list=[result["user"]["email"]],
+                fail_silently=False,
+            )
+        except Exception:
+            # Do not leave a customer thinking an inaccessible account was
+            # created. A retry can register normally if SMTP is restored.
+            users_collection.delete_one({"_id": result["user"]["_id"]})
+            return Response(
+                {"message": "We could not send the verification email. Please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         return Response(
             {
                 "message": result["message"],
-                "access": result["access"],
-                "refresh": result["refresh"],
             },
             status=status.HTTP_201_CREATED,
         )
@@ -123,6 +151,60 @@ def register(request):
     return Response(
         {"message": result["message"]},
         status=status.HTTP_400_BAD_REQUEST,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def verify_email(request):
+    token = request.data.get("token")
+    if not isinstance(token, str) or not token:
+        return Response({"message": "Verification token is required."}, status=status.HTTP_400_BAD_REQUEST)
+    result = verify_email_service(token)
+    return Response(
+        {"message": result["message"]},
+        status=status.HTTP_200_OK if result["success"] else status.HTTP_400_BAD_REQUEST,
+    )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def resend_verification_email(request):
+    email_serializer = serializers.EmailField()
+    try:
+        email = email_serializer.run_validation(request.data.get("email", "")).strip()
+    except serializers.ValidationError as error:
+        return Response({"message": error.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+    token = issue_email_verification(email)
+    if token:
+        verification_url = (
+            f"{config('FRONTEND_URL', default='http://localhost:5173').rstrip('/')}/"
+            f"?verify_email={token}"
+        )
+        try:
+            send_mail(
+                subject="Verify your Support AI account",
+                message=(
+                    "Verify ownership of this email address to activate your account. "
+                    f"This link expires in 24 hours: {verification_url}"
+                ),
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception:
+            return Response(
+                {"message": "We could not send the verification email. Please try again later."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+    # Keep this response identical for unknown, already-verified, and ineligible accounts.
+    return Response(
+        {"message": "If that address has an unverified customer account, a fresh verification link has been sent."},
+        status=status.HTTP_200_OK,
     )
 
 
@@ -204,6 +286,7 @@ def admin_users(request):
             {
                 "users": ManagedUserSerializer(users, many=True).data,
                 "roles": USER_ROLES,
+                "categories": list(AGENT_SPECIALTY_CATEGORIES),
             },
             status=status.HTTP_200_OK,
         )

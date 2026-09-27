@@ -314,6 +314,7 @@ export type AgentWorkload = {
   active_tickets_count: number;
   resolved_tickets_count: number;
   primary_category: string;
+  specialties?: string[];
   active_tickets: Array<{
     ticket_id: string;
     subject: string;
@@ -374,4 +375,3 @@ export const getAgentsWorkload = async (): Promise<AgentWorkload[]> => {
   const response = await api.get("/api/tickets/manager/workload/");
   return response.data?.workload || [];
 };
-

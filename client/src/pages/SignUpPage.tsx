@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import api from '@/api';
 
 interface SignUpPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, email?: string) => void;
 }
 
 export default function SignUpPage({ onNavigate }: SignUpPageProps) {
@@ -17,6 +18,26 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const canResendVerification = error.toLowerCase().includes('email already exists');
+
+  const handleResendVerification = async () => {
+    if (!email.trim()) {
+      setError('Enter the email address you used for the account first.');
+      return;
+    }
+
+    setResending(true);
+    setError('');
+    try {
+      await api.post('/api/auth/resend-verification/', { email: email.trim() });
+      onNavigate('verify-pending', email.trim());
+    } catch (requestError: any) {
+      setError(requestError.response?.data?.message || 'Unable to request a verification email. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +65,7 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
     setLoading(false);
 
     if (res.success) {
-      onNavigate('dashboard:My Tickets');
+      onNavigate('verify-pending', email);
     } else {
       setError(
         res.message || 'Registration failed. Please try again.'
@@ -244,7 +265,17 @@ export default function SignUpPage({ onNavigate }: SignUpPageProps) {
           {/* Error */}
           {error && (
             <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-              {error}
+              <p>{error}</p>
+              {canResendVerification && (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resending || !email.trim()}
+                  className="mt-2 font-semibold underline disabled:opacity-60"
+                >
+                  {resending ? 'Sending verification link…' : 'Already registered? Resend verification email'}
+                </button>
+              )}
             </div>
           )}
 

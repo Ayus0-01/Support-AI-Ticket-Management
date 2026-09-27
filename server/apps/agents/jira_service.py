@@ -552,6 +552,29 @@ def create_jira_issue(
         "",
     )
 
+    # M3 can be retried from the manager UI after a timeout or review. Reuse
+    # the existing ticket mapping so a retry cannot create duplicate Jira
+    # issues for a ticket that has already been escalated.
+    if ticket_id:
+        mapped_ticket = tickets_collection.find_one(
+            {"ticket_id": ticket_id},
+            {"jira": 1},
+        )
+        jira_mapping = (mapped_ticket or {}).get("jira") or {}
+        existing_issue_key = jira_mapping.get("jira_issue_key") if isinstance(jira_mapping, dict) else None
+        if existing_issue_key:
+            return {
+                "status": "SUCCESS",
+                "created": False,
+                "already_linked": True,
+                "jira_issue_key": existing_issue_key,
+                "jira_issue_id": jira_mapping.get("jira_issue_id"),
+                "jira_issue_url": f"{cfg['url']}/browse/{existing_issue_key}",
+                "ticket_id": ticket_id,
+                "jira_status": jira_mapping.get("jira_status", "Unknown"),
+                "reason": "Existing Jira issue mapping reused; no duplicate issue was created.",
+            }
+
     subject = ticket.get(
         "subject",
         "IT Ticket Escalation",

@@ -28,12 +28,18 @@ class EscalationAgent(BaseAgent):
         validation = input_data.get("validation") or {}
 
         # Extract read-only M1 ticket fields safely
-        ticket_id = str(ticket.get("ticket_id", "")).strip()
-        subject = (ticket.get("subject") or "").strip()
-        category = (ticket.get("category") or "").strip()
-        subcategory = (ticket.get("subcategory") or "").strip()
-        severity = (ticket.get("severity") or "").strip()
-        priority = (ticket.get("priority") or "").strip()
+        def ticket_text(value):
+            # Classification priority may be stored as {value, reason}.
+            if isinstance(value, dict):
+                value = value.get("value", "")
+            return str(value or "").strip()
+
+        ticket_id = ticket_text(ticket.get("ticket_id", ""))
+        subject = ticket_text(ticket.get("subject"))
+        category = ticket_text(ticket.get("category"))
+        subcategory = ticket_text(ticket.get("subcategory"))
+        severity = ticket_text(ticket.get("severity"))
+        priority = ticket_text(ticket.get("priority"))
 
         # Extract validation reasons & limitations
         val_reasons = validation.get("reasons") or input_data.get("validation_reasons") or []
@@ -74,4 +80,3 @@ class EscalationAgent(BaseAgent):
                 "recommended_action": recommended_action,
             }
         }
-

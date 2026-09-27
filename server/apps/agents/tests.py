@@ -433,6 +433,7 @@ class MultiAgentPipelineTests(SimpleTestCase):
         }
 
         mock_ticket = {
+            "_id": ObjectId(),
             "ticket_id": "TCK-2002",
             "subject": "VPN Disconnecting",
             "description": "VPN drops every 5 mins",
@@ -459,7 +460,9 @@ class MultiAgentPipelineTests(SimpleTestCase):
         result = execute_orchestration_pipeline(
             ticket_id="TCK-2002",
             ticket_data=mock_ticket,
-            confidence_threshold=0.70
+            # Legacy threshold argument must no longer prevent an otherwise
+            # validated response from reaching the customer.
+            confidence_threshold=2.0
         )
 
         self.assertIsNotNone(result)
@@ -726,7 +729,7 @@ class ResolutionAgentTests(SimpleTestCase):
 
 class ValidationAgentTests(SimpleTestCase):
     """
-    Focused unit tests for M3 Validation Agent / Confidence Gate.
+    Focused unit tests for M3 grounding and response validation.
     """
 
     def test_1_valid_grounded_resolution_passes_validation(self):
@@ -842,7 +845,7 @@ class ValidationAgentTests(SimpleTestCase):
         val = output["validation"]
         self.assertEqual(val["groundedness_ratio"], 0.0)
 
-    def test_7_low_invalid_confidence_handled_correctly(self):
+    def test_7_confidence_score_does_not_block_otherwise_valid_response(self):
         agent = ValidationAgent()
         input_data = {
             "confidence_threshold": 0.95,  # High threshold
@@ -860,7 +863,7 @@ class ValidationAgentTests(SimpleTestCase):
 
         output = agent.run(input_data)
         val = output["validation"]
-        self.assertFalse(val["is_valid"])
+        self.assertTrue(val["is_valid"])
         self.assertLess(val["confidence_score"], 0.95)
 
     def test_8_missing_information_limitations_prevent_auto_resolution(self):
@@ -972,6 +975,26 @@ class EscalationAgentTests(SimpleTestCase):
         self.assertEqual(esc["priority_context"], "P1")
         self.assertEqual(ticket_copy["severity"], ticket_data["severity"])
 
+    def test_priority_object_from_m1_does_not_break_escalation(self):
+        agent = EscalationAgent()
+        output = agent.run({
+            "ticket": {
+                "ticket_id": "IT-2026-000231",
+                "subject": "CRM business process failure",
+                "category": "APPLICATION",
+                "subcategory": "CRM",
+                "severity": "HIGH",
+                "priority": {
+                    "value": "P2",
+                    "reason": "High severity affecting a team is assigned P2.",
+                },
+            },
+            "validation": {"reasons": ["The AI response was degraded."]},
+        })
+
+        self.assertEqual(output["status"], "SUCCESS")
+        self.assertEqual(output["escalation"]["priority_context"], "P2")
+
     def test_3_no_invented_support_tier_or_assignment_produced(self):
         agent = EscalationAgent()
         output = agent.run({
@@ -1079,7 +1102,7 @@ class EscalationAgentTests(SimpleTestCase):
             "ticket_id": "TCK-7009",
             "results": [{"article_id": "KB-1", "chunk_index": 0, "article_title": "VPN Guide"}]
         }
-        mock_ticket = {"ticket_id": "TCK-7009", "subject": "VPN Disconnecting"}
+        mock_ticket = {"_id": ObjectId(), "ticket_id": "TCK-7009", "subject": "VPN Disconnecting"}
         mock_tickets.find_one.return_value = mock_ticket
 
         saved_workflow = {}
@@ -1201,6 +1224,45 @@ class JiraServiceTests(SimpleTestCase):
 
 
 class EmailServiceTests(SimpleTestCase):
+    def test_customer_resolution_email_omits_internal_kb_source_markers(self):
+        from apps.agents.email_service import build_resolution_email_content
+
+        content = build_resolution_email_content(
+            ticket={"ticket_id": "IT-2026-000231", "subject": "VPN connection failure"},
+            response={
+                "summary": "Restart the client. [SOURCE:KB-INTERNAL-44#3]",
+                "steps": [{
+                    "order": 1,
+                    "instruction": "Verify network connectivity. [SOURCE:KB-INTERNAL-44#3]",
+                    "sources": ["KB-INTERNAL-44"],
+                }],
+            },
+        )
+
+        for body in (content["text_body"], content["html_body"]):
+            self.assertIn("Verify network connectivity.", body)
+            self.assertNotIn("KB-INTERNAL-44", body)
+            self.assertNotIn("[SOURCE:", body)
+
+    def test_ticket_created_email_includes_classified_severity_and_priority(self):
+        from apps.agents.email_service import build_ticket_created_email_content
+
+        content = build_ticket_created_email_content({
+            "ticket_id": "IT-2026-000231",
+            "subject": "CRM business process failure",
+            "description": "A CRM process is failing.",
+            "category": "APPLICATION",
+            "severity": "HIGH",
+            "priority": "P1",
+            "status": "Open",
+        })
+
+        for body in (content["text_body"], content["html_body"]):
+            self.assertIn("Severity:", body)
+            self.assertIn("HIGH", body)
+            self.assertIn("Priority:", body)
+            self.assertIn("P1", body)
+
     def test_unconfigured_email_returns_unconfigured_status(self):
         from apps.agents.email_service import send_escalation_email, is_email_configured
         empty_cfg = {"smtp_host": "", "smtp_user": "", "smtp_password": "", "support_email": ""}
@@ -1387,6 +1449,7 @@ class ActivityLoggingTests(SimpleTestCase):
             "context": "[SOURCE:KB-1#0] Title: App Guide\nRestart app"
         }
         mock_ticket = {
+            "_id": ObjectId(),
             "ticket_id": "TCK-8003",
             "subject": "App freezing",
             "description": "App freezes constantly",
@@ -1415,7 +1478,7 @@ class ActivityLoggingTests(SimpleTestCase):
         self.assertIn("AGENT_RETRIEVAL_COMPLETED", actions)
         self.assertIn("AGENT_RESOLUTION_COMPLETED", actions)
         self.assertIn("AGENT_VALIDATION_COMPLETED", actions)
-        self.assertIn("AUTO_RESOLUTION_APPROVED", actions)
+        self.assertIn("AUTO_RESOLUTION_SENT_TO_CUSTOMER", actions)
 
         for entry in logged_entries:
             self.assertEqual(entry["ticket_id"], "TCK-8003")

@@ -1,5 +1,6 @@
 import threading
 import logging
+import re
 logger = logging.getLogger(__name__)
 from apps.notifications.services import create_notification
 from rest_framework.decorators import (
@@ -236,9 +237,12 @@ def create_ticket_view(request):
 
     
 
-    enqueue_classification(
-        ticket["ticket_id"]
-)
+    processing_queued = True
+    try:
+        enqueue_classification(ticket["ticket_id"])
+    except Exception:
+        processing_queued = False
+        logger.exception("Could not queue processing for newly created ticket %s", ticket["ticket_id"])
         
         
     
@@ -253,6 +257,7 @@ def create_ticket_view(request):
         {
             "message": "Ticket created successfully.",
             "ticket": ticket,
+            "processing_status": "queued" if processing_queued else "queue_failed",
         },
         status=status.HTTP_201_CREATED
     )
@@ -704,17 +709,9 @@ def classification_override_view(
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    if user.get("role") not in {
-        "Agent",
-        "Admin",
-    }:
-        return Response(
-            {
-                "message":
-                    "Agent access required."
-            },
-            status=status.HTTP_403_FORBIDDEN,
-        )
+    role_error = _require_agent_or_admin(user)
+    if role_error:
+        return role_error
 
     serializer = ClassificationOverrideSerializer(
         data=request.data
@@ -864,17 +861,9 @@ def transition_ticket_status_view(
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    if user.get("role") not in {
-        "Agent",
-        "Admin",
-    }:
-        return Response(
-            {
-                "message":
-                    "Agent access required."
-            },
-            status=status.HTTP_403_FORBIDDEN,
-        )
+    role_error = _require_agent_or_admin(user)
+    if role_error:
+        return role_error
 
     serializer = StatusTransitionSerializer(
         data=request.data
@@ -1619,6 +1608,29 @@ def _serialize_resolution_response(response_document):
         ),
     })
 
+
+def _serialize_customer_resolution(response_document):
+    """Whitelist only the final resolution fields used by requester UI."""
+    def customer_text(value):
+        text = value if isinstance(value, str) else ""
+        return re.sub(r"\s*\[SOURCE:[^\]]+\]", "", text).strip()
+
+    raw_steps = response_document.get("steps") or []
+    customer_steps = [
+        {
+            "order": step.get("order"),
+            "instruction": customer_text(step.get("instruction")),
+        }
+        for step in raw_steps if isinstance(raw_steps, list)
+        if isinstance(step, dict)
+    ]
+    return _make_json_safe({
+        "id": str(response_document["_id"]),
+        "status": response_document.get("status"),
+        "summary": customer_text(response_document.get("summary")),
+        "steps": customer_steps,
+    })
+
 def _get_authenticated_user(request):
     auth_header = request.headers.get(
         "Authorization"
@@ -1770,10 +1782,12 @@ def get_resolution_response_view(
             status=status.HTTP_403_FORBIDDEN,
         )
 
-    return Response(
-        _serialize_resolution_response(response_document),
-        status=status.HTTP_200_OK,
+    payload = (
+        _serialize_resolution_response(response_document)
+        if is_staff
+        else _serialize_customer_resolution(response_document)
     )
+    return Response(payload, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -2177,16 +2191,31 @@ def assign_ticket_view(request, ticket_id):
     if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
         return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
     
+    existing_ticket = tickets_collection.find_one({"ticket_id": ticket_id})
+    if not existing_ticket:
+        return Response({"message": "Ticket not found."}, status=status.HTTP_404_NOT_FOUND)
+
     auto_assign = request.data.get("auto_assign", False)
     assignee = request.data.get("assignee")
     
     if auto_assign or not assignee:
         ticket = auto_assign_ticket(ticket_id, user.get("username"))
+        if not ticket:
+            category = str(existing_ticket.get("category") or "Unclassified").strip()
+            return Response(
+                {
+                    "code": "NO_MATCHING_ACTIVE_AGENT",
+                    "message": (
+                        f"No active Agent is configured for the {category} specialty. "
+                        "Configure an active Agent's specialties or keep the ticket escalated for manager assignment."
+                    ),
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
     else:
         ticket = assign_ticket(ticket_id, assignee, user.get("username"))
-        
     if not ticket:
-        return Response({"message": "Ticket not found or assignment failed."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "The selected account is not an active Agent."}, status=status.HTTP_400_BAD_REQUEST)
         
     return Response(
            _make_json_safe({
@@ -2221,4 +2250,3 @@ def manager_workload_view(request):
         return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
     data = get_agents_workload()
     return Response({"workload": data}, status=status.HTTP_200_OK)
-

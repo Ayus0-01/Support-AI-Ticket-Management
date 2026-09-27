@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import json
 import urllib.request
+from decouple import config
 
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "qwen3:4b"
+OLLAMA_URL = config("OLLAMA_URL", default="http://localhost:11434/api/generate")
+MODEL_NAME = config("OLLAMA_MODEL", default="qwen3:4b")
 
 MIN_QUERY_WORDS = 4
 MAX_QUERY_WORDS = 10
@@ -19,7 +20,7 @@ def _call_ollama(
     prompt: str,
 ) -> str:
     """
-    Call the local Ollama model and return
+    Call the configured Ollama model and return
     the raw JSON response string.
     """
 

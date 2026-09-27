@@ -1,27 +1,21 @@
 """
-M3 Validation Agent / Confidence Gate implementation.
-Evaluates Resolution Agent output, groundedness against retrieved M2 evidence,
-citation consistency, and composite confidence before approving auto-resolution.
+M3 Validation Agent.
+Checks resolution content, grounding against retrieved M2 evidence, and
+blocking limitations before approving automated customer delivery. Confidence
+is retained as diagnostic metadata and does not block delivery.
 """
 from typing import Dict, Any, List, Optional
 from .interfaces import BaseAgent
 
 
 class ValidationAgent(BaseAgent):
-    """
-    Real M3 Validation Agent / Confidence Gate.
-    Evaluates groundedness, citation consistency, resolution quality, and composite confidence.
-    Determines if a ticket workflow is eligible for auto-resolution or requires escalation.
-    Never modifies M1 classification/severity/priority fields or M2 RAG pipeline.
-    """
+    """Checks grounding, content quality, and blocking limitations for M3 output."""
     agent_name = "ValidationAgent"
 
     def run(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         resolution_input = input_data.get("resolution") or {}
         diagnosis = input_data.get("diagnosis") or {}
         retrieved_evidence = input_data.get("retrieved_evidence") or input_data.get("ticket", {}).get("existing_m2_context", [])
-        confidence_threshold = float(input_data.get("confidence_threshold", 0.70))
-
         # Check if caller supplied direct override confidence (for testing / manual gate)
         override_confidence = input_data.get("override_confidence")
 
@@ -122,7 +116,8 @@ class ValidationAgent(BaseAgent):
                 blocking_limitations.append(item_str)
                 reasons.append(f"Blocking limitation: {item_str}")
 
-        # Rule 6: Composite confidence calculation
+        # Keep the composite score for diagnostics and reporting. It is no
+        # longer used as an automated delivery cutoff.
         if override_confidence is not None:
             composite_confidence = float(override_confidence)
         else:
@@ -135,16 +130,12 @@ class ValidationAgent(BaseAgent):
             res_status == "SUCCESS" and
             bool(summary) and
             bool(steps) and
-            composite_confidence >= confidence_threshold and
             not blocking_limitations and
             (bool(sources) or groundedness_ratio > 0)
         )
 
         if is_valid:
-            reasons.append(f"Validation passed with composite confidence {composite_confidence} (threshold {confidence_threshold}).")
-        else:
-            if composite_confidence < confidence_threshold:
-                reasons.append(f"Composite confidence {composite_confidence} below threshold {confidence_threshold}.")
+            reasons.append("Validation passed grounding and content checks.")
 
         return {
             "status": "SUCCESS",
