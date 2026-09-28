@@ -9,7 +9,7 @@ A multi-role IT support application for ticket intake, classification, agent ass
 | Support Manager | Monitor workload and reports, manage assignments and escalations, and inspect classification, workflow evidence, and sources. |
 | Admin | Manage users and agent specialties, and access operational dashboards and settings. |
 
-The supported account roles are `User` (customer), `Agent`, `Support Manager`, and `Admin`. Accounts already stored with the retired `Manager` role are converted to `Support Manager` on their next successful sign-in.
+The supported account roles are `User` (customer), `Agent`, `Support Manager`, and `Admin`. 
 
 ### Technology at a glance
 
