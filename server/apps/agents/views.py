@@ -24,7 +24,7 @@ from .orchestrator import (
 )
 
 M3_READ_ROLES = {"Agent", "Support Manager", "Admin"}
-M3_EXECUTION_ROLES = {"Agent", "Admin"}
+M3_EXECUTION_ROLES = {"Agent", "Support Manager", "Admin"}
 
 
 def _sanitize_object_ids(data: Any) -> Any:

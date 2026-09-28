@@ -45,6 +45,13 @@ export type M3WorkflowEscalation = {
   };
 };
 
+export type M3WorkflowEmailResult = {
+  status?: string;
+  sent?: boolean;
+  recipient?: string;
+  reason?: string;
+};
+
 export type M3WorkflowData = {
   workflow_id: string;
   ticket_id: string;
@@ -58,6 +65,7 @@ export type M3WorkflowData = {
   resolution?: M3WorkflowResolution | null;
   validation?: M3WorkflowValidation | null;
   escalation?: M3WorkflowEscalation | null;
+  email_result?: M3WorkflowEmailResult | null;
   started_at?: string;
   completed_at?: string | null;
 };

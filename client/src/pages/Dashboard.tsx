@@ -882,7 +882,7 @@ interface TicketClassificationMeta {
                     <M3WorkflowPanel
                       ticketId={selectedTicketId}
                       isDark={isDark}
-                      canRunWorkflow={can('RESOLVE_TICKET')}
+                      canRunWorkflow={can('RESOLVE_TICKET') || user?.role === 'Support Manager'}
                     />
                   </div>
                 )}

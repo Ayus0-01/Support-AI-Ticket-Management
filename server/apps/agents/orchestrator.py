@@ -28,7 +28,9 @@ from .interfaces import (
 )
 from .jira_service import create_jira_issue
 from .email_service import (
+    send_ai_workflow_report_email,
     send_escalation_email,
+    get_workflow_report_recipient,
     send_resolution_email,
 )
 from apps.knowledge_base.persistence import (
@@ -737,6 +739,9 @@ def execute_orchestration_pipeline(
             "resolution": res_output.get("resolution", {}),
             "validation": val_details,
             "escalation_reason": "Grounding or required content checks need human review.",
+            "workflow_id": workflow_id,
+            "workflow_status": "ESCALATED",
+            "workflow_duration_ms": round((perf_counter() - workflow_started) * 1000),
         }
         esc_output = _run_timed_agent_stage(
             esc_agent, esc_input, "escalation_agent", workflow_id, stage_timings_ms
@@ -748,8 +753,12 @@ def execute_orchestration_pipeline(
         esc_data["jira_result"] = jira_result
         esc_input["jira_result"] = jira_result
 
-        # Invoke Email Integration Service layer for escalated tickets
-        email_result = send_escalation_email(esc_input)
+        # Keep the existing escalation email integration, now with the complete
+        # AI report context for the configured support inbox.
+        email_result = send_escalation_email(
+            esc_input,
+            recipient_email=get_workflow_report_recipient(),
+        )
         esc_data["email_result"] = email_result
 
         # Keep the agent that was assigned BEFORE AI processing started.
@@ -846,6 +855,52 @@ def execute_orchestration_pipeline(
                 "email_status": email_result.get("status"),
             },
         )
+
+    # Escalations use the established escalation email integration above.
+    # Successful workflows also send a full internal report to the support inbox.
+    email_result = esc_data.get("email_result") if not is_valid else None
+    if is_valid:
+        try:
+            report_ticket = tickets_collection.find_one({"ticket_id": ticket_id}) or ticket_data
+            email_result = send_ai_workflow_report_email({
+                "ticket": report_ticket,
+                "workflow_id": workflow_id,
+                "workflow_status": "COMPLETED",
+                "diagnosis": diag_output.get("diagnosis", {}),
+                "retrieved_evidence": ret_output.get("retrieved_evidence", []),
+                "resolution": res_output.get("resolution", {}),
+                "validation": val_details,
+                "escalation": {},
+                "jira_result": {},
+                "workflow_duration_ms": round((perf_counter() - workflow_started) * 1000),
+            })
+        except Exception as report_error:
+            logger.exception("AI workflow report email failed for %s", ticket_id)
+            email_result = {
+                "status": "FAILED",
+                "sent": False,
+                "recipient": None,
+                "reason": str(report_error),
+            }
+
+    workflow_update = {"email_result": email_result}
+    if not is_valid:
+        esc_data["email_result"] = email_result
+        workflow_update["escalation"] = esc_data
+    agent_workflows_collection.update_one(
+        {"workflow_id": workflow_id},
+        {"$set": workflow_update},
+    )
+    log_activity(
+        ticket_id=ticket_id,
+        action="AI_WORKFLOW_REPORT_EMAIL_PROCESSED",
+        details=f"Internal AI workflow report email {email_result.get('status', 'UNKNOWN')}.",
+        actor="Multi-Agent Orchestrator",
+        workflow_id=workflow_id,
+        agent_name="EmailService",
+        status=email_result.get("status", "UNKNOWN"),
+        metadata={"email_result": email_result},
+    )
 
     # This includes orchestration overhead such as persistence and escalation
     # integrations; per-agent durations remain available separately.

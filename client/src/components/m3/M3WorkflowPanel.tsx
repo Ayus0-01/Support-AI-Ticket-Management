@@ -199,6 +199,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
   const valPassed = Boolean(workflow?.validation?.is_valid);
   const isEscalated = workflow?.workflow_status === "ESCALATED";
   const isCompleted = workflow?.workflow_status === "COMPLETED";
+  const reportEmailResult = workflow?.email_result || workflow?.escalation?.email_result;
 
   if (initialLoading) {
     return (
@@ -727,24 +728,26 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
                   </div>
                 )}
 
-                {workflow.escalation.email_result && (
-                  <div className={`rounded-xl border p-3 ${isDark ? "border-gray-800 bg-gray-950" : "border-gray-200 bg-white"}`}>
-                    <div className="flex items-center justify-between font-semibold">
-                      <span className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
-                        <Mail className="h-3.5 w-3.5" /> Email Notification
-                      </span>
-                      <span className="rounded bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 text-[10px]">
-                        {workflow.escalation.email_result.status}
-                      </span>
-                    </div>
-                    {workflow.escalation.email_result.recipient && (
-                      <p className="mt-1 text-[11px] text-gray-500">
-                        To: {workflow.escalation.email_result.recipient}
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
+            </div>
+          )}
+
+          {reportEmailResult && (
+            <div className={`rounded-2xl border p-4 ${isDark ? "border-purple-900 bg-purple-950/20" : "border-purple-200 bg-purple-50/60"}`}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
+                  <Mail className="h-4 w-4" /> AI workflow report email
+                </span>
+                <span className="rounded-md bg-white/70 px-2 py-1 text-xs font-semibold dark:bg-gray-900/70">
+                  {reportEmailResult.status || "UNKNOWN"}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                {reportEmailResult.recipient ? `To: ${reportEmailResult.recipient}` : "No recipient was configured."}
+              </p>
+              {reportEmailResult.reason && reportEmailResult.status !== "SUCCESS" && (
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{reportEmailResult.reason}</p>
+              )}
             </div>
           )}
 

@@ -7,6 +7,7 @@ Does NOT fabricate credentials or mock successful email delivery when email is u
 """
 import logging
 import re
+from html import escape
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 
@@ -34,6 +35,14 @@ def get_email_config() -> Dict[str, Any]:
     }
 
 
+def get_workflow_report_recipient(
+    email_config_override: Optional[Dict[str, Any]] = None,
+) -> Optional[str]:
+    """Return the configured support-team inbox for internal AI workflow reports."""
+    cfg = email_config_override if email_config_override is not None else get_email_config()
+    return cfg.get("support_email") or cfg.get("smtp_user") or None
+
+
 def is_email_configured(config_dict: Optional[Dict[str, Any]] = None) -> bool:
     """
     Returns True if required SMTP host, user, password, and support recipient email are configured.
@@ -53,7 +62,11 @@ def build_escalation_email_content(
     validation: Dict[str, Any],
     escalation_reason: str,
     jira_result: Optional[Dict[str, Any]] = None,
-    recommended_action: str = ""
+    recommended_action: str = "",
+    retrieved_evidence: Optional[list] = None,
+    resolution: Optional[Dict[str, Any]] = None,
+    workflow_id: Optional[str] = None,
+    workflow_duration_ms: Optional[int] = None,
 ) -> Dict[str, str]:
     """
     Builds subject, plain text, and HTML formatted email body containing complete ticket details,
@@ -77,6 +90,9 @@ def build_escalation_email_content(
 
     jira_key = jira_result.get("jira_issue_key") if isinstance(jira_result, dict) else None
     jira_url = jira_result.get("jira_issue_url") if isinstance(jira_result, dict) else None
+    evidence = retrieved_evidence if isinstance(retrieved_evidence, list) else []
+    resolution = resolution if isinstance(resolution, dict) else {}
+    resolution_steps = resolution.get("troubleshooting_steps") if isinstance(resolution.get("troubleshooting_steps"), list) else []
 
     email_subject = f"[ESCALATION REQUIRED] Ticket #{ticket_id}: {subject_line}"
 
@@ -100,7 +116,24 @@ def build_escalation_email_content(
         f"- Composite Confidence: {conf}",
         f"- Validation Findings: {', '.join(reasons) if reasons else 'N/A'}",
         f"- Recommended Action: {recommended_action if recommended_action else 'Assign to support team for manual review'}",
+        f"\nAI WORKFLOW DETAILS:",
+        f"- Workflow ID: {workflow_id or 'N/A'}",
+        f"- Workflow Duration: {workflow_duration_ms if workflow_duration_ms is not None else 'N/A'} ms",
+        f"\nRETRIEVED KNOWLEDGE ({len(evidence)} chunks):",
     ]
+
+    for index, item in enumerate(evidence, start=1):
+        if isinstance(item, dict):
+            lines_label = item.get("article_title") or item.get("article_id") or "Knowledge chunk"
+            text_parts.append(f"{index}. {lines_label}: {item.get('content', '')}")
+    text_parts.extend([
+        "\nGENERATED RESOLUTION:",
+        str(resolution.get("summary") or "No resolution was generated."),
+    ])
+    for index, step in enumerate(resolution_steps, start=1):
+        if isinstance(step, dict):
+            step = step.get("instruction") or step.get("text") or str(step)
+        text_parts.append(f"{index}. {step}")
 
     if jira_key:
         text_parts.extend([
@@ -119,6 +152,16 @@ def build_escalation_email_content(
         <p><strong>Jira Key:</strong> {jira_key}<br>
         <strong>Jira URL:</strong> <a href="{jira_url}">{jira_url}</a></p>
         """
+
+    evidence_html = "".join(
+        f"<li><strong>{escape(str(item.get('article_title') or item.get('article_id') or 'Knowledge chunk'))}</strong>: {escape(str(item.get('content', '')))}</li>"
+        for item in evidence
+        if isinstance(item, dict)
+    )
+    resolution_steps_html = "".join(
+        f"<li>{escape(str(step.get('instruction') or step.get('text') or step) if isinstance(step, dict) else str(step))}</li>"
+        for step in resolution_steps
+    )
 
     html_body = f"""
     <html>
@@ -149,6 +192,12 @@ def build_escalation_email_content(
           <li><strong>Validation Findings:</strong> {', '.join(reasons) if reasons else 'N/A'}</li>
           <li><strong>Recommended Action:</strong> {recommended_action if recommended_action else 'Assign to support team for manual review'}</li>
         </ul>
+        <h3>AI Workflow Details</h3>
+        <p><strong>Workflow ID:</strong> {escape(str(workflow_id or 'N/A'))}<br>
+        <strong>Workflow duration:</strong> {escape(str(workflow_duration_ms if workflow_duration_ms is not None else 'N/A'))} ms</p>
+        <h3>Retrieved Knowledge ({len(evidence)} chunks)</h3><ol>{evidence_html}</ol>
+        <h3>Generated Resolution</h3>
+        <p>{escape(str(resolution.get('summary') or 'No resolution was generated.'))}</p><ol>{resolution_steps_html}</ol>
         {jira_html}
       </body>
     </html>
@@ -211,6 +260,10 @@ def send_escalation_email(
         "recommended_action",
         ""
     )
+    retrieved_evidence = escalation_input.get("retrieved_evidence")
+    resolution = escalation_input.get("resolution")
+    workflow_id = escalation_input.get("workflow_id")
+    workflow_duration_ms = escalation_input.get("workflow_duration_ms")
 
     if not is_email_configured(cfg) or not target_recipient:
         result = {
@@ -239,6 +292,10 @@ def send_escalation_email(
         escalation_reason=escalation_reason,
         jira_result=jira_result,
         recommended_action=recommended_action,
+        retrieved_evidence=retrieved_evidence,
+        resolution=resolution,
+        workflow_id=workflow_id,
+        workflow_duration_ms=workflow_duration_ms,
     )
 
     try:
@@ -925,6 +982,107 @@ def send_ticket_created_email(
     result=result,
 )
 
+    return result
+
+
+def send_ai_workflow_report_email(
+    report: Dict[str, Any],
+    email_config_override: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Send the internal AI workflow report to the configured support inbox."""
+    ticket = report.get("ticket") if isinstance(report.get("ticket"), dict) else {}
+    diagnosis = report.get("diagnosis") if isinstance(report.get("diagnosis"), dict) else {}
+    resolution = report.get("resolution") if isinstance(report.get("resolution"), dict) else {}
+    validation = report.get("validation") if isinstance(report.get("validation"), dict) else {}
+    escalation = report.get("escalation") if isinstance(report.get("escalation"), dict) else {}
+    jira = report.get("jira_result") if isinstance(report.get("jira_result"), dict) else {}
+    evidence = report.get("retrieved_evidence") if isinstance(report.get("retrieved_evidence"), list) else []
+
+    ticket_id = ticket.get("ticket_id") or ticket.get("ticket_number") or "N/A"
+    subject = ticket.get("subject") or "Support ticket"
+    summary = resolution.get("summary") or "No resolution was generated."
+    steps = resolution.get("troubleshooting_steps") or []
+    causes = diagnosis.get("likely_causes") or []
+    reasons = validation.get("reasons") or []
+    limitations = validation.get("blocking_limitations") or []
+    status_value = report.get("workflow_status") or "UNKNOWN"
+
+    lines = [
+        "AI WORKFLOW REPORT",
+        f"Ticket: {ticket_id} — {subject}",
+        f"Workflow: {report.get('workflow_id', 'N/A')}",
+        f"Outcome: {status_value}",
+        f"Category: {ticket.get('category', 'N/A')} / {ticket.get('subcategory', 'N/A')}",
+        f"Severity / priority: {ticket.get('severity', 'N/A')} / {ticket.get('priority', 'N/A')}",
+        "",
+        "DIAGNOSIS",
+        f"Problem: {diagnosis.get('problem_understanding', 'N/A')}",
+        f"Affected system: {diagnosis.get('affected_system', 'N/A')}",
+        f"Likely causes: {'; '.join(map(str, causes)) or 'None identified'}",
+        "",
+        f"RETRIEVED KNOWLEDGE ({len(evidence)} chunks)",
+    ]
+    for index, item in enumerate(evidence, start=1):
+        if isinstance(item, dict):
+            lines.append(f"{index}. {item.get('article_title') or item.get('article_id') or 'Knowledge chunk'}: {item.get('content', '')}")
+    lines.extend([
+        "",
+        "GENERATED RESOLUTION",
+        f"Summary: {summary}",
+        "Steps:",
+    ])
+    for index, step in enumerate(steps, start=1):
+        if isinstance(step, dict):
+            step = step.get("instruction") or step.get("text") or str(step)
+        lines.append(f"{index}. {step}")
+    lines.extend([
+        "",
+        "VALIDATION",
+        f"Valid: {validation.get('is_valid', 'N/A')}",
+        f"Confidence: {validation.get('confidence_score', 'N/A')}",
+        f"Findings: {'; '.join(map(str, reasons)) or 'None'}",
+        f"Blocking limitations: {'; '.join(map(str, limitations)) or 'None'}",
+        "",
+        "ESCALATION / INTEGRATION",
+        f"Escalation required: {escalation.get('escalation_required', status_value == 'ESCALATED')}",
+        f"Reason: {escalation.get('reason') or escalation.get('recommended_action') or 'None'}",
+        f"Jira: {jira.get('jira_issue_key') or 'Not created'} {jira.get('jira_issue_url') or ''}".strip(),
+        f"Workflow duration: {report.get('workflow_duration_ms', 'N/A')} ms",
+    ])
+    text_body = "\n".join(lines)
+    html_body = "<html><body style='font-family:Arial,sans-serif;line-height:1.5;color:#263244'>"
+    html_body += f"<h2>AI Workflow Report</h2><p><b>Ticket:</b> {escape(str(ticket_id))} — {escape(str(subject))}<br>"
+    html_body += f"<b>Workflow:</b> {escape(str(report.get('workflow_id', 'N/A')))}<br><b>Outcome:</b> {escape(str(status_value))}</p>"
+    html_body += f"<p><b>Category:</b> {escape(str(ticket.get('category', 'N/A')))} / {escape(str(ticket.get('subcategory', 'N/A')))}<br>"
+    html_body += f"<b>Severity / priority:</b> {escape(str(ticket.get('severity', 'N/A')))} / {escape(str(ticket.get('priority', 'N/A')))}</p>"
+    html_body += f"<h3>Diagnosis</h3><p>{escape(str(diagnosis.get('problem_understanding', 'N/A')))}<br>"
+    html_body += f"Affected system: {escape(str(diagnosis.get('affected_system', 'N/A')))}<br>Likely causes: {escape('; '.join(map(str, causes)) or 'None identified')}</p>"
+    html_body += f"<h3>Retrieved knowledge ({len(evidence)} chunks)</h3><ol>"
+    for item in evidence:
+        if isinstance(item, dict):
+            label = item.get("article_title") or item.get("article_id") or "Knowledge chunk"
+            html_body += f"<li><b>{escape(str(label))}</b>: {escape(str(item.get('content', '')))}</li>"
+    html_body += f"</ol><h3>Generated resolution</h3><p>{escape(str(summary))}</p><ol>"
+    for step in steps:
+        if isinstance(step, dict):
+            step = step.get("instruction") or step.get("text") or str(step)
+        html_body += f"<li>{escape(str(step))}</li>"
+    html_body += f"</ol><h3>Validation</h3><p>Valid: {escape(str(validation.get('is_valid', 'N/A')))}; "
+    html_body += f"confidence: {escape(str(validation.get('confidence_score', 'N/A')))}<br>Findings: {escape('; '.join(map(str, reasons)) or 'None')}<br>"
+    html_body += f"Blocking limitations: {escape('; '.join(map(str, limitations)) or 'None')}</p><h3>Escalation / integration</h3>"
+    html_body += f"<p>Escalation required: {escape(str(escalation.get('escalation_required', status_value == 'ESCALATED')))}<br>"
+    html_body += f"Reason: {escape(str(escalation.get('reason') or escalation.get('recommended_action') or 'None'))}<br>"
+    html_body += f"Jira: {escape(str(jira.get('jira_issue_key') or 'Not created'))} {escape(str(jira.get('jira_issue_url') or ''))}<br>"
+    html_body += f"Workflow duration: {escape(str(report.get('workflow_duration_ms', 'N/A')))} ms</p></body></html>"
+
+    result = _send_generic_email(
+        subject=f"[AI Workflow Report] #{ticket_id}: {subject}",
+        text_body=text_body,
+        html_body=html_body,
+        recipient_email=get_workflow_report_recipient(email_config_override),
+        email_config_override=email_config_override,
+    )
+    save_email_log(ticket=ticket, email_type="AI_WORKFLOW_REPORT", result=result)
     return result
 
 def build_ticket_assigned_email_content(
