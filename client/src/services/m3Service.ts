@@ -17,8 +17,7 @@ export type M3WorkflowEvidence = {
 export type M3WorkflowResolution = {
   summary?: string;
   troubleshooting_steps?: string[];
-  missing_information?: string[];
-  limitations?: string[];
+  confidence?: number;
 };
 
 export type M3WorkflowValidation = {

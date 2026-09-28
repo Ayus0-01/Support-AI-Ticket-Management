@@ -6,7 +6,7 @@ interface User {
   email: string;
   username: string;
   mobile?: string;
-  role: "User" | "Agent" | "Support Manager" | "Manager" | "Admin";
+  role: "User" | "Agent" | "Support Manager" | "Admin";
   avatar: string;
 }
 
@@ -60,21 +60,6 @@ const ROLE_CAPABILITIES: Record<
     "OVERRIDE_CLASSIFICATION",
     "ADD_INTERNAL_COMMENT",
     "CHANGE_TICKET_STATUS",
-    "RESOLVE_TICKET",
-    "VIEW_ALL_TICKETS",
-    "ASSIGN_TICKETS",
-    "VIEW_REPORTS",
-  ],
-
-  Manager: [
-    "VIEW_DASHBOARD",
-    "VIEW_AGENT_QUEUE",
-    "VIEW_AGENT_TICKET",
-    "VIEW_CLASSIFICATION",
-    "OVERRIDE_CLASSIFICATION",
-    "ADD_INTERNAL_COMMENT",
-    "CHANGE_TICKET_STATUS",
-    "RESOLVE_TICKET",
     "VIEW_ALL_TICKETS",
     "ASSIGN_TICKETS",
     "VIEW_REPORTS",

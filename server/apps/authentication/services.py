@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from AIticket.db import users_collection
-from .constants import USER_ROLES
+from .constants import USER_ROLES, normalize_user_role
 
 
 def _utc_now():
@@ -129,7 +129,9 @@ def update_managed_user(*, actor_id, target_user, updates):
         }
 
     target_is_active = target_user.get("is_active", True)
-    target_role = target_user.get("role", "User")
+    target_role = normalize_user_role(target_user.get("role", "User"))
+    if target_user.get("role") != target_role:
+        updates = {**updates, "role": target_role}
     next_role = updates.get("role", target_role)
     next_is_active = updates.get("is_active", target_is_active)
 
@@ -185,6 +187,14 @@ def login_service(data):
             "success": False,
             "message": "Invalid email or password.",
         }
+
+    normalized_role = normalize_user_role(user.get("role", "User"))
+    if user.get("role") != normalized_role:
+        users_collection.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"role": normalized_role}},
+        )
+        user["role"] = normalized_role
 
     # Historical staff accounts were provisioned internally before this field
     # existed. Customer accounts without an explicit verified flag remain

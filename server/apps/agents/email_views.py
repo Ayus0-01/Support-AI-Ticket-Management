@@ -19,6 +19,8 @@ from rest_framework.decorators import (
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import AccessToken
+from bson import ObjectId
 
 from .email_service import (
     send_ticket_created_email,
@@ -27,7 +29,39 @@ from .email_service import (
     send_resolved_email,
 )
 
-from AIticket.db import email_logs_collection
+from AIticket.db import email_logs_collection, users_collection
+
+EMAIL_SEND_ROLES = {"Admin"}
+EMAIL_LOG_ROLES = {"Agent", "Support Manager", "Admin"}
+
+
+def _authorize_email_request(request, allowed_roles):
+    auth_header = request.headers.get("Authorization", "")
+    parts = auth_header.split(" ")
+    if len(parts) != 2 or parts[0] != "Bearer":
+        return None, Response(
+            {"message": "A valid Bearer token is required."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        token = AccessToken(parts[1])
+        user_id = token["user_id"]
+        user = users_collection.find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        user = None
+
+    if not user:
+        return None, Response(
+            {"message": "Invalid or expired token."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    if user.get("role", "User") not in allowed_roles:
+        return None, Response(
+            {"message": "You do not have permission to use this email endpoint."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    return user, None
 
 
 def _get_request_data(request) -> Dict[str, Any]:
@@ -49,6 +83,10 @@ def send_ticket_created_email_view(request):
 
     Sends a ticket-created notification.
     """
+
+    _, auth_error = _authorize_email_request(request, EMAIL_SEND_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
@@ -86,6 +124,10 @@ def send_resolution_email_view(request):
 
     Sends an AI-resolution notification to the requester.
     """
+
+    _, auth_error = _authorize_email_request(request, EMAIL_SEND_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
@@ -132,6 +174,10 @@ def send_escalation_email_view(request):
     Sends an escalation notification to the support team.
     """
 
+    _, auth_error = _authorize_email_request(request, EMAIL_SEND_ROLES)
+    if auth_error:
+        return auth_error
+
     data = _get_request_data(request)
 
     result = send_escalation_email(
@@ -158,6 +204,10 @@ def send_resolved_email_view(request):
 
     Sends a final resolved notification to the requester.
     """
+
+    _, auth_error = _authorize_email_request(request, EMAIL_SEND_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
@@ -201,6 +251,10 @@ def get_email_logs_view(request, ticket_id):
 
     Returns email history for a ticket.
     """
+
+    _, auth_error = _authorize_email_request(request, EMAIL_LOG_ROLES)
+    if auth_error:
+        return auth_error
 
     try:
         logs = list(

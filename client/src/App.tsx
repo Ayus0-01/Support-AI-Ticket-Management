@@ -225,7 +225,7 @@ function AppContent() {
       return null;
     }
 
-    if (user.role === 'Support Manager' || user.role === 'Manager') {
+    if (user.role === 'Support Manager') {
       return (
         <SupportManagerDashboard
           onNavigate={navigate}

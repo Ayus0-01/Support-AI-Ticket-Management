@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from AIticket.fields import UTCDateTimeField
 
 
 class CreateTicketSerializer(serializers.Serializer):
@@ -120,17 +121,33 @@ class EmployeeTicketSerializer(serializers.Serializer):
 
     severity = serializers.CharField(allow_null=True, required=False)
     priority = serializers.SerializerMethodField()
+    category_confidence = serializers.SerializerMethodField()
     sla = serializers.DictField(allow_null=True, required=False)
     queue = serializers.CharField(allow_null=True, required=False)
 
-    created_at = serializers.DateTimeField(allow_null=True, required=False)
-    updated_at = serializers.DateTimeField(allow_null=True, required=False)
+    created_at = UTCDateTimeField(allow_null=True, required=False)
+    updated_at = UTCDateTimeField(allow_null=True, required=False)
 
     def get_priority(self, obj):
         priority = obj.get("priority")
         if isinstance(priority, dict):
             return priority.get("value")
         return priority
+
+    def get_category_confidence(self, obj):
+        if not self.context.get("include_category_confidence", False):
+            return None
+
+        classification = obj.get("classification") or {}
+        category = classification.get("category") or {}
+        confidence = category.get(
+            "confidence",
+            obj.get("category_confidence", obj.get("confidence")),
+        )
+        try:
+            return float(confidence) if confidence is not None else None
+        except (TypeError, ValueError):
+            return None
 
     def get_latest_response_id(self, obj):
         val = obj.get("latest_response_id")

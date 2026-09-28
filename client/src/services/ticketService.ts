@@ -50,6 +50,7 @@ export type Ticket = {
   severity: string | null;
   subcategory: string | null;
   confidence?: number | null;
+  category_confidence?: number | null;
   path?: string | null;
   sla: TicketSLA | null;
   assignee: string | null;
@@ -324,7 +325,7 @@ export type AgentWorkload = {
   }>;
 };
 
-export type ManagerOverviewData = {
+export type SupportManagerOverviewData = {
   metrics: {
     open_tickets: number;
     high_priority: number;
@@ -347,8 +348,8 @@ export type AIPerformanceMetrics = {
   kb_gap_count: number;
 };
 
-export const getManagerOverview = async (): Promise<ManagerOverviewData> => {
-  const response = await api.get("/api/tickets/manager/overview/");
+export const getSupportManagerOverview = async (): Promise<SupportManagerOverviewData> => {
+  const response = await api.get("/api/tickets/support-manager/overview/");
   return {
     ...response.data,
     queue: normalizeTickets(response.data?.queue || []),
@@ -367,11 +368,11 @@ export const autoAssignTicket = async (ticketId: string) => {
 };
 
 export const getAIPerformance = async (): Promise<AIPerformanceMetrics> => {
-  const response = await api.get("/api/tickets/manager/ai-performance/");
+  const response = await api.get("/api/tickets/support-manager/ai-performance/");
   return response.data;
 };
 
 export const getAgentsWorkload = async (): Promise<AgentWorkload[]> => {
-  const response = await api.get("/api/tickets/manager/workload/");
+  const response = await api.get("/api/tickets/support-manager/workload/");
   return response.data?.workload || [];
 };

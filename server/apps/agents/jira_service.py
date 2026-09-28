@@ -552,7 +552,7 @@ def create_jira_issue(
         "",
     )
 
-    # M3 can be retried from the manager UI after a timeout or review. Reuse
+    # M3 can be retried from the Support Manager UI after a timeout or review. Reuse
     # the existing ticket mapping so a retry cannot create duplicate Jira
     # issues for a ticket that has already been escalated.
     if ticket_id:

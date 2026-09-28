@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from AIticket.fields import UTCDateTimeField
 
 from .constants import USER_ROLES
 from apps.tickets.classification.subcategory_classifier import AGENT_SPECIALTY_CATEGORIES
@@ -38,8 +39,8 @@ class ManagedUserSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=USER_ROLES)
     specialties = serializers.ListField(child=serializers.ChoiceField(choices=AGENT_SPECIALTY_CATEGORIES), required=False)
     is_active = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(allow_null=True, required=False)
-    last_login_at = serializers.DateTimeField(allow_null=True, required=False)
+    created_at = UTCDateTimeField(allow_null=True, required=False)
+    last_login_at = UTCDateTimeField(allow_null=True, required=False)
 
     def get_id(self, obj):
         return str(obj["_id"])

@@ -20,30 +20,30 @@ from .views import (
     reject_resolution_view,
     resolution_feedback_view,
     send_manual_resolution_view,
-    manager_overview_view,
+    support_manager_overview_view,
     assign_ticket_view,
-    manager_ai_performance_view,
-    manager_workload_view,
+    support_manager_ai_performance_view,
+    support_manager_workload_view,
 )
 
 
 urlpatterns = [
     path(
-        "manager/overview/",
-        manager_overview_view,
-        name="manager-overview",
+        "support-manager/overview/",
+        support_manager_overview_view,
+        name="support-manager-overview",
     ),
 
     path(
-        "manager/ai-performance/",
-        manager_ai_performance_view,
-        name="manager-ai-performance",
+        "support-manager/ai-performance/",
+        support_manager_ai_performance_view,
+        name="support-manager-ai-performance",
     ),
 
     path(
-        "manager/workload/",
-        manager_workload_view,
-        name="manager-workload",
+        "support-manager/workload/",
+        support_manager_workload_view,
+        name="support-manager-workload",
     ),
 
     path(
@@ -166,4 +166,3 @@ urlpatterns = [
     ),
     
 ]
-

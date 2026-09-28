@@ -804,7 +804,7 @@ def execute_orchestration_pipeline(
                 comments_collection.insert_one({
                     "ticket_id": ticket_id,
                     "author_user_id": "Multi-Agent Orchestrator",
-                    "comment": f"Ticket escalated for manager assignment: {escalation_reason}",
+                    "comment": f"Ticket escalated for Support Manager assignment: {escalation_reason}",
                     "visibility": "INTERNAL",
                     "source": "M3_SPECIALIST_ESCALATION",
                     "created_at": now,

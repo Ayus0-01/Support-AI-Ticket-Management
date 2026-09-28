@@ -48,7 +48,7 @@ from .services import (
     assign_ticket,
     auto_assign_ticket,
     get_agents_workload,
-    get_manager_overview_data,
+    get_support_manager_overview_data,
     get_ai_performance_metrics,
 )
 
@@ -326,7 +326,7 @@ def get_ticket_detail_view(request, ticket_id):
     Return ticket details.
 
     Customers can view only their own tickets.
-    Agents, Support Managers, Managers, and Admins can
+    Agents, Support Managers, and Admins can
     view support tickets according to their role.
     """
 
@@ -343,7 +343,6 @@ def get_ticket_detail_view(request, ticket_id):
     if role in {
         "Agent",
         "Support Manager",
-        "Manager",
         "Admin",
     }:
         ticket = tickets_collection.find_one(
@@ -373,7 +372,14 @@ def get_ticket_detail_view(request, ticket_id):
     )
 
     safe_ticket = EmployeeTicketSerializer(
-        ticket
+        ticket,
+        context={
+            "include_category_confidence": role in {
+                "Agent",
+                "Support Manager",
+                "Admin",
+            }
+        },
     ).data
 
     return Response(
@@ -595,7 +601,6 @@ def agent_queue_view(request):
     if role not in {
         "Agent",
         "Support Manager",
-        "Manager",
         "Admin",
     }:
         return Response(
@@ -619,6 +624,7 @@ def agent_queue_view(request):
     safe_tickets = EmployeeTicketSerializer(
         tickets,
         many=True,
+        context={"include_category_confidence": True},
     ).data
 
     return Response(
@@ -878,6 +884,12 @@ def transition_ticket_status_view(
     new_status = serializer.validated_data[
         "status"
     ]
+
+    if user.get("role") == "Support Manager" and new_status == "Resolved":
+        return Response(
+            {"message": "Support Managers cannot resolve tickets."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     resolution_summary = (
         serializer.validated_data.get(
@@ -1326,8 +1338,6 @@ def generate_resolution_view(
 
     if role not in {
         "Agent",
-        "Support Manager",
-        "Manager",
         "Admin",
     }:
         return Response(
@@ -1677,19 +1687,28 @@ def _require_agent_or_admin(user):
     if role not in {
         "Agent",
         "Support Manager",
-        "Manager",
         "Admin",
     }:
         return Response(
             {
                 "message": (
-                    "Only Agent or Admin users can "
+                    "Only Agent, Support Manager, or Admin users can "
                     "perform this action."
                 )
             },
             status=status.HTTP_403_FORBIDDEN,
         )
 
+    return None
+
+
+def _require_resolution_authority(user):
+    """Limit resolution generation, review, and delivery to authorized staff."""
+    if user.get("role", "User") not in {"Agent", "Admin"}:
+        return Response(
+            {"message": "You do not have permission to generate, review, or send resolutions."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
     return None
 
 
@@ -1710,7 +1729,7 @@ def get_ticket_responses_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(user)
+    role_error = _require_resolution_authority(user)
 
     if role_error:
         return role_error
@@ -1802,7 +1821,7 @@ def accept_resolution_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(
+    role_error = _require_resolution_authority(
         user
     )
 
@@ -1858,7 +1877,7 @@ def edit_send_resolution_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(
+    role_error = _require_resolution_authority(
         user
     )
 
@@ -1941,7 +1960,7 @@ def reject_resolution_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(
+    role_error = _require_resolution_authority(
         user
     )
 
@@ -2098,7 +2117,7 @@ def send_manual_resolution_view(
     if error:
         return error
 
-    role_error = _require_agent_or_admin(
+    role_error = _require_resolution_authority(
         user
     )
 
@@ -2162,18 +2181,18 @@ def send_manual_resolution_view(
 @api_view(["GET"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def manager_overview_view(request):
+def support_manager_overview_view(request):
     user, error = _get_authenticated_user(request)
     if error:
         return error
 
-    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
+    if user.get("role") not in {"Support Manager", "Admin"}:
         return Response(
-            {"message": "Manager or Admin access required."},
+            {"message": "Support Manager or Admin access required."},
             status=status.HTTP_403_FORBIDDEN
         )
 
-    data = get_manager_overview_data()
+    data = get_support_manager_overview_data()
 
     return Response(
         _make_json_safe(data),
@@ -2188,8 +2207,8 @@ def assign_ticket_view(request, ticket_id):
     user, error = _get_authenticated_user(request)
     if error:
         return error
-    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
-        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    if user.get("role") not in {"Support Manager", "Admin"}:
+        return Response({"message": "Support Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
     
     existing_ticket = tickets_collection.find_one({"ticket_id": ticket_id})
     if not existing_ticket:
@@ -2207,7 +2226,7 @@ def assign_ticket_view(request, ticket_id):
                     "code": "NO_MATCHING_ACTIVE_AGENT",
                     "message": (
                         f"No active Agent is configured for the {category} specialty. "
-                        "Configure an active Agent's specialties or keep the ticket escalated for manager assignment."
+                        "Configure an active Agent's specialties or keep the ticket escalated for Support Manager assignment."
                     ),
                 },
                 status=status.HTTP_409_CONFLICT,
@@ -2229,12 +2248,12 @@ def assign_ticket_view(request, ticket_id):
 @api_view(["GET"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def manager_ai_performance_view(request):
+def support_manager_ai_performance_view(request):
     user, error = _get_authenticated_user(request)
     if error:
         return error
-    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
-        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    if user.get("role") not in {"Support Manager", "Admin"}:
+        return Response({"message": "Support Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
     data = get_ai_performance_metrics()
     return Response(data, status=status.HTTP_200_OK)
 
@@ -2242,11 +2261,11 @@ def manager_ai_performance_view(request):
 @api_view(["GET"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def manager_workload_view(request):
+def support_manager_workload_view(request):
     user, error = _get_authenticated_user(request)
     if error:
         return error
-    if user.get("role") not in {"Support Manager", "Manager", "Admin"}:
-        return Response({"message": "Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
+    if user.get("role") not in {"Support Manager", "Admin"}:
+        return Response({"message": "Support Manager or Admin access required."}, status=status.HTTP_403_FORBIDDEN)
     data = get_agents_workload()
     return Response({"workload": data}, status=status.HTTP_200_OK)

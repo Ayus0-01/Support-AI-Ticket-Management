@@ -43,7 +43,7 @@ def get_next_ticket_number():
 def create_ticket(data, requester):
     sequence = get_next_ticket_number()
 
-    current_year = datetime.now(timezone.utc).year
+    current_year = datetime.now(IST).year
 
     ticket_id = f"IT-{current_year}-{sequence:06d}"
 
@@ -1196,7 +1196,7 @@ def assign_ticket(ticket_id, assignee_username, actor_username=None):
 def get_agents_workload():
     """
     Calculate real-time workload for Support Agents only.
-    Managers and Admins are not eligible for ticket assignment.
+    Support Managers and Admins are not eligible for ticket assignment.
     """
     raw_agents = users_collection.find(
         {"role": "Agent"},
@@ -1298,9 +1298,9 @@ def auto_assign_ticket(ticket_id, actor_username=None):
     return assign_ticket(ticket_id, target_agent["username"], actor_username)
 
 
-def get_manager_overview_data():
+def get_support_manager_overview_data():
     """
-    Compute key Support Manager metrics and summary datasets from real DB data.
+    Compute Support Manager metrics and summary datasets from real DB data.
     """
     from .queue import sort_ticket_queue
     now = datetime.now(timezone.utc)

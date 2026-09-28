@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from AIticket.fields import UTCDateTimeField
 
 
 class CreateKnowledgeArticleSerializer(serializers.Serializer):
@@ -73,8 +74,8 @@ class KnowledgeArticleListSerializer(serializers.Serializer):
     indexed_version = serializers.IntegerField(allow_null=True)
     embedding_model = serializers.CharField(allow_null=True, required=False)
     index_error = serializers.CharField(allow_null=True, required=False)
-    updated_at = serializers.DateTimeField()
-    created_at = serializers.DateTimeField()
+    updated_at = UTCDateTimeField()
+    created_at = UTCDateTimeField()
 
 
 class KnowledgeArticleDetailSerializer(KnowledgeArticleListSerializer):
@@ -82,11 +83,11 @@ class KnowledgeArticleDetailSerializer(KnowledgeArticleListSerializer):
     source_url = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     visible_to_departments = serializers.ListField(required=False)
     content_hash = serializers.CharField(required=False)
-    last_indexed_at = serializers.DateTimeField(allow_null=True, required=False)
+    last_indexed_at = UTCDateTimeField(allow_null=True, required=False)
     author_id = serializers.CharField(required=False, allow_null=True)
     author_name = serializers.CharField(required=False)
     reviewed_by_id = serializers.CharField(required=False, allow_null=True)
-    source_updated_at = serializers.DateTimeField(allow_null=True, required=False)
+    source_updated_at = UTCDateTimeField(allow_null=True, required=False)
 
 
 class ChunkPreviewSerializer(serializers.Serializer):

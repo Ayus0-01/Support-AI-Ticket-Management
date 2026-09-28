@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { formatDateTime, getIndiaDateKey, parseDateTime } from '../utils/dateTime';
 import { useTheme } from '@/context/ThemeContext';
 import {
   getNotifications,
@@ -25,7 +26,7 @@ import {
   autoAssignTicket,
   getAIPerformance,
   getAgentsWorkload,
-  getManagerOverview,
+  getSupportManagerOverview,
 } from "../services/ticketService";
 import type {
   Ticket as ApiTicket,
@@ -247,7 +248,7 @@ const sidebarGroups: {
   },
 ];
 
-const managerSidebarGroups: {
+const supportManagerSidebarGroups: {
   title: string;
   items: SidebarItem[];
 }[] = [
@@ -324,7 +325,7 @@ useEffect(() => {
         }
 
         const data = await getAgentQueue();
-        const sortedQueue = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const sortedQueue = [...data].sort((a, b) => (parseDateTime(b.created_at)?.getTime() ?? 0) - (parseDateTime(a.created_at)?.getTime() ?? 0));
         setQueueTickets(sortedQueue);
         return;
       }
@@ -335,12 +336,12 @@ useEffect(() => {
       }
 
       if (title === "All Tickets") {
-        const data = await getManagerOverview();
+        const data = await getSupportManagerOverview();
         const allTickets = data.all_tickets || [];
         const sortedTickets = [...allTickets].sort(
           (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime()
+            (parseDateTime(b.created_at)?.getTime() ?? 0) -
+            (parseDateTime(a.created_at)?.getTime() ?? 0)
         );
         setTickets(sortedTickets);
         return;
@@ -349,8 +350,8 @@ useEffect(() => {
       const data = await getMyTickets();
       const sortedTickets = [...data].sort(
         (a, b) =>
-          new Date(b.created_at).getTime() -
-          new Date(a.created_at).getTime()
+          (parseDateTime(b.created_at)?.getTime() ?? 0) -
+          (parseDateTime(a.created_at)?.getTime() ?? 0)
       );
       setTickets(sortedTickets);
       
@@ -479,7 +480,7 @@ useEffect(() => {
       matchesStatus &&
       matchesAssignee
     );
-  }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }).sort((a, b) => (parseDateTime(b.created_at)?.getTime() ?? 0) - (parseDateTime(a.created_at)?.getTime() ?? 0));
 
   const totalPages = Math.max(1, Math.ceil(filteredTickets.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
@@ -568,7 +569,7 @@ interface TicketClassificationMeta {
     const subcategoryMeta = (classification.subcategory || {}) as TicketClassificationMeta;
     const severityMeta = (classification.severity || {}) as TicketClassificationMeta;
     const priorityMeta = (classification.priority || {}) as TicketClassificationMeta;
-    const categoryConfidence = detailTicket?.confidence ?? categoryMeta.confidence ?? null;
+    const categoryConfidence = detailTicket?.category_confidence ?? detailTicket?.confidence ?? categoryMeta.confidence ?? null;
     const classificationPath = detailTicket?.path || categoryMeta.route || subcategoryMeta.route;
     const priorityReason = detailTicket?.priority_reason || priorityMeta.reason || '';
     const isAgentWorkspace = title === 'My queue' && can('VIEW_AGENT_TICKET');
@@ -768,7 +769,7 @@ interface TicketClassificationMeta {
                   <div className="mt-5 space-y-3 text-sm divide-y divide-gray-100 dark:divide-gray-800">
                     <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Assignee</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.assignee || 'Unassigned'}</span></div>
                     <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Queue</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{detailTicket.queue || 'N/A'}</span></div>
-                    {(detailTicket.sla?.first_response_due || detailTicket.sla?.priority) && <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">First response due</span><span className={`text-right ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.sla.first_response_due ? new Date(detailTicket.sla.first_response_due).toLocaleString() : detailTicket.sla.priority}</span></div>}
+                    {(detailTicket.sla?.first_response_due || detailTicket.sla?.priority) && <div className="pt-2 flex justify-between gap-4"><span className="text-xs text-slate-500 uppercase shrink-0">First response due</span><span className={`text-right ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.sla.first_response_due ? formatDateTime(detailTicket.sla.first_response_due) : detailTicket.sla.priority}</span></div>}
                     {canViewClassification && (
                       <>
                         {categoryConfidence != null && <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Confidence</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{`${Math.round(categoryConfidence * 100)}%`}</span></div>}
@@ -776,8 +777,8 @@ interface TicketClassificationMeta {
                         {priorityReason && <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Priority Reason</span><span className={`text-right max-w-[70%] ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{priorityReason}</span></div>}
                       </>
                     )}
-                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Created At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.created_at).toLocaleString()}</span></div>
-                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Updated At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{new Date(detailTicket.updated_at).toLocaleString()}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Created At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{formatDateTime(detailTicket.created_at)}</span></div>
+                    <div className="pt-2 flex justify-between"><span className="text-xs text-slate-500 uppercase">Updated At</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>{formatDateTime(detailTicket.updated_at)}</span></div>
                   </div>
                 </div>
               </div>
@@ -805,7 +806,7 @@ interface TicketClassificationMeta {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>AI Classification</p>
-                      <p className={`mt-1 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Internal agent view</p>
+                      <p className={`mt-1 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Internal agent view · Confidence is diagnostic and does not gate AI resolution.</p>
                     </div>
                     {classification?.model_version && <span className="text-xs text-slate-500">{String(classification.model_version)}</span>}
                   </div>
@@ -878,11 +879,15 @@ interface TicketClassificationMeta {
                         AI Support Workflow
                       </h3>
                     </div>
-                    <M3WorkflowPanel ticketId={selectedTicketId} isDark={isDark} />
+                    <M3WorkflowPanel
+                      ticketId={selectedTicketId}
+                      isDark={isDark}
+                      canRunWorkflow={can('RESOLVE_TICKET')}
+                    />
                   </div>
                 )}
 
-                {isAgentWorkspace && (
+                {isAgentWorkspace && can('RESOLVE_TICKET') && (
                   <div className="space-y-2 pt-4 border-t border-dashed border-gray-300 dark:border-gray-800">
                     <div className="flex flex-wrap items-center gap-2 px-1">
                       <span className="inline-block h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
@@ -910,7 +915,7 @@ interface TicketClassificationMeta {
                   </div>
                 )}
 
-                {!isAgentWorkspace && detailTicket && (detailTicket.resolution_status === "SENT" || detailTicket.resolution_status === "EDITED_SENT") && (
+                {!can('VIEW_AGENT_TICKET') && detailTicket && (detailTicket.resolution_status === "SENT" || detailTicket.resolution_status === "EDITED_SENT") && (
                   <UserResolutionCard
                     ticket={detailTicket}
                     isDark={isDark}
@@ -944,7 +949,7 @@ interface TicketClassificationMeta {
                     <div key={`${event.created_at}-${index}`} className={`rounded-2xl border p-4 ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-100 bg-slate-50'}`}>
                       <div className="flex items-center justify-between gap-3">
                         <span className={`text-xs font-semibold ${event.event_type === 'STATUS_CHANGE' ? 'text-blue-600' : 'text-emerald-600'}`}>{event.event_type === 'STATUS_CHANGE' ? 'Status change' : `Comment · ${event.visibility || 'PUBLIC'}`}</span>
-                        <span className="text-xs text-slate-500">{new Date(event.created_at).toLocaleString()}</span>
+                        <span className="text-xs text-slate-500">{formatDateTime(event.created_at)}</span>
                       </div>
                       <p className={`mt-2 text-sm ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{event.event_type === 'STATUS_CHANGE' ? `${event.from_status || '—'} → ${event.to_status || '—'}` : event.comment || '—'}</p>
                     </div>
@@ -970,7 +975,7 @@ interface TicketClassificationMeta {
                 <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-emerald-950/10' : 'border-gray-200 bg-emerald-50/50'}`}>
                   <p className={`text-xs uppercase tracking-[0.2em] font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>Resolution</p>
                   <p className={`mt-3 text-sm leading-7 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>{detailTicket.resolution.summary}</p>
-                  {detailTicket.resolution.resolved_at && <p className="mt-2 text-xs text-slate-500">Resolved {new Date(detailTicket.resolution.resolved_at).toLocaleString()}</p>}
+                  {detailTicket.resolution.resolved_at && <p className="mt-2 text-xs text-slate-500">Resolved {formatDateTime(detailTicket.resolution.resolved_at)}</p>}
                 </div>
               )}
             </div>
@@ -982,7 +987,7 @@ interface TicketClassificationMeta {
 
   // If My Queue page layout
   if (title === 'My queue') {
-    const queueRows = [...queueTickets].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const queueRows = [...queueTickets].sort((a, b) => (parseDateTime(b.created_at)?.getTime() ?? 0) - (parseDateTime(a.created_at)?.getTime() ?? 0));
 
     const getRowNumberColor = (index: number) => {
       switch (index) {
@@ -1047,7 +1052,7 @@ interface TicketClassificationMeta {
                           {row.subject}
                         </button>
                         <span className="text-xs text-slate-400 dark:text-gray-500 mt-1 block">
-                          {row.ticket_id} · created {new Date(row.created_at).toLocaleString()}
+                          {row.ticket_id} · created {formatDateTime(row.created_at)}
                         </span>
                       </td>
                       <td className="px-4 py-4">
@@ -1212,7 +1217,7 @@ interface TicketClassificationMeta {
             {row.subject}
           </button>
           <div className="text-xs text-slate-500 mt-1">
-            {row.ticket_id} · created {new Date(row.created_at).toLocaleDateString()}
+            {row.ticket_id} · created {formatDateTime(row.created_at, { dateStyle: 'short' })}
           </div>
         </div>
       </div>
@@ -1879,7 +1884,7 @@ function ReportsPage({ isDark }: { isDark: boolean }) {
     setIsLoading(true);
     setError('');
     try {
-      const overview = await getManagerOverview();
+      const overview = await getSupportManagerOverview();
       setTickets(overview.all_tickets);
     } catch (requestError) {
       setError(getApiErrorMessage(requestError, 'Unable to load ticket reports.'));
@@ -1890,19 +1895,19 @@ function ReportsPage({ isDark }: { isDark: boolean }) {
   useEffect(() => { void loadReport(); }, [loadReport]);
 
   const now = new Date();
-  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+  const todayKey = getIndiaDateKey(now) || now.toISOString().slice(0, 10);
+  const [todayYear, todayMonth, todayDay] = todayKey.split('-').map(Number);
+  const weekStart = new Date(Date.UTC(todayYear, todayMonth - 1, todayDay - 6));
+  const weekStartKey = weekStart.toISOString().slice(0, 10);
   const weekTickets = tickets.filter((ticket) => {
-    const createdAt = new Date(ticket.created_at);
-    return !Number.isNaN(createdAt.getTime()) && createdAt >= weekStart && createdAt <= now;
+    const createdKey = getIndiaDateKey(ticket.created_at);
+    return Boolean(createdKey && createdKey >= weekStartKey && createdKey <= todayKey);
   });
   const dailyCounts = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(weekStart);
-    date.setDate(weekStart.getDate() + index);
-    const count = weekTickets.filter((ticket) => {
-      const createdAt = new Date(ticket.created_at);
-      return createdAt.getFullYear() === date.getFullYear() && createdAt.getMonth() === date.getMonth() && createdAt.getDate() === date.getDate();
-    }).length;
-    return { label: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date), count };
+    const date = new Date(Date.UTC(todayYear, todayMonth - 1, todayDay - 6 + index));
+    const dateKey = date.toISOString().slice(0, 10);
+    const count = weekTickets.filter((ticket) => getIndiaDateKey(ticket.created_at) === dateKey).length;
+    return { label: formatDateTime(date, { weekday: 'short' }), count };
   });
   const maxDailyCount = Math.max(1, ...dailyCounts.map(({ count }) => count));
   const priorities = [
@@ -1993,7 +1998,7 @@ function ReportsPage({ isDark }: { isDark: boolean }) {
               {topCategories.length ? <ul className="space-y-2">{topCategories.map(([category, count]) => <li key={category} className={`flex items-center justify-between gap-3 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}><span className="truncate">{formatCategoryLabel(category)}</span><span className={`shrink-0 ${quietClass}`}>{count}</span></li>)}</ul> : <p className={`text-sm ${quietClass}`}>{isLoading ? 'Loading ticket data…' : 'No ticket categories to report yet.'}</p>}
             </section>
           </div>
-          <p className={`text-xs ${quietClass}`}>Data comes from ticket records available to the manager and administrator overview API. Tickets without a priority or category are counted as unclassified.</p>
+          <p className={`text-xs ${quietClass}`}>Data comes from ticket records available to the Support Manager and Admin overview. Tickets without a priority or category are counted as unclassified.</p>
         </>
       )}
     </div>
@@ -2017,15 +2022,10 @@ function getApiErrorMessage(error: unknown, fallback: string) {
 }
 
 function formatAccountDate(value: string | null) {
-  if (!value) return '—';
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-
-  return new Intl.DateTimeFormat(undefined, {
+  return formatDateTime(value, {
     dateStyle: 'medium',
     timeStyle: 'short',
-  }).format(date);
+  });
 }
 
 function SpecialtyPicker({
@@ -2481,7 +2481,7 @@ function TaxonomyPage({ isDark }: { isDark: boolean }) {
 
 function SLAPoliciesPage({ isDark }: { isDark: boolean }) {
   const policies = [
-    { name: 'Critical — P1', firstResponse: '15 min', resolution: '4 hours', calendar: 'Chennai business hrs', escalation: 'Auto-escalate to L3 + manager after 10 min', status: 'Active', tone: 'bg-red-600' },
+    { name: 'Critical — P1', firstResponse: '15 min', resolution: '4 hours', calendar: 'Chennai business hrs', escalation: 'Auto-escalate to L3 + Support Manager after 10 min', status: 'Active', tone: 'bg-red-600' },
     { name: 'High — P2', firstResponse: '1 hour', resolution: '8 hours', calendar: 'Chennai business hrs', escalation: 'Auto-escalate to L2 after 45 min', status: 'Active', tone: 'bg-amber-600' },
     { name: 'Medium — P3', firstResponse: '4 hours', resolution: '24 hours', calendar: 'Chennai business hrs', escalation: 'Notify team lead after 3 hours', status: 'Active', tone: 'bg-orange-500' },
     { name: 'Low — P4', firstResponse: '8 hours', resolution: '72 hours', calendar: 'Standard 9-to-5', escalation: 'Weekly review queue', status: 'Active', tone: 'bg-slate-500' },
@@ -3101,7 +3101,7 @@ function NotificationsPage({
         ? 'Agent Notifications'
         : role === 'Admin'
           ? 'System Notifications'
-          : 'Manager Notifications & System Alerts';
+          : 'Support Manager Notifications & System Alerts';
 
   const pageDescription =
     role === 'User'
@@ -3202,13 +3202,8 @@ function NotificationsPage({
       return '';
     }
 
-    const date = new Date(createdAt);
-
-    if (Number.isNaN(date.getTime())) {
-      return '';
-    }
-
-    return date.toLocaleString();
+    const formatted = formatDateTime(createdAt);
+    return formatted === '—' ? '' : formatted;
   };
 
   const getNotificationType = (
@@ -3614,7 +3609,7 @@ function ProfilePage({ isDark }: { isDark: boolean }) {
     </div>
   );
 }
-function ManagerProfilePage({ isDark }: { isDark: boolean }) {
+function SupportManagerProfilePage({ isDark }: { isDark: boolean }) {
   const { user } = useAuth();
   return (
     <div className="max-w-2xl space-y-6">
@@ -3642,7 +3637,7 @@ function ManagerProfilePage({ isDark }: { isDark: boolean }) {
           <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Username</span><span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{user?.username}</span></div>
           <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Email Address</span><span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{user?.email}</span></div>
           <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Department Scope</span><span className={isDark ? 'text-gray-200' : 'text-gray-700'}>IT Operations & Customer Support</span></div>
-          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Assigned Access</span><span className="font-semibold text-blue-600">Full Manager Dashboard & Assignment Control</span></div>
+          <div className="pt-2 flex justify-between"><span className="text-xs text-gray-500 uppercase">Assigned Access</span><span className="font-semibold text-blue-600">Support Manager Dashboard & Assignment Control</span></div>
         </div>
       </div>
     </div>
@@ -3684,7 +3679,7 @@ useEffect(() => {
         ? await getAgentQueue()
         : await getMyTickets();
 
-      const sortedHome = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      const sortedHome = [...data].sort((a, b) => (parseDateTime(b.created_at)?.getTime() ?? 0) - (parseDateTime(a.created_at)?.getTime() ?? 0));
       setHomeTickets(sortedHome);
     } catch (err) {
       if (silent) {
@@ -3808,7 +3803,6 @@ const openTopSearchTicket = (ticketId: string) => {
   if (user?.role === "Agent") {
     setActivePage("My queue");
   } else if (
-    user?.role === "Manager" ||
     user?.role === "Support Manager"
   ) {
     setActivePage("Ticket Queue");
@@ -3892,8 +3886,8 @@ const openTopSearchTicket = (ticketId: string) => {
     }
   };
 
-  const activeSidebarGroups = (user?.role === 'Support Manager' || user?.role === 'Manager')
-    ? managerSidebarGroups
+  const activeSidebarGroups = user?.role === 'Support Manager'
+    ? supportManagerSidebarGroups
     : sidebarGroups;
 
   return (
@@ -4241,7 +4235,7 @@ const openTopSearchTicket = (ticketId: string) => {
 
               {/* Stat cards */}
               {(() => {
-                const isSupportManager = user?.role === 'Support Manager' || user?.role === 'Manager';
+                const isSupportManager = user?.role === 'Support Manager';
                 const homeOpenCount = homeTickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
                 const homeHighPriorityCount = homeTickets.filter(t => (t.priority === 'P1' || t.priority === 'P2' || t.severity === 'HIGH' || t.severity === 'CRITICAL') && t.status !== 'Resolved' && t.status !== 'Closed').length;
                 const homeSlaBreachesCount = homeTickets.filter(t => {
@@ -4249,13 +4243,14 @@ const openTopSearchTicket = (ticketId: string) => {
                   const sla = t.sla;
                   if (!sla) return false;
                   const due = sla.resolution_due || sla.first_response_due;
-                  return due ? new Date(due) < new Date() : false;
+                  const dueAt = parseDateTime(due);
+                  return dueAt ? dueAt < new Date() : false;
                 }).length;
                 const homeEscalationsCount = homeTickets.filter(t => 
                   t.priority === 'P1' || t.severity === 'CRITICAL' || t.work_blocked === 'YES' || homeSlaBreachesCount > 0
                 ).length;
 
-                const managerHomeStats = [
+                const supportManagerHomeStats = [
                   { label: 'Open Tickets', value: String(homeOpenCount), change: 'Awaiting resolution', icon: Ticket, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
                   { label: 'High Priority', value: String(homeHighPriorityCount), change: 'P1 / P2 Cases', icon: AlertCircle, iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
                   { label: 'SLA Breaches', value: String(homeSlaBreachesCount), change: 'Past SLA target', icon: AlertTriangle, iconBg: 'bg-red-50', iconColor: 'text-red-600' },
@@ -4271,7 +4266,7 @@ const openTopSearchTicket = (ticketId: string) => {
                   { label: 'Avg Response', value: '15m', change: 'Standard SLA', icon: Zap, iconBg: 'bg-green-50', iconColor: 'text-green-600' },
                 ];
 
-                const activeStats = isSupportManager ? managerHomeStats : dynamicHomeStats;
+                const activeStats = isSupportManager ? supportManagerHomeStats : dynamicHomeStats;
 
                 return (
                   <div className={`grid gap-4 ${isSupportManager ? 'grid-cols-2 md:grid-cols-3 xl:grid-cols-5' : 'grid-cols-2 xl:grid-cols-4'}`}>

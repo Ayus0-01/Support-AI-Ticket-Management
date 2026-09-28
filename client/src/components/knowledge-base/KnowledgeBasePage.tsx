@@ -9,6 +9,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { formatDateTime } from "../../utils/dateTime";
 import {
   createKnowledgeArticle,
   getIngestionStatus,
@@ -88,12 +89,7 @@ const slugFromTitle = (value: string) => value
   .replace(/(^-|-$)/g, "");
 
 const formatDate = (value?: string | null) => {
-  if (!value) {
-    return "—";
-  }
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  return formatDateTime(value);
 };
 
 const isTerminalJob = (status?: string) => ["COMPLETED", "COMPLETED_WITH_ERRORS", "FAILED"].includes(status || "");

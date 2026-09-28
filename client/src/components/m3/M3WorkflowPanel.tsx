@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { formatDateTime } from "../../utils/dateTime";
 import {
   Bot,
   Play,
@@ -31,6 +32,7 @@ import {
 interface M3WorkflowPanelProps {
   ticketId: string;
   isDark?: boolean;
+  canRunWorkflow?: boolean;
 }
 
 const formatDuration = (durationMs?: number) => {
@@ -51,6 +53,7 @@ const TIMED_STAGES = [
 export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
   ticketId,
   isDark = false,
+  canRunWorkflow = true,
 }) => {
   const [workflow, setWorkflow] = useState<M3WorkflowData | null>(null);
   const [activityLogs, setActivityLogs] = useState<M3ActivityLog[]>([]);
@@ -235,7 +238,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
           </div>
         </div>
 
-        <button
+        {canRunWorkflow && <button
           onClick={handleRunWorkflow}
           disabled={loading}
           className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500"
@@ -251,7 +254,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
               <span>{workflow ? "Re-Run AI Workflow" : "Run AI Workflow"}</span>
             </>
           )}
-        </button>
+        </button>}
       </div>
 
       {/* Error Banner */}
@@ -615,9 +618,18 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
           {/* Resolution Section */}
           {workflow.resolution && (
             <div className={`rounded-2xl border p-5 ${isDark ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white"}`}>
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                <FileText className="h-4 w-4 text-purple-500" />
-                <span>3. Generated Resolution</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <FileText className="h-4 w-4 text-purple-500" />
+                  <span>3. Generated Resolution</span>
+                </div>
+                {typeof workflow.resolution.confidence === "number" && (
+                  <span className="rounded-full bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-700 dark:text-purple-300">
+                    Resolution confidence: {Math.round(workflow.resolution.confidence <= 1
+                      ? workflow.resolution.confidence * 100
+                      : workflow.resolution.confidence)}%
+                  </span>
+                )}
               </div>
               {workflow.resolution.summary && (
                 <div className="mt-3">
@@ -764,7 +776,7 @@ export const M3WorkflowPanel: React.FC<M3WorkflowPanelProps> = ({
                       <div className="flex items-center justify-between font-semibold">
                         <span className="text-blue-600 dark:text-blue-400">{log.action}</span>
                         <span className="text-[10px] text-gray-400">
-                          {new Date(log.timestamp).toLocaleTimeString()}
+                          {formatDateTime(log.timestamp, { timeStyle: "medium" })}
                         </span>
                       </div>
                       <p className="mt-1 text-gray-600 dark:text-gray-300">{log.details}</p>

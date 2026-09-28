@@ -1,4 +1,7 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, timezone
+from zoneinfo import ZoneInfo
+
+INDIA_TIME_ZONE = ZoneInfo("Asia/Kolkata")
 
 SLA_RULES = {
     "P1": {
@@ -66,30 +69,28 @@ def move_to_business_time(dt):
     Move a datetime into business hours.
     """
 
+    # Ticket dates from MongoDB are naive UTC datetimes. Interpret them as UTC,
+    # then calculate the business window against the Indian calendar and clock.
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    dt = dt.astimezone(INDIA_TIME_ZONE)
+    local_time = dt.timetz().replace(tzinfo=None)
+
     if not is_business_day(dt.date()):
         next_day = dt.date()
 
         while not is_business_day(next_day):
             next_day += timedelta(days=1)
 
-        return datetime.combine(
-            next_day,
-            BUSINESS_START
-        )
+        return datetime.combine(next_day, BUSINESS_START, tzinfo=INDIA_TIME_ZONE)
 
-    if dt.time() < BUSINESS_START:
-        return datetime.combine(
-            dt.date(),
-            BUSINESS_START
-        )
+    if local_time < BUSINESS_START:
+        return datetime.combine(dt.date(), BUSINESS_START, tzinfo=INDIA_TIME_ZONE)
 
-    if dt.time() >= BUSINESS_END:
+    if local_time >= BUSINESS_END:
         next_day = next_business_day(dt.date())
 
-        return datetime.combine(
-            next_day,
-            BUSINESS_START
-        )
+        return datetime.combine(next_day, BUSINESS_START, tzinfo=INDIA_TIME_ZONE)
 
     return dt
 
@@ -111,8 +112,7 @@ def add_business_minutes(start_datetime, minutes):
         current = move_to_business_time(current)
 
         business_end = datetime.combine(
-            current.date(),
-            BUSINESS_END
+            current.date(), BUSINESS_END, tzinfo=INDIA_TIME_ZONE
         )
 
         available_today = int(
@@ -130,7 +130,8 @@ def add_business_minutes(start_datetime, minutes):
 
         current = datetime.combine(
             next_business_day(current.date()),
-            BUSINESS_START
+            BUSINESS_START,
+            tzinfo=INDIA_TIME_ZONE,
         )
 
     return current
@@ -157,7 +158,7 @@ def calculate_sla(priority, created_at=None):
         )
 
     if created_at is None:
-        created_at = datetime.now()
+        created_at = datetime.now(INDIA_TIME_ZONE)
 
     created_at = move_to_business_time(
         created_at

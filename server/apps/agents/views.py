@@ -23,6 +23,9 @@ from .orchestrator import (
     get_activity_logs,
 )
 
+M3_READ_ROLES = {"Agent", "Support Manager", "Admin"}
+M3_EXECUTION_ROLES = {"Agent", "Admin"}
+
 
 def _sanitize_object_ids(data: Any) -> Any:
     """
@@ -38,6 +41,40 @@ def _sanitize_object_ids(data: Any) -> Any:
     elif isinstance(data, tuple):
         return tuple(_sanitize_object_ids(item) for item in data)
     return data
+
+
+def _redact_resolution_for_support_manager(workflow: Dict[str, Any], executions: list):
+    """Expose a read-only resolution summary and evidence, not execution internals."""
+    safe_workflow = dict(workflow)
+    resolution = safe_workflow.get("resolution")
+    if isinstance(resolution, dict):
+        safe_workflow["resolution"] = {
+            key: resolution[key]
+            for key in (
+                "summary",
+                "troubleshooting_steps",
+                "confidence",
+            )
+            if key in resolution
+        }
+    else:
+        safe_workflow["resolution"] = None
+
+    safe_executions = []
+    for execution in executions:
+        safe_execution = dict(execution)
+        agent_name = safe_execution.get("agent_name")
+        if agent_name == "ResolutionAgent":
+            safe_execution.pop("output_data", None)
+
+        input_data = safe_execution.get("input_data")
+        if agent_name in {"ValidationAgent", "EscalationAgent"} and isinstance(input_data, dict):
+            safe_input_data = dict(input_data)
+            safe_input_data.pop("resolution", None)
+            safe_execution["input_data"] = safe_input_data
+        safe_executions.append(safe_execution)
+
+    return safe_workflow, safe_executions
 
 
 def _authenticate_request(request):
@@ -97,6 +134,11 @@ def execute_m3_workflow_view(request, ticket_id: Optional[str] = None):
     user, error_response = _authenticate_request(request)
     if error_response:
         return error_response
+    if user.get("role", "User") not in M3_EXECUTION_ROLES:
+        return Response(
+            {"message": "You do not have permission to run the AI workflow."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     target_ticket_id = (ticket_id or (request.data.get("ticket_id") if isinstance(request.data, dict) else None) or "").strip()
     if not target_ticket_id:
@@ -148,6 +190,11 @@ def get_m3_workflow_status_view(request, ticket_id: str):
     user, error_response = _authenticate_request(request)
     if error_response:
         return error_response
+    if user.get("role", "User") not in M3_READ_ROLES:
+        return Response(
+            {"message": "Staff access is required to view AI workflow details."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     target_ticket_id = ticket_id.strip()
     ticket = tickets_collection.find_one({"ticket_id": target_ticket_id})
@@ -166,6 +213,9 @@ def get_m3_workflow_status_view(request, ticket_id: str):
 
     workflow_id = workflow.get("workflow_id")
     executions = get_workflow_executions(workflow_id) if workflow_id else []
+
+    if user.get("role") == "Support Manager":
+        workflow, executions = _redact_resolution_for_support_manager(workflow, executions)
 
     return Response(
         _sanitize_object_ids({
@@ -188,6 +238,11 @@ def get_m3_activity_logs_view(request, ticket_id: Optional[str] = None, workflow
     user, error_response = _authenticate_request(request)
     if error_response:
         return error_response
+    if user.get("role", "User") not in M3_READ_ROLES:
+        return Response(
+            {"message": "Staff access is required to view AI workflow details."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     target_ticket_id = (ticket_id or request.query_params.get("ticket_id") or "").strip()
     target_workflow_id = (workflow_id or request.query_params.get("workflow_id") or "").strip()

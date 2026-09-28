@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 
 from AIticket.db import users_collection
-from .constants import USER_ROLES
+from .constants import USER_ROLES, normalize_user_role
 from .serializers import (
     LoginSerializer,
     ManagedUserCreateSerializer,
@@ -46,7 +46,7 @@ def _normalise_managed_user(user):
         "_id": user["_id"],
         "username": user.get("username", ""),
         "email": user.get("email", ""),
-        "role": user.get("role") or "User",
+        "role": normalize_user_role(user.get("role") or "User"),
         "specialties": user.get("specialties", []),
         "is_active": user.get("is_active", True),
         "created_at": user.get("created_at"),

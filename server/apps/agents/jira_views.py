@@ -18,6 +18,10 @@ from rest_framework.decorators import (
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import AccessToken
+from bson import ObjectId
+
+from AIticket.db import users_collection
 
 from .jira_service import (
     create_jira_issue,
@@ -25,6 +29,37 @@ from .jira_service import (
     update_jira_issue,
     sync_jira_status_for_ticket,
 )
+
+JIRA_READ_ROLES = {"Agent", "Support Manager", "Admin"}
+JIRA_MANAGEMENT_ROLES = {"Support Manager", "Admin"}
+
+
+def _authorize_jira_request(request, allowed_roles):
+    auth_header = request.headers.get("Authorization", "")
+    parts = auth_header.split(" ")
+    if len(parts) != 2 or parts[0] != "Bearer":
+        return None, Response(
+            {"message": "A valid Bearer token is required."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    try:
+        token = AccessToken(parts[1])
+        user = users_collection.find_one({"_id": ObjectId(token["user_id"])})
+    except Exception:
+        user = None
+
+    if not user:
+        return None, Response(
+            {"message": "Invalid or expired token."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    if user.get("role", "User") not in allowed_roles:
+        return None, Response(
+            {"message": "You do not have permission to use this Jira endpoint."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    return user, None
 
 
 def _get_request_data(request) -> Dict[str, Any]:
@@ -44,6 +79,10 @@ def create_jira_ticket_view(request):
 
     Creates a Jira issue for a SupportPilot ticket.
     """
+
+    _, auth_error = _authorize_jira_request(request, JIRA_MANAGEMENT_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
@@ -77,6 +116,10 @@ def get_jira_ticket_view(request, ticket_id):
     Retrieves Jira information mapped to a SupportPilot ticket.
     """
 
+    _, auth_error = _authorize_jira_request(request, JIRA_READ_ROLES)
+    if auth_error:
+        return auth_error
+
     result = get_jira_issue(ticket_id)
 
     return Response(
@@ -98,6 +141,10 @@ def update_jira_ticket_view(request, ticket_id):
 
     Updates the mapped Jira issue.
     """
+
+    _, auth_error = _authorize_jira_request(request, JIRA_MANAGEMENT_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
@@ -125,6 +172,10 @@ def sync_jira_ticket_view(request):
 
     Synchronizes Jira status with the SupportPilot ticket.
     """
+
+    _, auth_error = _authorize_jira_request(request, JIRA_MANAGEMENT_ROLES)
+    if auth_error:
+        return auth_error
 
     data = _get_request_data(request)
 
