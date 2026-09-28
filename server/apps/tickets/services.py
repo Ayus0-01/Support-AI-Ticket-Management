@@ -824,7 +824,8 @@ VALID_STATUS_TRANSITIONS = {
         "Resolved",
     },
 
-    "Resolved": set(),
+    "Resolved": {"Closed"},
+    "Closed": set(),
 }
 
 def transition_ticket_status(
@@ -1011,6 +1012,58 @@ def add_ticket_comment(
     )
 
     return comment_document
+
+
+def reopen_ticket(ticket_id, actor_user_id, additional_info):
+    """Reopen a resolved/closed customer ticket and add the user's update to its timeline."""
+    now = datetime.now(timezone.utc)
+    ticket = tickets_collection.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        return {"success": False, "error": "TICKET_NOT_FOUND"}
+    if ticket.get("status") not in {"Resolved", "Closed"}:
+        return {
+            "success": False,
+            "error": "INVALID_TRANSITION",
+            "current_status": ticket.get("status", "Open"),
+        }
+
+    comment = {
+        "ticket_id": ticket_id,
+        "author_user_id": str(actor_user_id),
+        "comment": additional_info,
+        "visibility": "PUBLIC",
+        "source": "CUSTOMER_REOPEN",
+        "created_at": now,
+    }
+    inserted_comment = comments_collection.insert_one(comment)
+    transition = tickets_collection.update_one(
+        {"ticket_id": ticket_id, "status": {"$in": ["Resolved", "Closed"]}},
+        {
+            "$set": {
+                "status": "Open",
+                "resolution_status": "REOPENED",
+                "updated_at": now,
+            }
+        },
+    )
+    if transition.modified_count != 1:
+        comments_collection.delete_one({"_id": inserted_comment.inserted_id})
+        latest = tickets_collection.find_one({"ticket_id": ticket_id}, {"status": 1})
+        return {
+            "success": False,
+            "error": "INVALID_TRANSITION",
+            "current_status": (latest or {}).get("status", "Open"),
+        }
+
+    status_history_collection.insert_one({
+        "ticket_id": ticket_id,
+        "from_status": ticket.get("status"),
+        "to_status": "Open",
+        "changed_by": str(actor_user_id),
+        "changed_at": now,
+    })
+    comment["_id"] = str(inserted_comment.inserted_id)
+    return {"success": True, "ticket_id": ticket_id, "status": "Open", "comment": comment}
 
 def get_ticket_timeline(
     ticket_id,

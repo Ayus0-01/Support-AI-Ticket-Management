@@ -460,6 +460,11 @@ def submit_feedback(
             "You can only submit feedback for your own tickets."
         )
 
+    if is_owner and ticket.get("resolution_status") == "REOPENED":
+        raise ValueError(
+            "This resolution belongs to an earlier ticket attempt. Wait for the updated resolution before submitting feedback."
+        )
+
     # 2. Sent Resolution Only: Requesters may only confirm/reject SENT or EDITED_SENT resolutions
     if is_owner and response.get("status") not in {"SENT", "EDITED_SENT"}:
         raise ValueError(
@@ -513,46 +518,54 @@ def submit_feedback(
             )
 
         current_status = tickets_collection.find_one({"_id": ticket["_id"]})
+        resolved_by_confirmation = False
         if current_status and current_status.get("status") == "In Progress":
-            transition_ticket_status(
+            resolution_transition = transition_ticket_status(
                 ticket_id=ticket["ticket_id"],
                 new_status="Resolved",
                 actor_user_id=user_id,
                 resolution_summary=response.get("summary", "AI resolution confirmed by customer."),
             )
-
-                    # Send resolved notification after the ticket is actually resolved.
-        try:
-            resolved_ticket = tickets_collection.find_one(
-                {"_id": ticket["_id"]}
+            resolved_by_confirmation = bool(
+                resolution_transition
+                and resolution_transition.get("success")
+                and resolution_transition.get("to_status") == "Resolved"
             )
 
-            resolved_email_result = send_resolved_email(
-                ticket=resolved_ticket or ticket,
-                resolution=response,
-            )
+        # Send a resolved email only when this feedback caused a new transition
+        # to Resolved. Reopen/late feedback must not resend an old resolution.
+        if resolved_by_confirmation:
+            try:
+                resolved_ticket = tickets_collection.find_one(
+                    {"_id": ticket["_id"]}
+                )
 
-            log_activity(
-                ticket_id=ticket["ticket_id"],
-                action="RESOLVED_EMAIL_SENT",
-                details="Ticket resolved notification email processed.",
-                actor="Resolution Workflow",
-                agent_name="ReviewService",
-                status=resolved_email_result.get("status", "UNKNOWN"),
-                metadata={
-                    "email_result": resolved_email_result,
-                },
-            )
+                resolved_email_result = send_resolved_email(
+                    ticket=resolved_ticket or ticket,
+                    resolution=response,
+                )
 
-        except Exception as email_error:
-            log_activity(
-                ticket_id=ticket["ticket_id"],
-                action="RESOLVED_EMAIL_FAILED",
-                details=f"Resolved notification email failed: {email_error}",
-                actor="Resolution Workflow",
-                agent_name="ReviewService",
-                status="FAILED",
-            )
+                log_activity(
+                    ticket_id=ticket["ticket_id"],
+                    action="RESOLVED_EMAIL_SENT",
+                    details="Ticket resolved notification email processed.",
+                    actor="Resolution Workflow",
+                    agent_name="ReviewService",
+                    status=resolved_email_result.get("status", "UNKNOWN"),
+                    metadata={
+                        "email_result": resolved_email_result,
+                    },
+                )
+
+            except Exception as email_error:
+                log_activity(
+                    ticket_id=ticket["ticket_id"],
+                    action="RESOLVED_EMAIL_FAILED",
+                    details=f"Resolved notification email failed: {email_error}",
+                    actor="Resolution Workflow",
+                    agent_name="ReviewService",
+                    status="FAILED",
+                )
 
         timeline_comment = (
             f"Requester confirmed the AI resolution solved the issue. Ticket resolved. Feedback: {comment_text}"

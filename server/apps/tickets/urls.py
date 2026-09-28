@@ -10,6 +10,7 @@ from .views import (
     agent_queue_view,
     classification_override_view,
     transition_ticket_status_view,
+    reopen_ticket_view,
     add_ticket_comment_view,
     ticket_timeline_view,
     generate_resolution_view,
@@ -139,6 +140,12 @@ urlpatterns = [
         "<str:ticket_id>/status/",
         transition_ticket_status_view,
         name="ticket-status-transition",
+    ),
+
+    path(
+        "<str:ticket_id>/reopen/",
+        reopen_ticket_view,
+        name="ticket-reopen",
     ),
 
     path(

@@ -15,6 +15,25 @@ OLLAMA_URL = config("OLLAMA_URL", default="http://localhost:11434/api/generate")
 MODEL_NAME = config("OLLAMA_MODEL", default="qwen3:4b")
 REQUEST_TIMEOUT = config("OLLAMA_TIMEOUT", default=120, cast=int)  # Timeout in seconds for LLM call
 
+DIAGNOSIS_OUTPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "problem_understanding": {"type": "string"},
+        "affected_system": {"type": "string"},
+        "likely_causes": {"type": "array", "items": {"type": "string"}},
+        "missing_information": {"type": "array", "items": {"type": "string"}},
+        "confidence": {"type": "number"},
+    },
+    "required": [
+        "problem_understanding",
+        "affected_system",
+        "likely_causes",
+        "missing_information",
+        "confidence",
+    ],
+    "additionalProperties": False,
+}
+
 
 
 def _call_llm(prompt: str, timeout: int = REQUEST_TIMEOUT) -> Optional[str]:
@@ -27,10 +46,10 @@ def _call_llm(prompt: str, timeout: int = REQUEST_TIMEOUT) -> Optional[str]:
         "prompt": prompt,
         "stream": False,
         "think": False,
-        "format": "json",
+        "format": DIAGNOSIS_OUTPUT_SCHEMA,
         "keep_alive": "10m",
         "options": {
-            "num_predict": 192,
+            "num_predict": 384,
         },
     }).encode("utf-8")
 

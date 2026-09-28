@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
@@ -106,6 +106,8 @@ function isNavPage(page: string | null): page is NavPage {
 function AppContent() {
   const [page, setPage] = useState<Page>(() => {
     if (new URLSearchParams(window.location.search).has('verify_email')) return 'verify';
+    const browserPage = window.history.state?.appPage;
+    if (['home', 'signin', 'signup', 'dashboard', 'verify', 'verify-pending'].includes(browserPage)) return browserPage as Page;
     return (sessionStorage.getItem("page") as Page) || "home";
   });
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState('');
@@ -118,11 +120,39 @@ function AppContent() {
 
   const [dashboardActive, setDashboardActive] = useState<NavPage | undefined>(
     () => {
+      const browserPage = window.history.state?.dashboardNavigation?.page || window.history.state?.dashboardActive;
+      if (isNavPage(browserPage)) return browserPage;
       const savedPage = sessionStorage.getItem("dashboardActive");
 
       return isNavPage(savedPage) ? savedPage : undefined;
     }
   );
+  const appPopState = useRef(false);
+
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const state = event.state;
+      if (!state?.appPage) return;
+      appPopState.current = true;
+      setPage(state.appPage as Page);
+      setDashboardActive(isNavPage(state.dashboardNavigation?.page)
+        ? state.dashboardNavigation.page
+        : isNavPage(state.dashboardActive) ? state.dashboardActive : undefined);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    const existing = window.history.state || {};
+    const state = { ...existing, appPage: page, dashboardActive };
+    if (appPopState.current) {
+      window.history.replaceState(state, '');
+      appPopState.current = false;
+    } else if (existing.appPage !== page || existing.dashboardActive !== dashboardActive) {
+      window.history.pushState(state, '');
+    }
+  }, [page, dashboardActive]);
   useEffect(() => {
     sessionStorage.setItem("page", page);
 
@@ -149,6 +179,11 @@ function AppContent() {
         ? sub
         : undefined;
 
+      window.history.replaceState({
+        ...(window.history.state || {}),
+        dashboardNavigation: { page: validSub || 'Dashboard', ticketId: null },
+      }, '');
+
       if (!isAuthenticated) {
         setPage('signin');
         setDashboardActive(validSub);
@@ -161,6 +196,10 @@ function AppContent() {
 }
 
     if (p === 'dashboard') {
+      window.history.replaceState({
+        ...(window.history.state || {}),
+        dashboardNavigation: { page: 'Dashboard', ticketId: null },
+      }, '');
       if (!isAuthenticated) {
         setPage('signin');
         setDashboardActive(undefined);

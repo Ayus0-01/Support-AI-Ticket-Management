@@ -20,6 +20,7 @@ import {
   previewClassification,
   overrideClassification,
   transitionTicketStatus,
+  reopenTicket,
   addTicketComment,
   getTicketTimeline,
   assignTicket,
@@ -308,6 +309,8 @@ const [queueError, setQueueError] = useState("");
   const [overrideSeverity, setOverrideSeverity] = useState("");
   const [commentText, setCommentText] = useState("");
   const [commentVisibility, setCommentVisibility] = useState<"PUBLIC" | "INTERNAL">("PUBLIC");
+  const [reopenInfo, setReopenInfo] = useState("");
+  const [reopenFormOpen, setReopenFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All statuses");
   const [assigneeFilter, setAssigneeFilter] = useState("All assignees");
@@ -624,7 +627,7 @@ interface TicketClassificationMeta {
       }
     };
 
-    const handleStatusChange = async (status: 'In Progress' | 'Resolved') => {
+    const handleStatusChange = async (status: 'In Progress' | 'Resolved' | 'Closed') => {
       if (!isAgentWorkspace) return;
       const trimmedResolutionSummary = resolutionSummary.trim();
 
@@ -699,6 +702,33 @@ interface TicketClassificationMeta {
       }
     };
 
+    const handleReopen = async () => {
+      if (!reopenInfo.trim()) {
+        setActionError('Add a short update about why this ticket needs to be reopened.');
+        return;
+      }
+      try {
+        setActionBusy(true);
+        setActionError('');
+        await reopenTicket(selectedTicketId, reopenInfo.trim());
+        setReopenInfo('');
+        setReopenFormOpen(false);
+        const [latestTicket, timelineData, refreshedTickets] = await Promise.all([
+          getTicketDetails(selectedTicketId),
+          getTicketTimeline(selectedTicketId),
+          getMyTickets(),
+        ]);
+        setDetailTicket(latestTicket);
+        setTimeline(timelineData);
+        setTickets(refreshedTickets);
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } }; message?: string };
+        setActionError(err?.response?.data?.message || err?.message || 'Could not reopen the ticket.');
+      } finally {
+        setActionBusy(false);
+      }
+    };
+
     const handleComment = async () => {
       if (!isAgentWorkspace || !commentText.trim()) return;
       if (commentVisibility === 'INTERNAL' && !can('ADD_INTERNAL_COMMENT')) {
@@ -733,6 +763,11 @@ interface TicketClassificationMeta {
               <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{isAgentWorkspace ? 'Agent workspace — live ticket controls and classification review.' : 'Full ticket details fetched live from the database.'}</p>
             </div>
             <div className="flex flex-wrap gap-3">
+              {isAgentWorkspace && ['Agent', 'Admin'].includes(user?.role || '') && detailTicket?.status === 'Resolved' && can('CHANGE_TICKET_STATUS') && (
+                <button onClick={() => handleStatusChange('Closed')} disabled={actionBusy} className="rounded-2xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-900 disabled:opacity-50 dark:bg-slate-700 dark:hover:bg-slate-600">
+                  {actionBusy ? 'Closing…' : 'Close ticket'}
+                </button>
+              )}
               <button onClick={onBack} className="rounded-2xl border border-slate-200 bg-transparent px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800">
                 ← Back to list
               </button>
@@ -800,6 +835,26 @@ interface TicketClassificationMeta {
                   ))}
                 </div>
               </div>
+
+              {!isAgentWorkspace && user?.role === 'User' && ['Resolved', 'Closed'].includes(detailTicket.status) && (
+                <section className={`rounded-3xl border p-5 ${isDark ? 'border-blue-900 bg-blue-950/20' : 'border-blue-200 bg-blue-50/70'}`}>
+                  <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Need more help with this issue?</h3>
+                  <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Reopen this ticket if the issue is still happening or you need more help.</p>
+                  {!reopenFormOpen ? (
+                    <button type="button" onClick={() => { setReopenInfo(''); setActionError(''); setReopenFormOpen(true); }} className="mt-3 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Reopen ticket</button>
+                  ) : (
+                    <>
+                      <label htmlFor="reopen-additional-info" className={`mt-4 block text-sm font-medium ${isDark ? 'text-gray-200' : 'text-slate-800'}`}>What additional information should support know?</label>
+                      <textarea id="reopen-additional-info" value={reopenInfo} onChange={event => setReopenInfo(event.target.value)} rows={3} maxLength={5000} placeholder="What is still happening or what changed?" className={`mt-2 w-full rounded-2xl border px-3 py-2.5 text-sm ${isDark ? 'border-gray-700 bg-gray-900 text-white' : 'border-blue-200 bg-white text-slate-900'}`} />
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button type="button" onClick={() => { setReopenFormOpen(false); setReopenInfo(''); setActionError(''); }} disabled={actionBusy} className={`rounded-xl border px-4 py-2.5 text-sm font-semibold ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-900' : 'border-slate-300 text-slate-700 hover:bg-white'}`}>Cancel</button>
+                        <button type="button" onClick={handleReopen} disabled={actionBusy || !reopenInfo.trim()} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">{actionBusy ? 'Reopening…' : 'Submit and reopen'}</button>
+                      </div>
+                    </>
+                  )}
+                  {actionError && <p className="mt-3 text-sm text-red-600" role="alert">{actionError}</p>}
+                </section>
+              )}
 
               {canViewClassification && (
                 <div className={`rounded-3xl border p-5 ${isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-white'}`}>
@@ -1362,6 +1417,8 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
     }
   });
   const [submitted, setSubmitted] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [ticketCategories, setTicketCategories] = useState<string[]>([]);
@@ -1369,10 +1426,7 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
   const [categoriesError, setCategoriesError] = useState("");
   const [preview, setPreview] = useState<ClassificationPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [duplicateLoading, setDuplicateLoading] = useState(false);
   const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
-  const [duplicateChecked, setDuplicateChecked] = useState(false);
-  const [duplicateCheckPending, setDuplicateCheckPending] = useState(false);
   const duplicateRequestId = useRef(0);
 
   useEffect(() => {
@@ -1420,12 +1474,24 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
     };
   }, []);
 
+  useEffect(() => {
+    if (!form.subject.trim() && !form.description.trim()) {
+      localStorage.removeItem('aiticketpilot_ticket_draft');
+      setDraftSaved(false);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      localStorage.setItem('aiticketpilot_ticket_draft', JSON.stringify(form));
+      setDraftSaved(true);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [form]);
+
   const set = (k: string, v: string | boolean) => {
+    setDraftSaved(false);
     if (k === 'subject' || k === 'description') {
       duplicateRequestId.current += 1;
-      setDuplicateLoading(false);
       setDuplicateCandidates([]);
-      setDuplicateChecked(false);
     }
 
     setForm((f: typeof form) => ({
@@ -1443,14 +1509,12 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
 
     if (!subject || !description) {
       setDuplicateCandidates([]);
-      setDuplicateChecked(false);
       return;
     }
 
     const requestId = ++duplicateRequestId.current;
 
     try {
-      setDuplicateLoading(true);
       const duplicates = await checkDuplicateTickets(
         subject,
         description
@@ -1461,7 +1525,6 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
       }
 
       setDuplicateCandidates(duplicates);
-      setDuplicateChecked(true);
     } catch (error) {
       if (requestId !== duplicateRequestId.current) {
         return;
@@ -1469,43 +1532,22 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
 
       console.error('Duplicate check failed:', error);
       setDuplicateCandidates([]);
-      setDuplicateChecked(false);
-    } finally {
-      if (requestId === duplicateRequestId.current) {
-        setDuplicateLoading(false);
-      }
     }
   };
 
-  const handleSubjectBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const subject = event.currentTarget.value;
-
-    if (!subject.trim()) {
-      setDuplicateCheckPending(false);
-      setDuplicateCandidates([]);
-      setDuplicateChecked(false);
+  useEffect(() => {
+    if (!form.subject.trim() || !form.description.trim()) {
       return;
     }
 
-    if (!form.description.trim()) {
-      // The subject blur is the trigger. Wait for the required description
-      // instead of sending an invalid or low-information request.
-      setDuplicateCheckPending(true);
-      return;
-    }
+    // Wait until the customer pauses typing, so duplicate checks run reliably
+    // without sending a request for every keystroke.
+    const timer = window.setTimeout(() => {
+      void runDuplicateCheck(form.subject, form.description);
+    }, 700);
 
-    setDuplicateCheckPending(false);
-    void runDuplicateCheck(subject, form.description);
-  };
-
-  const handleDescriptionBlur = () => {
-    if (!duplicateCheckPending) {
-      return;
-    }
-
-    setDuplicateCheckPending(false);
-    void runDuplicateCheck(form.subject, form.description);
-  };
+    return () => window.clearTimeout(timer);
+  }, [form.subject, form.description]);
 
   useEffect(() => {
     if (!form.subject.trim() || !form.description.trim()) {
@@ -1537,7 +1579,32 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
       'aiticketpilot_ticket_draft',
       JSON.stringify(form)
     );
-    setSubmitError("Draft saved locally on this device.");
+    setDraftSaved(true);
+    setSubmitError("");
+  };
+
+  const clearForm = () => {
+    duplicateRequestId.current += 1;
+    setForm({
+      subject: '',
+      description: '',
+      category: AUTO_CATEGORY,
+      affectedSystem: '',
+      started: 'Today',
+      impact: 'Just me',
+      blocked: 'No',
+      workaround: false,
+      department: 'Finance',
+      location: 'Chennai — DLF IT Park',
+      assetTag: '',
+      preferredContact: 'Email',
+    });
+    setFormResetKey(key => key + 1);
+    setSubmitError("");
+    setSubmitted(false);
+    setDraftSaved(false);
+    setPreview(null);
+    setDuplicateCandidates([]);
   };
 
   const submit = async () => {
@@ -1608,23 +1675,40 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
     <div className="grid gap-6 xl:grid-cols-[1.4fr_0.8fr]">
       <div className={`rounded-3xl border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
         <div className={`p-6 space-y-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-          <div className={`rounded-3xl border px-5 py-4 ${isDark ? 'bg-yellow-950/10 border-yellow-500/20' : 'bg-yellow-50 border-yellow-200'}`}>
-            <p className="text-sm font-semibold text-yellow-700">{duplicateLoading ? 'Checking for similar tickets...' : duplicateCandidates.length > 0 ? 'You have a similar open ticket' : duplicateChecked ? 'No likely duplicate found' : 'Duplicate check will run automatically'}</p>
-            <p className="mt-2 text-sm text-slate-600">{duplicateCandidates.length > 0 ? 'Adding to an existing ticket is usually faster than raising a new one.' : duplicateChecked ? 'No matching active ticket passed the duplicate threshold.' : 'Leave the subject and description to let the system compare your ticket with recent active tickets.'}</p>
-            {duplicateCandidates[0] ? (
-              <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{duplicateCandidates[0].subject || duplicateCandidates[0].ticket_id}</p>
-                  <p className="text-xs text-slate-500">{duplicateCandidates[0].ticket_id} · {duplicateCandidates[0].status || 'Active'}{duplicateCandidates[0].score ? ` · ${(duplicateCandidates[0].score * 100).toFixed(0)}% similarity` : ''}</p>
-                </div>
-                <button type="button" onClick={() => {
-                  if (duplicateCandidates[0]?.ticket_id) {
-                    onOpenTicket?.(duplicateCandidates[0].ticket_id);
-                  }
-                }} className="self-start rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">Review</button>
-              </div>
-            ) : null}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-slate-500" role="status">{draftSaved ? 'Draft saved on this device. You can leave and continue later.' : 'Your ticket draft saves automatically on this device as you type.'}</p>
+            <div className="flex gap-3 sm:justify-end">
+              <button type="button" onClick={clearForm} className="rounded-full border border-rose-300 px-5 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50">Clear form</button>
+              <button type="button" onClick={saveDraft} className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft now</button>
+            </div>
           </div>
+          {duplicateCandidates.length > 0 && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setDuplicateCandidates([]); }}>
+              <section role="dialog" aria-modal="true" aria-labelledby="duplicate-ticket-title" className={`w-full max-w-xl rounded-3xl border p-6 shadow-2xl ${isDark ? 'border-gray-700 bg-gray-900 text-white' : 'border-slate-200 bg-white text-slate-900'}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 id="duplicate-ticket-title" className="text-lg font-bold">This may be a duplicate ticket</h2>
+                    <p className="mt-1 text-sm text-slate-500">We found similar open tickets. You can review one before submitting.</p>
+                  </div>
+                  <button type="button" aria-label="Close duplicate warning" onClick={() => setDuplicateCandidates([])} className="rounded-full px-3 py-1 text-xl leading-none text-slate-500 hover:bg-slate-100">×</button>
+                </div>
+                <div className="mt-5 max-h-72 space-y-3 overflow-y-auto">
+                  {duplicateCandidates.map((candidate) => (
+                    <div key={candidate.ticket_id} className={`flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between ${isDark ? 'border-gray-700 bg-gray-800' : 'border-slate-200 bg-slate-50'}`}>
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold">{candidate.subject || candidate.ticket_id}</p>
+                        <p className="mt-1 text-xs text-slate-500">{candidate.ticket_id} · {candidate.status || 'Active'}{candidate.score != null ? ` · ${(candidate.score * 100).toFixed(0)}% similarity` : ''}</p>
+                      </div>
+                      <button type="button" onClick={() => { setDuplicateCandidates([]); onOpenTicket?.(candidate.ticket_id); }} className="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">Review ticket</button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-5 flex justify-end">
+                  <button type="button" onClick={() => setDuplicateCandidates([])} className={`rounded-full border px-4 py-2 text-sm font-semibold ${isDark ? 'border-gray-700 text-gray-200 hover:bg-gray-800' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}`}>Continue with new ticket</button>
+                </div>
+              </section>
+            </div>
+          )}
 
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
@@ -1641,7 +1725,6 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
                 <input
                   value={form.subject}
                   onChange={e => set('subject', e.target.value)}
-                  onBlur={handleSubjectBlur}
                   placeholder="VPN connection failing on corporate network"
                   className={field}
                   required
@@ -1653,7 +1736,6 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
                 <textarea
                   value={form.description}
                   onChange={e => set('description', e.target.value)}
-                  onBlur={handleDescriptionBlur}
                   rows={5}
                   placeholder={'Unable to connect to VPN since this morning. Error message: "Connection timed out. Please check your network settings and try again." Tried restarting the client but issue persists.'}
                   className={field}
@@ -1791,13 +1873,12 @@ function CreateTicketPage({ isDark, onCreated, onOpenTicket, onOpenKnowledgeArti
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Attachments (optional)</label>
-              <input type="file" className={field} />
+              <input key={formResetKey} type="file" className={field} />
               <p className="mt-2 text-xs text-slate-500">Screenshots or log files. Max 5 files, 10 MB each.</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button type="button" onClick={saveDraft} className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Save draft</button>
+          <div className="flex justify-end">
             <button type="button" onClick={submit} disabled={submitting} className="rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">{submitting ? "Submitting..." : "Submit ticket"}</button>
           </div>
 
@@ -3659,11 +3740,86 @@ export default function Dashboard({ onNavigate, initialPage }: DashboardProps) {
   ]);
   const [aiInput, setAiInput] = useState('');
   const [topSearchTerm, setTopSearchTerm] = useState('');
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(
+    () => typeof window.history.state?.dashboardNavigation?.ticketId === 'string'
+      ? window.history.state.dashboardNavigation.ticketId
+      : null,
+  );
   const [knowledgeArticleId, setKnowledgeArticleId] = useState<string | null>(null);
+  const [notificationMenuOpen, setNotificationMenuOpen] = useState(false);
+  const [notificationPreview, setNotificationPreview] = useState<Array<{ _id: string; title: string; message: string; ticket_id?: string | null; is_read: boolean; created_at: string }>>([]);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
   const [homeTickets, setHomeTickets] = useState<ApiTicket[]>([]);
   const [loadingHome, setLoadingHome] = useState(true);
   const [homeError, setHomeError] = useState("");
+  const dashboardPopState = useRef(Boolean(
+    window.history.state?.appPage === 'dashboard' && !window.history.state?.dashboardNavigation,
+  ));
+
+  useEffect(() => {
+    const existingState = window.history.state || {};
+    const navigation = { page: activePage, ticketId: selectedTicketId };
+    const nextState = { ...existingState, appPage: 'dashboard', dashboardActive: activePage, dashboardNavigation: navigation };
+    if (dashboardPopState.current) {
+      window.history.replaceState(nextState, '');
+      dashboardPopState.current = false;
+      return;
+    }
+    const current = existingState.dashboardNavigation;
+    if (current?.page === navigation.page && current?.ticketId === navigation.ticketId) return;
+    window.history.pushState(nextState, '');
+  }, [activePage, selectedTicketId]);
+
+  useEffect(() => {
+    const restoreDashboardLocation = (event: PopStateEvent) => {
+      const state = event.state;
+      if (state?.appPage !== 'dashboard') return;
+      const page = (typeof state.dashboardNavigation?.page === 'string'
+        ? state.dashboardNavigation.page
+        : typeof state.dashboardActive === 'string' ? state.dashboardActive : 'Dashboard') as NavPage;
+      dashboardPopState.current = true;
+      setActivePage(page);
+      setSelectedTicketId(typeof state.dashboardNavigation?.ticketId === 'string' ? state.dashboardNavigation.ticketId : null);
+      setKnowledgeArticleId(null);
+    };
+    window.addEventListener('popstate', restoreDashboardLocation);
+    return () => window.removeEventListener('popstate', restoreDashboardLocation);
+  }, []);
+
+  const refreshNotificationPreview = useCallback(async () => {
+    try {
+      const data = await getNotifications();
+      setNotificationPreview((data.notifications || []).slice(0, 5));
+      setNotificationUnreadCount(data.unread_count || 0);
+    } catch (error) {
+      console.warn('Could not refresh notification preview:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshNotificationPreview();
+    const timer = window.setInterval(() => void refreshNotificationPreview(), 15000);
+    return () => window.clearInterval(timer);
+  }, [refreshNotificationPreview]);
+
+  const openNotification = async (notification: (typeof notificationPreview)[number]) => {
+    if (!notification.is_read) {
+      try {
+        await markNotificationRead(notification._id);
+        setNotificationPreview(current => current.map(item => item._id === notification._id ? { ...item, is_read: true } : item));
+        setNotificationUnreadCount(count => Math.max(0, count - 1));
+      } catch (error) {
+        console.warn('Could not mark notification as read:', error);
+      }
+    }
+    setNotificationMenuOpen(false);
+    if (notification.ticket_id) {
+      setSelectedTicketId(notification.ticket_id);
+      setActivePage(user?.role === 'Agent' ? 'My queue' : user?.role === 'Support Manager' ? 'Ticket Queue' : user?.role === 'Admin' ? 'All Tickets' : 'My Tickets');
+    } else {
+      setActivePage('Notifications');
+    }
+  };
 
 useEffect(() => {
   if (activePage !== 'Dashboard') return;
@@ -3939,7 +4095,9 @@ const openTopSearchTicket = (ticketId: string) => {
                     <button
                       key={item.name}
                       onClick={() => {
-                        setActivePage(item.name);
+                        setSelectedTicketId(null);
+                        setKnowledgeArticleId(null);
+                        if (activePage !== item.name) setActivePage(item.name);
                         setSidebarOpen(false);
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
@@ -4050,9 +4208,9 @@ const openTopSearchTicket = (ticketId: string) => {
             )}
             {activePage === 'My Tickets' && (
               <div className="mt-2 flex items-center gap-4">
-                <button onClick={() => setActivePage('My Tickets')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>My tickets</button>
-                <button onClick={() => setActivePage('Create Ticket')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Raise a ticket</button>
-                <button onClick={() => setActivePage('Knowledge Base')} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Self-help</button>
+                <button onClick={() => { setSelectedTicketId(null); setActivePage('My Tickets'); }} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>My tickets</button>
+                <button onClick={() => { setSelectedTicketId(null); setActivePage('Create Ticket'); }} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Raise a ticket</button>
+                <button onClick={() => { setSelectedTicketId(null); setActivePage('Knowledge Base'); }} className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Self-help</button>
               </div>
             )}
           </div>
@@ -4165,16 +4323,41 @@ const openTopSearchTicket = (ticketId: string) => {
 
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
-                  
-                  setActivePage('Notifications');
+                  setNotificationMenuOpen(open => !open);
+                  void refreshNotificationPreview();
                 }}
+                aria-label={`Notifications${notificationUnreadCount ? `, ${notificationUnreadCount} unread` : ''}`}
+                aria-expanded={notificationMenuOpen}
                 className={`relative p-2 rounded-lg transition-colors ${isDark ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+                {notificationUnreadCount > 0 && <span className="absolute -right-1 -top-1 min-w-4 h-4 rounded-full bg-red-600 px-1 text-[9px] font-bold leading-4 text-white">{notificationUnreadCount > 99 ? '99+' : notificationUnreadCount}</span>}
               </button>
-              
+              {notificationMenuOpen && (
+                <div className={`absolute right-0 top-12 z-50 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border shadow-xl ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+                  <div className={`flex items-center justify-between border-b px-4 py-3 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
+                    <div>
+                      <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Notifications</p>
+                      <p className="text-xs text-slate-500">{notificationUnreadCount} unread</p>
+                    </div>
+                    <button type="button" onClick={() => { setNotificationMenuOpen(false); setActivePage('Notifications'); }} className="text-xs font-semibold text-blue-600 hover:text-blue-700">View all</button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notificationPreview.length === 0 ? <p className="px-4 py-6 text-sm text-slate-500">No notifications yet.</p> : notificationPreview.map(notification => (
+                      <button key={notification._id} type="button" onClick={() => void openNotification(notification)} className={`block w-full border-b px-4 py-3 text-left last:border-b-0 ${isDark ? 'border-gray-800 hover:bg-gray-800' : 'border-gray-100 hover:bg-slate-50'}`}>
+                        <span className="flex items-center gap-2">
+                          {!notification.is_read && <span className="h-2 w-2 shrink-0 rounded-full bg-blue-600" />}
+                          <span className={`truncate text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{notification.title}</span>
+                        </span>
+                        <span className={`mt-1 block line-clamp-2 text-xs ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{notification.message}</span>
+                        {notification.ticket_id && <span className="mt-1 block text-[11px] text-blue-600">Ticket {notification.ticket_id}</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             {/* User avatar */}
             <div className="relative ml-2 pl-3 border-l border-gray-200 dark:border-gray-700">

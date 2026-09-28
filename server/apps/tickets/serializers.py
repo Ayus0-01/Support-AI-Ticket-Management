@@ -175,6 +175,7 @@ class StatusTransitionSerializer(serializers.Serializer):
             ("Open", "Open"),
             ("In Progress", "In Progress"),
             ("Resolved", "Resolved"),
+            ("Closed", "Closed"),
         ],
         required=True,
     )
@@ -190,6 +191,16 @@ class StatusTransitionSerializer(serializers.Serializer):
                 }
             )
         return attrs
+
+
+class ReopenTicketSerializer(serializers.Serializer):
+    additional_info = serializers.CharField(max_length=5000, required=True, allow_blank=False)
+
+    def validate_additional_info(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Please add information about why the ticket needs to be reopened.")
+        return value
 
 
 class TicketCommentSerializer(serializers.Serializer):

@@ -31,6 +31,7 @@ from .serializers import (
     ClassificationOverrideSerializer,
     StatusTransitionSerializer,
     TicketCommentSerializer,
+    ReopenTicketSerializer,
     
 )
 from .services import (
@@ -50,6 +51,7 @@ from .services import (
     get_agents_workload,
     get_support_manager_overview_data,
     get_ai_performance_metrics,
+    reopen_ticket,
 )
 
 from .classification.category_classifier import (
@@ -885,6 +887,12 @@ def transition_ticket_status_view(
         "status"
     ]
 
+    if new_status == "Closed" and user.get("role") not in {"Agent", "Admin"}:
+        return Response(
+            {"message": "Only an Agent or Admin can close a resolved ticket."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
     if user.get("role") == "Support Manager" and new_status == "Resolved":
         return Response(
             {"message": "Support Managers cannot resolve tickets."},
@@ -947,6 +955,48 @@ def transition_ticket_status_view(
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def reopen_ticket_view(request, ticket_id):
+    user, error = _get_authenticated_user(request)
+    if error:
+        return error
+    if user.get("role", "User") != "User":
+        return Response({"message": "Only the ticket requester can reopen a ticket."}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = ReopenTicketSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    ticket = tickets_collection.find_one({"ticket_id": ticket_id})
+    if not ticket:
+        return Response({"message": "Ticket not found."}, status=status.HTTP_404_NOT_FOUND)
+    if str((ticket.get("requester") or {}).get("user_id")) != str(user["_id"]):
+        return Response({"message": "You can only reopen your own tickets."}, status=status.HTTP_403_FORBIDDEN)
+
+    result = reopen_ticket(ticket_id, user["_id"], serializer.validated_data["additional_info"])
+    if not result["success"]:
+        if result["error"] == "TICKET_NOT_FOUND":
+            return Response({"message": "Ticket not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "Only resolved or closed tickets can be reopened.", "current_status": result.get("current_status")}, status=status.HTTP_409_CONFLICT)
+
+    assignee = ticket.get("assignee")
+    if assignee:
+        try:
+            create_notification(
+                recipient=assignee,
+                title="Ticket reopened by customer",
+                message=f"{ticket_id} was reopened with additional information.",
+                notification_type="info",
+                ticket_id=ticket_id,
+            )
+        except Exception as notification_error:
+            logger.warning("Reopen notification failed for %s: %s", ticket_id, notification_error)
+
+    return Response({"message": "Ticket reopened.", "ticket_id": ticket_id, "status": "Open"}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 @authentication_classes([])

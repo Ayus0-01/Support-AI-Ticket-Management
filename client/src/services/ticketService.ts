@@ -193,7 +193,7 @@ export type ClassificationOverrideBody = {
 };
 
 export type StatusTransitionBody = {
-  status: "Open" | "In Progress" | "Resolved";
+  status: "Open" | "In Progress" | "Resolved" | "Closed";
   resolution_summary?: string;
 };
 
@@ -281,6 +281,13 @@ export const transitionTicketStatus = async (
     `/api/tickets/${ticketId}/status/`,
     body
   );
+  return response.data;
+};
+
+export const reopenTicket = async (ticketId: string, additionalInfo: string) => {
+  const response = await api.post(`/api/tickets/${ticketId}/reopen/`, {
+    additional_info: additionalInfo,
+  });
   return response.data;
 };
 
