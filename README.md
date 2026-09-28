@@ -1,6 +1,36 @@
 # Support AI Ticket Management System
 
-A React and Django REST application for support ticket intake, classification, routing, human review, knowledge-base retrieval, and AI-assisted resolution. Ticket and application-user records are stored in MongoDB Atlas. The current AI generation endpoint is Ollama running Qwen3:4B; the retrieval and reranking models run in the Python process.
+A multi-role IT support application for ticket intake, classification, agent assignment, knowledge-base search, and AI-assisted resolution. Customers, support agents, Support Managers, and administrators use the same React application with role-specific access. Django REST APIs and a persistent worker coordinate ticket processing; ticket and application-user records are stored in MongoDB Atlas.
+
+| Portal | What it supports |
+| --- | --- |
+| Customer | Register and verify email, submit tickets, follow ticket history, and view customer-safe resolutions. |
+| Agent | Work assigned tickets, inspect classification and staff workflow details, and prepare or send resolutions. |
+| Support Manager | Monitor workload and reports, manage assignments and escalations, and inspect classification, workflow evidence, and sources. |
+| Admin | Manage users and agent specialties, and access operational dashboards and settings. |
+
+The supported account roles are `User` (customer), `Agent`, `Support Manager`, and `Admin`. Accounts already stored with the retired `Manager` role are converted to `Support Manager` on their next successful sign-in.
+
+### Technology at a glance
+
+| Area | Project implementation |
+| --- | --- |
+| Web app | React 18, TypeScript, Vite, Tailwind CSS, React Router, Axios |
+| API | Python, Django 6, Django REST Framework, JWT authentication |
+| Data and jobs | MongoDB Atlas through PyMongo; MongoDB-backed persistent ticket queue |
+| Classification and retrieval | LightGBM, FastEmbed embeddings, keyword search, reciprocal rank fusion, and a Transformer reranker |
+| Resolution generation | Qwen3:4B through Ollama; generated answers use retrieved knowledge and the existing validation flow |
+| Integrations | Existing SMTP configuration for email and Jira REST API for escalations |
+
+### Where to find things
+
+- [Architecture and ticket lifecycle](#architecture)
+- [Authentication and email verification](#authentication-and-email-verification)
+- [AI classification, knowledge search, and resolution](#ai-ticket-intelligence)
+- [Environment variables](#backend-environment)
+- [Local setup](#local-development)
+- [API overview](#api-overview)
+- [Testing and deployment notes](#tests-and-verification)
 
 This repository is an existing application. Ticket lifecycle and AI logic live in their existing modules and should be extended there rather than duplicated.
 
@@ -9,6 +39,8 @@ This repository is an existing application. Ticket lifecycle and AI logic live i
 Customers submit support requests in the React website. Django saves each ticket right away and places an AI-processing job in MongoDB. A separate ticket worker picks up that job, classifies the ticket, finds a matching support agent, searches the knowledge base, and prepares a resolution for review or delivery. The website checks the saved workflow periodically, so staff can see progress without manually refreshing the page.
 
 For local use, three processes need to be running: the Django API, the ticket worker, and the React website. AI resolution generation also needs an Ollama service reachable at the configured `OLLAMA_URL`. For deployment, the worker must run as a persistent service; starting the website or Django API alone does not process queued tickets.
+
+Application timestamps are stored in UTC for consistent ordering. Business-hour SLA calculations and date/time display use India Standard Time (`Asia/Kolkata`, UTC+05:30). API date values represent UTC; clients treat legacy timestamp strings without an offset as UTC, then convert them to India time for display.
 
 ### A few terms used in this README
 
@@ -43,15 +75,39 @@ The ticket API persists the ticket and queues one MongoDB job. A separate long-r
 
 ### Repository layout
 
-- `client/` — Vite, React, TypeScript UI; authentication context, ticket and resolution services, and customer/agent/manager/admin dashboards.
-- `server/AIticket/` — Django settings, URL routing, WSGI/ASGI entry points, and MongoDB connection.
-- `server/apps/authentication/` — MongoDB-backed accounts, JWT login, email verification, roles, and managed users.
-- `server/apps/tickets/` — ticket APIs, ticket persistence, lifecycle, classification, routing, queues, workload, and durable worker.
-- `server/apps/agents/` — multi-agent orchestration, escalation, Jira and email integrations.
-- `server/apps/knowledge_base/` — article ingestion, embeddings, retrieval, reranking, resolution generation, citation persistence, and response review.
-- `server/apps/history/`, `reports/`, `admin_panel/`, `notifications/` — supporting application APIs and models.
-- `server/training/artifacts/` — checked-in LightGBM models and label maps loaded by M1 at runtime.
-- `docs/`, `plan/`, `UI/`, `images/` — project support material and design assets.
+The diagram shows the application directories and startup files needed to orient yourself in the codebase. It leaves out local virtual environments, generated files, datasets, and design/support material.
+
+```text
+Support_AI_Ticket_Management_Agent/
+├── client/                         React + TypeScript + Vite frontend
+│   ├── src/
+│   │   ├── components/             Shared UI and feature components
+│   │   ├── context/                Authentication and app state
+│   │   ├── pages/                  Customer, agent, Support Manager, and admin screens
+│   │   ├── services/               Frontend API clients
+│   │   └── utils/                  Shared frontend utilities
+│   ├── package.json
+│   └── vite.config.ts
+├── server/                         Django REST backend and ticket worker
+│   ├── AIticket/                   Django settings, URLs, WSGI/ASGI
+│   ├── apps/
+│   │   ├── authentication/         Accounts, JWT, email verification
+│   │   ├── tickets/                Ticket lifecycle, classification, queue
+│   │   ├── agents/                 Orchestration, assignment, Jira, email
+│   │   ├── knowledge_base/         Articles, retrieval, and resolutions
+│   │   ├── history/
+│   │   ├── notifications/
+│   │   ├── reports/
+│   │   └── admin_panel/
+│   ├── training/artifacts/         Runtime LightGBM models and label maps
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── .env.example
+├── README.md
+└── start-local.cmd                 Starts local API, worker, and frontend
+```
+
+The ticket worker is started through Django's `manage.py`; it does not have a separate source directory. `server/training/artifacts/` contains model files needed by classification at runtime.
 
 ## Ticket lifecycle
 
@@ -66,7 +122,7 @@ Ticket states retain the existing `Open`, `In Progress`, `Resolved`, and `Closed
 
 ### Human-agent coverage
 
-Agent accounts are existing user documents with role `Agent`; the application does not create filler agents. Admins can select any of the ten classifier categories as specialties in the Users page, when creating Agents or editing existing Agents. Configure the intended staffing scenario on the actual seven Agent records: five with VPN and two with NETWORK as initial coverage. Changing an Agent specialty affects future tickets in the selected category. Categories without an active matching specialist use the current escalation path. A missing/overloaded specialist pool does not silently route the ticket to an unrelated agent. Existing manual manager assignment remains available.
+Agent accounts are existing user documents with role `Agent`; the application does not create filler agents. Admins can select any of the ten classifier categories as specialties in the Users page, when creating Agents or editing existing Agents. Configure the intended staffing scenario on the actual seven Agent records: five with VPN and two with NETWORK as initial coverage. Changing an Agent specialty affects future tickets in the selected category. Categories without an active matching specialist use the current escalation path. A missing/overloaded specialist pool does not silently route the ticket to an unrelated agent. Existing manual Support Manager assignment remains available.
 
 The code does not seed or assert the number of Agent records in MongoDB. Confirm the live account records and active workloads during environment setup.
 
@@ -82,6 +138,8 @@ Registration requires working SMTP and `FRONTEND_URL` so the verification link r
 
 The trained LightGBM category, subcategory, and severity models are loaded from `server/training/artifacts/`. The checked-in category map has ten labels: ACCESS, APPLICATION, EMAIL, HARDWARE, NETWORK, PRINTER, SECURITY, SOFTWARE, UNCLASSIFIED, and VPN. Severity rules and the existing deterministic impact/severity priority mapping calculate priority and SLA. The classification routing module maps category to a team queue; ticket assignment separately uses eligible Agent account specialties and workload.
 
+Staff ticket details show the category model's confidence as a diagnostic score so agents can inspect classification behavior. That score does not gate M2/M3 resolution generation or customer delivery; the existing classification model still uses its own thresholds to choose classification routing and the `UNCLASSIFIED` label. M3's existing validation result determines whether an AI resolution is delivered or escalated.
+
 ### Knowledge base and resolution (M2)
 
 Knowledge articles can be created, published, searched, and ingested from supported HTML/text, DOCX, and PDF sources. The existing pipeline builds ticket search queries, runs vector and keyword retrieval, combines candidate rankings with reciprocal rank fusion (RRF), filters by published status and applicable category/department, reranks candidates, and packs context for generation. FastEmbed provides dense embeddings. The Transformer reranker uses `BAAI/bge-reranker-v2-m3`.
@@ -90,7 +148,7 @@ The generator uses Qwen3:4B through Ollama. `OLLAMA_URL` and `OLLAMA_MODEL` conf
 
 ### Multi-agent workflow (M3) and human review
 
-The orchestrator coordinates diagnosis, knowledge retrieval, resolution, validation, and the existing escalation branch. Successful AI responses are persisted and await customer confirmation. Staff can inspect response details and citations through staff APIs and can edit, accept, reject, or send a manual response through existing review endpoints. Customers receive only the resolution ID/status, final summary, and final steps from the customer response endpoint; internal sources, citations, scores, and workflow details remain excluded from that response.
+The orchestrator coordinates diagnosis, knowledge retrieval, resolution, validation, and the existing escalation branch. Successful AI responses are persisted and await customer confirmation. Agents and Admins can inspect response details and citations, edit or accept/reject drafts, and send manual responses. Support Managers can inspect the generated resolution summary, troubleshooting steps, confidence, retrieved knowledge chunks, and source snippets in a read-only workflow view. They cannot run the workflow, generate or review response drafts, send resolutions, or mark tickets resolved. Customers receive only the resolution ID/status, final summary, and final steps from the customer response endpoint; internal sources, citations, scores, and workflow details remain excluded from that response.
 
 The staff M3 workflow panel records and displays elapsed milliseconds for classification, diagnosis, knowledge retrieval, resolution generation, validation, and escalation analysis, plus total M3 elapsed time. These are wall-clock durations for this application's calls and workflow work; they are useful for locating slow stages, not a performance guarantee. The classification time is included when processing starts from the background ticket worker. Manually rerun M3 workflows have no new classification stage, so that entry is shown as pending. Older workflow records created before timings were added do not contain these values.
 
@@ -157,7 +215,7 @@ All routes are rooted at `/api/` and use the existing JWT header flow where the 
 
 - `/api/auth/register/`, `/api/auth/verify-email/`, `/api/auth/login/`, `/api/auth/me/`, `/api/auth/admin/users/`
 - `/api/tickets/`, `/api/tickets/my/`, `/api/tickets/<ticket_id>/`, `/api/tickets/queue/`, `/api/tickets/<ticket_id>/timeline/`
-- Ticket status, comments, classification override, assignment, workload, manager overview, and AI performance routes are under `/api/tickets/`.
+- Ticket status, comments, classification override, assignment, workload, Support Manager overview, and AI performance routes are under `/api/tickets/`.
 - Resolution generation/review/feedback routes are under `/api/tickets/`; staff-only response listing and customer-safe sent-response retrieval use the existing response endpoints.
 - Knowledge articles, search, ingestion, ingestion status, and knowledge gaps are under `/api/knowledge/`.
 - M3 workflow execution/status/activity logs are under `/api/agents/`.
@@ -201,6 +259,7 @@ No production deployment or live integration is claimed by this repository updat
 
 - Never commit `.env`, JWT signing keys, Mongo credentials, SMTP passwords, Jira tokens, or public AI endpoint credentials.
 - Use HTTPS and narrow host/CORS/CSRF allowlists in production.
+- Enforce role restrictions in API views as well as the frontend. Direct email and Jira HTTP endpoints require staff authorization; ticket notifications and escalation integrations used by the worker call their existing services internally.
 - Registration verification proves mailbox access; it does not validate a provider against a hardcoded list.
 - Keep customer-facing response serializers limited to final user-safe resolution fields. RAG citations, retrieval metadata, validation, routing, and internal comments are staff/workflow data.
 - Restrict MongoDB access to the application and worker identities and configure appropriate backups/retention.
