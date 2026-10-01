@@ -209,21 +209,6 @@ npm run dev
 
 Set the frontend API base URL using the existing `client/src/api.ts` configuration before connecting it to a non-local backend. Keep `server/.env` and all credential files out of source control.
 
-## API overview
-
-All routes are rooted at `/api/` and use the existing JWT header flow where the view requires authentication.
-
-- `/api/auth/register/`, `/api/auth/verify-email/`, `/api/auth/login/`, `/api/auth/me/`, `/api/auth/admin/users/`
-- `/api/tickets/`, `/api/tickets/my/`, `/api/tickets/<ticket_id>/`, `/api/tickets/queue/`, `/api/tickets/<ticket_id>/timeline/`
-- Ticket status, comments, classification override, assignment, workload, Support Manager overview, and AI performance routes are under `/api/tickets/`.
-- Resolution generation/review/feedback routes are under `/api/tickets/`; staff-only response listing and customer-safe sent-response retrieval use the existing response endpoints.
-- Knowledge articles, search, ingestion, ingestion status, and knowledge gaps are under `/api/knowledge/`.
-- M3 workflow execution/status/activity logs are under `/api/agents/`.
-- Email logs and notifications are under `/api/email/` and `/api/notifications/`.
-- Jira issue create/read/update/status sync are under `/api/jira/`.
-
-The canonical endpoint definitions are in `server/AIticket/urls.py` and each app's `urls.py`.
-
 ## Tests and verification
 
 Run the Django test suite from `server/`:
